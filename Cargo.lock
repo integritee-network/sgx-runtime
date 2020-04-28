@@ -2504,7 +2504,6 @@ version = "2.0.0-alpha.7"
 dependencies = [
  "futures 0.3.4",
  "log",
- "node-template-runtime",
  "sc-basic-authorship",
  "sc-cli",
  "sc-client-api",
@@ -2515,6 +2514,7 @@ dependencies = [
  "sc-network",
  "sc-service",
  "sc-transaction-pool",
+ "sgx-runtime",
  "sp-consensus",
  "sp-consensus-aura",
  "sp-core",
@@ -4567,6 +4567,38 @@ dependencies = [
  "itoa",
  "ryu",
  "serde",
+]
+
+[[package]]
+name = "sgx-runtime"
+version = "2.0.0-alpha.6"
+dependencies = [
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "pallet-aura",
+ "pallet-balances",
+ "pallet-grandpa",
+ "pallet-randomness-collective-flip",
+ "pallet-sudo",
+ "pallet-template",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "parity-scale-codec",
+ "serde",
+ "sp-api",
+ "sp-block-builder",
+ "sp-consensus-aura",
+ "sp-core",
+ "sp-inherents",
+ "sp-io",
+ "sp-offchain",
+ "sp-runtime",
+ "sp-session",
+ "sp-std",
+ "sp-transaction-pool",
+ "sp-version",
+ "substrate-wasm-builder-runner",
 ]
 
 [[package]]

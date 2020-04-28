@@ -17,7 +17,7 @@ futures = '0.3.4'
 log = '0.4.8'
 structopt = '0.3.8'
 
-[dependencies.node-template-runtime]
+[dependencies.sgx-runtime]
 path = '../runtime'
 version = '2.0.0-alpha.7'
 
