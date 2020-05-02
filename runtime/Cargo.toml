@@ -52,14 +52,24 @@ version = '0.8.0-alpha.6'
 [dependencies.sp-core]
 default-features = false
 version = '2.0.0-alpha.6'
+features = ["full_crypto"]
+
+[dependencies.sp-application-crypto]
+default-features = false
+version = '2.0.0-alpha.6'
+features = ["full_crypto"]
 
 [dependencies.sp-inherents]
 default-features = false
 version = '2.0.0-alpha.6'
 
-[dependencies.sp-io]
-default-features = false
-version = '2.0.0-alpha.6'
+#[dependencies.sp-io]
+#default-features = false
+#version = '2.0.0-alpha.6'
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+sp-io = { version = "2.0.0-alpha.6", default-features = false, features = [ "disable_oom", "disable_panic_handler" ] }
+
 
 [dependencies.sp-offchain]
 default-features = false
@@ -111,9 +121,6 @@ default-features = false
 package = 'pallet-transaction-payment'
 version = '2.0.0-alpha.6'
 
-[build-dependencies.wasm-builder-runner]
-package = 'substrate-wasm-builder-runner'
-version = '1.0.5'
 
 [package]
 authors = ['Anonymous']
@@ -127,32 +134,3 @@ version = '2.0.0-alpha.6'
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
-[features]
-default = ['std']
-std = [
-    'aura/std',
-    'balances/std',
-    'codec/std',
-    'frame-executive/std',
-    'frame-support/std',
-    'grandpa/std',
-    'randomness-collective-flip/std',
-    'serde',
-    'sp-api/std',
-    'sp-block-builder/std',
-    'sp-consensus-aura/std',
-    'sp-core/std',
-    'sp-inherents/std',
-    'sp-io/std',
-    'sp-offchain/std',
-    'sp-runtime/std',
-    'sp-session/std',
-    'sp-std/std',
-    'sp-transaction-pool/std',
-    'sp-version/std',
-    'sudo/std',
-    'system/std',
-    'timestamp/std',
-    'transaction-payment/std',
-    'template/std',
-]

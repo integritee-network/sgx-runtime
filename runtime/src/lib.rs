@@ -1,6 +1,15 @@
-//! The Substrate Node Template runtime. This can be compiled with `#[no_std]`, ready for Wasm.
+//! The Substrate Node Template runtime for SGX. 
+//! This is only meant to be used inside an SGX enclave with `#[no_std]`
+//! 
+//! you should assemble your runtime to be used with your STF here 
+//! and get all your needed pallets in
 
-#![cfg_attr(not(feature = "std"), no_std)]
+#![no_std]
+#![feature(prelude_import)]
+#![feature(structural_match)]
+#![feature(core_intrinsics)]
+#![feature(derive_eq)]
+
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit="256"]
 
@@ -14,9 +23,7 @@ use sp_runtime::traits::{
 	BlakeTwo256, Block as BlockT, IdentityLookup, Verify, ConvertInto, IdentifyAccount
 };
 use sp_api::impl_runtime_apis;
-//use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-//use grandpa::AuthorityList as GrandpaAuthorityList;
-//use grandpa::fg_primitives;
+
 use sp_version::RuntimeVersion;
 
 pub use timestamp::Call as TimestampCall;
