@@ -63,16 +63,31 @@ tag = 'v2.0.0-alpha.7'
 git = 'https://github.com/paritytech/substrate.git'
 default-features = false
 tag = 'v2.0.0-alpha.7'
+features = ["full_crypto"]
 
 [dependencies.sp-inherents]
 git = 'https://github.com/paritytech/substrate.git'
 default-features = false
 tag = 'v2.0.0-alpha.7'
 
+[dependencies.sp-application-crypto]
+git = 'https://github.com/paritytech/substrate.git'
+default-features = false
+tag = 'v2.0.0-alpha.7'
+features = ["full_crypto"]
+
 [dependencies.sp-io]
 git = 'https://github.com/paritytech/substrate.git'
 default-features = false
 tag = 'v2.0.0-alpha.7'
+
+#[dependencies.sp-io]
+#default-features = false
+#version = '2.0.0-alpha.6'
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+sp-io = { version = "2.0.0-alpha.6", default-features = false, features = [ "disable_oom", "disable_panic_handler" ] }
+
 
 [dependencies.sp-offchain]
 git = 'https://github.com/paritytech/substrate.git'
@@ -151,32 +166,3 @@ version = '2.0.0-alpha.7'
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
-[features]
-default = ['std']
-std = [
-    'aura/std',
-    'balances/std',
-    'codec/std',
-    'frame-executive/std',
-    'frame-support/std',
-    'grandpa/std',
-    'randomness-collective-flip/std',
-    'serde',
-    'sp-api/std',
-    'sp-block-builder/std',
-    'sp-consensus-aura/std',
-    'sp-core/std',
-    'sp-inherents/std',
-    'sp-io/std',
-    'sp-offchain/std',
-    'sp-runtime/std',
-    'sp-session/std',
-    'sp-std/std',
-    'sp-transaction-pool/std',
-    'sp-version/std',
-    'sudo/std',
-    'system/std',
-    'timestamp/std',
-    'transaction-payment/std',
-    'template/std',
-]

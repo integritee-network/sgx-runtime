@@ -35,17 +35,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "alga"
-version = "0.9.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "4f823d037a7ec6ea2197046bafd4ae150e6bc36f9ca347404f46a46823fa84f2"
-dependencies = [
- "approx",
- "num-complex",
- "num-traits 0.2.11",
-]
-
-[[package]]
 name = "ansi_term"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -79,15 +68,6 @@ dependencies = [
  "shell32-sys",
  "winapi 0.2.8",
  "xdg",
-]
-
-[[package]]
-name = "approx"
-version = "0.3.2"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f0e60b75072ecd4168020818c0107f2857bb6c4e64252d8d3983f6263b40a5c3"
-dependencies = [
- "num-traits 0.2.11",
 ]
 
 [[package]]
@@ -1881,12 +1861,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "libm"
-version = "0.2.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7d73b3f436185384286bd8098d17ec07c9a7d2388a6599f824d8502b529702a"
-
-[[package]]
 name = "libp2p"
 version = "0.18.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2223,17 +2197,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "linregress"
-version = "0.1.7"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9290cf6f928576eeb9c096c6fad9d8d452a0a1a70a2bbffa6e36064eedc0aac9"
-dependencies = [
- "failure",
- "nalgebra",
- "statrs",
-]
-
-[[package]]
 name = "lock_api"
 version = "0.3.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2265,15 +2228,6 @@ name = "matches"
 version = "0.1.8"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "7ffc5c5338469d4d3ea17d269fa8ea3512ad247247c30bd2df69e68309ed0a08"
-
-[[package]]
-name = "matrixmultiply"
-version = "0.2.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d4f7ec66360130972f34830bfad9ef05c6610a43938a467bcc9ab9369ab3478f"
-dependencies = [
- "rawpointer",
-]
 
 [[package]]
 name = "maybe-uninit"
@@ -2435,23 +2389,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "nalgebra"
-version = "0.18.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "aaa9fddbc34c8c35dd2108515587b8ce0cab396f17977b8c738568e4edb521a2"
-dependencies = [
- "alga",
- "approx",
- "generic-array",
- "matrixmultiply",
- "num-complex",
- "num-rational",
- "num-traits 0.2.11",
- "rand 0.6.5",
- "typenum",
-]
-
-[[package]]
 name = "names"
 version = "0.11.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2601,16 +2538,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "num-complex"
-version = "0.2.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b6b19411a9719e753aff12e5187b74d60d3dc449ec3f4dc21e3989c3f554bc95"
-dependencies = [
- "autocfg 1.0.0",
- "num-traits 0.2.11",
-]
-
-[[package]]
 name = "num-integer"
 version = "0.1.42"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2648,7 +2575,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c62be47e61d1842b9170f0fdeec8eba98e60e90e5446449a0545e5152acd7096"
 dependencies = [
  "autocfg 1.0.0",
- "libm",
 ]
 
 [[package]]
@@ -2711,7 +2637,6 @@ dependencies = [
  "pallet-session",
  "pallet-timestamp",
  "parity-scale-codec",
- "serde",
  "sp-application-crypto",
  "sp-consensus-aura",
  "sp-core",
@@ -2727,11 +2652,9 @@ name = "pallet-balances"
 version = "2.0.0-alpha.7"
 source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-alpha.7#83a6f1add7957160283ac5d7e627da06beb725d9"
 dependencies = [
- "frame-benchmarking",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
- "serde",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -2763,7 +2686,6 @@ dependencies = [
  "pallet-finality-tracker",
  "pallet-session",
  "parity-scale-codec",
- "serde",
  "sp-core",
  "sp-finality-grandpa",
  "sp-runtime",
@@ -2794,12 +2716,10 @@ dependencies = [
  "impl-trait-for-tuples",
  "pallet-timestamp",
  "parity-scale-codec",
- "serde",
  "sp-io",
  "sp-runtime",
  "sp-staking",
  "sp-std",
- "sp-trie",
 ]
 
 [[package]]
@@ -2810,7 +2730,6 @@ dependencies = [
  "frame-support",
  "frame-system",
  "parity-scale-codec",
- "serde",
  "sp-io",
  "sp-runtime",
  "sp-std",
@@ -2833,12 +2752,10 @@ name = "pallet-timestamp"
 version = "2.0.0-alpha.7"
 source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-alpha.7#83a6f1add7957160283ac5d7e627da06beb725d9"
 dependencies = [
- "frame-benchmarking",
  "frame-support",
  "frame-system",
  "impl-trait-for-tuples",
  "parity-scale-codec",
- "serde",
  "sp-inherents",
  "sp-runtime",
  "sp-std",
@@ -2865,7 +2782,6 @@ source = "git+https://github.com/paritytech/substrate.git?tag=v2.0.0-alpha.7#83a
 dependencies = [
  "frame-support",
  "parity-scale-codec",
- "serde",
  "sp-api",
  "sp-runtime",
  "sp-std",
@@ -3414,7 +3330,7 @@ checksum = "6a6b1679d49b24bbfe0c803429aa1874472f50d9b363131f0e89fc356b544d03"
 dependencies = [
  "getrandom",
  "libc",
- "rand_chacha 0.2.2",
+ "rand_chacha",
  "rand_core 0.5.1",
  "rand_hc 0.2.0",
  "rand_pcg 0.2.1",
@@ -3462,15 +3378,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "90bde5296fc891b0cef12a6d03ddccc162ce7b2aff54160af9338f8d40df6d19"
 dependencies = [
  "getrandom",
-]
-
-[[package]]
-name = "rand_hc"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "7b40677c7be09ae76218dc623efbf7b18e34bced3f38883af07bb75630a21bc4"
-dependencies = [
- "rand_core 0.3.1",
 ]
 
 [[package]]
@@ -4587,6 +4494,7 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-api",
+ "sp-application-crypto",
  "sp-block-builder",
  "sp-consensus-aura",
  "sp-core",
@@ -4598,7 +4506,6 @@ dependencies = [
  "sp-std",
  "sp-transaction-pool",
  "sp-version",
- "substrate-wasm-builder-runner",
 ]
 
 [[package]]
@@ -5292,15 +5199,6 @@ name = "static_assertions"
 version = "1.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a2eb9349b6444b326872e140eb1cf5e7c522154d69e7a0ffb0fb81c06b37543f"
-
-[[package]]
-name = "statrs"
-version = "0.10.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "10102ac8d55e35db2b3fafc26f81ba8647da2e15879ab686a67e6d19af2685e8"
-dependencies = [
- "rand 0.5.6",
-]
 
 [[package]]
 name = "string"

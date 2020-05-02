@@ -5,3 +5,6 @@ members = [
 ]
 [profile.release]
 panic = 'unwind'
+
+[patch.crates-io]
+sp-io = { git = "https://github.com/scs/substraTEE-worker.git", branch = "v2.0.0-alpha.6-upgrade", default-features = false, features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"]}
