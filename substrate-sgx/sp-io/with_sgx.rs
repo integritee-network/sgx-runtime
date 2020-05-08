@@ -275,6 +275,16 @@ pub mod crypto {
         true
     }
 
+    /// Start verification extension.
+    fn start_batch_verify() {
+        warn!("crypto::start_batch_verify unimplemented");
+    }
+
+    fn finish_batch_verify() -> bool {
+        warn!("crypto::finish_batch_verify unimplemented");
+        true
+    }
+
     pub fn sr25519_public_keys(id: KeyTypeId) -> Vec<sr25519::Public> {
         warn!("crypto::sr25519_public_key unimplemented");
         vec![sr25519::Public::default()]
