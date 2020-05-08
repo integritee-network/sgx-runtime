@@ -123,6 +123,18 @@ pub mod storage {
         warn!("storage::clear_prefix() unimplemented");
     }
 
+    /// Append the encoded `value` to the storage item at `key`.
+    ///
+    /// The storage item needs to implement [`EncodeAppend`](codec::EncodeAppend).
+    ///
+    /// # Warning
+    ///
+    /// If the storage item does not support [`EncodeAppend`](codec::EncodeAppend) or
+    /// something else fails at appending, the storage item will be set to `[value]`.
+    pub fn append(key: &[u8], value: Vec<u8>) {
+        warn!("storage::append() unimplemented");
+    }
+
     pub fn root() -> [u8; 32] {
         warn!("storage::root() unimplemented");
         [0u8; 32]
@@ -203,47 +215,34 @@ pub mod trie {
     }
 }
 
-pub mod hashing {
+pub mod misc {
     use super::*;
-
-    pub fn keccak_256(data: &[u8]) -> [u8; 32] {
-        warn!("hashing::keccak256 unimplemented");
-        [0u8; 32]
+    /// The current relay chain identifier.
+    pub fn chain_id() -> u64 {
+        warn!("OtherApi::chain_id unimplemented");
+        0
     }
 
-    pub fn blake2_128(data: &[u8]) -> [u8; 16] {
-        debug!("blake2_128 of {}", encode_hex(data));
-        let hash = sp_core::blake2_128(data);
-        debug!("  returning hash {}", encode_hex(&hash));
-        hash
+    /// Print a number.
+    pub fn print_num(val: u64) {
+        debug!(target: "runtime", "{}", val);
     }
 
-    pub fn blake2_256(data: &[u8]) -> [u8; 32] {
-        debug!("blake2_256 of {}", encode_hex(data));
-        let hash = sp_core::blake2_256(data);
-        debug!("  returning hash {}", encode_hex(&hash));
-        hash
+    /// Print any valid `utf8` buffer.
+    pub fn print_utf8(utf8: &[u8]) {
+        if let Ok(data) = std::str::from_utf8(utf8) {
+            debug!(target: "runtime", "{}", data)
+        }
     }
 
-    pub fn twox_256(data: &[u8]) -> [u8; 32] {
-        debug!("twox_256 of {}", encode_hex(data));
-        let hash = sp_core::twox_256(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
+    /// Print any `u8` slice as hex.
+    pub fn print_hex(data: &[u8]) {
+        debug!(target: "runtime", "{:?}", data);
     }
 
-    pub fn twox_128(data: &[u8]) -> [u8; 16] {
-        debug!("twox_128 of {}", encode_hex(data));
-        let hash = sp_core::twox_128(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn twox_64(data: &[u8]) -> [u8; 8] {
-        debug!("twox_64 of {}", encode_hex(data));
-        let hash = sp_core::twox_64(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
+    pub fn runtime_version(wasm: &[u8]) -> Option<Vec<u8>> {
+        warn!("misc::runtime_version unimplemented!");
+        Some([2u8; 32].to_vec())
     }
 }
 
@@ -276,11 +275,11 @@ pub mod crypto {
     }
 
     /// Start verification extension.
-    fn start_batch_verify() {
+    pub fn start_batch_verify() {
         warn!("crypto::start_batch_verify unimplemented");
     }
 
-    fn finish_batch_verify() -> bool {
+    pub fn finish_batch_verify() -> bool {
         warn!("crypto::finish_batch_verify unimplemented");
         true
     }
@@ -322,6 +321,54 @@ pub mod crypto {
     ) -> Result<[u8; 33], EcdsaVerifyError> {
         warn!("crypto::secp256k1_ecdsa_recover unimplemented");
         Ok([0; 33])
+    }
+}
+
+pub mod hashing {
+    use super::*;
+
+    pub fn keccak_256(data: &[u8]) -> [u8; 32] {
+        warn!("hashing::keccak256 unimplemented");
+        [0u8; 32]
+    }
+
+    pub fn sha2_256(data: &[u8]) -> [u8; 32] {
+        sp_core::hashing::sha2_256(data)
+    }
+
+    pub fn blake2_128(data: &[u8]) -> [u8; 16] {
+        debug!("blake2_128 of {}", encode_hex(data));
+        let hash = sp_core::blake2_128(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
+    }
+
+    pub fn blake2_256(data: &[u8]) -> [u8; 32] {
+        debug!("blake2_256 of {}", encode_hex(data));
+        let hash = sp_core::blake2_256(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
+    }
+
+    pub fn twox_256(data: &[u8]) -> [u8; 32] {
+        debug!("twox_256 of {}", encode_hex(data));
+        let hash = sp_core::twox_256(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
+    }
+
+    pub fn twox_128(data: &[u8]) -> [u8; 16] {
+        debug!("twox_128 of {}", encode_hex(data));
+        let hash = sp_core::twox_128(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
+    }
+
+    pub fn twox_64(data: &[u8]) -> [u8; 8] {
+        debug!("twox_64 of {}", encode_hex(data));
+        let hash = sp_core::twox_64(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
     }
 }
 
@@ -437,37 +484,6 @@ pub mod offchain {
     ) -> Result<usize, offchain::HttpError> {
         warn!("offchain::http_response_read_body unimplemented");
         Err(offchain::HttpError::IoError)
-    }
-}
-
-pub mod misc {
-    use super::*;
-    /// The current relay chain identifier.
-    pub fn chain_id() -> u64 {
-        warn!("OtherApi::chain_id unimplemented");
-        0
-    }
-
-    /// Print a number.
-    pub fn print_num(val: u64) {
-        debug!(target: "runtime", "{}", val);
-    }
-
-    /// Print any valid `utf8` buffer.
-    pub fn print_utf8(utf8: &[u8]) {
-        if let Ok(data) = std::str::from_utf8(utf8) {
-            debug!(target: "runtime", "{}", data)
-        }
-    }
-
-    /// Print any `u8` slice as hex.
-    pub fn print_hex(data: &[u8]) {
-        debug!(target: "runtime", "{:?}", data);
-    }
-
-    pub fn runtime_version(wasm: &[u8]) -> Option<Vec<u8>> {
-        warn!("misc::runtime_version unimplemented!");
-        Some([2u8; 32].to_vec())
     }
 }
 
