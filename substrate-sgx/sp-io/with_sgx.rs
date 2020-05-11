@@ -270,8 +270,7 @@ pub mod crypto {
     }
 
     pub fn ed25519_verify(sig: &ed25519::Signature, msg: &[u8], pubkey: &ed25519::Public) -> bool {
-        warn!("crypto::ed25519_verify unimplemented");
-        true
+        ed25519::Pair::verify(sig, msg, pubkey)
     }
 
     /// Start verification extension.
