@@ -111,7 +111,10 @@ pub mod storage {
     }
 
     pub fn clear(key: &[u8]) {
-        warn!("storage::clear() unimplemented");
+        with_externalities(|ext|
+            if let None = ext.remove(key) {
+                info!("Tried to clear storage, that was not existing");
+            });
     }
 
     pub fn exists(key: &[u8]) -> bool {
