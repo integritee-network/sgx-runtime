@@ -166,7 +166,7 @@ pub mod storage {
 	/// This is a low level API that is potentially dangerous as it can easily result
 	/// in unbalanced transactions. For example, FRAME users should use high level storage
 	/// abstractions.
-	fn start_transaction() {
+	pub fn start_transaction() {
 		warn!("storage::start_transaction unimplemented");
 	}
 
@@ -177,7 +177,7 @@ pub mod storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	fn rollback_transaction() {
+	pub fn rollback_transaction() {
 		warn!("storage::rollback_transaction unimplemented");
 	}
 
@@ -188,7 +188,7 @@ pub mod storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	fn commit_transaction() {
+	pub fn commit_transaction() {
         warn!("storage::commit_transaction unimplemented");
     }
 }
@@ -257,7 +257,8 @@ pub mod default_child_storage {
         warn!("storage::root() unimplemented");
         vec![0, 1, 2, 3]
     }
-    fn next_key(
+
+    pub fn next_key(
         storage_key: &[u8],
         key: &[u8],
     ) -> Option<Vec<u8>> {
@@ -280,13 +281,14 @@ pub mod trie {
         warn!("trie::blake2_256_ordered_root() unimplemented");
         H256::default()
     }
-    fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+    
+    pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::keccak_256_root() unimplemented");
         H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::keccak_256_ordered_root() unimplemented");
         H256::default()
 	}
@@ -372,7 +374,7 @@ pub mod crypto {
 	/// needs to be called.
 	///
 	/// Returns `true` when the verification is either successful or batched.
-	fn sr25519_batch_verify(
+	pub fn sr25519_batch_verify(
 		sig: &sr25519::Signature,
 		msg: &[u8],
 		pub_key: &sr25519::Public,
@@ -414,7 +416,7 @@ pub mod crypto {
     }
 
     /// Returns all `ecdsa` public keys for the given key id from the keystore.
-	fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
+	pub fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
         warn!("crypto::ecdsa_public_keys unimplemented");
         Vec::new()
 	}
@@ -425,7 +427,7 @@ pub mod crypto {
 	/// The `seed` needs to be a valid utf8.
 	///
 	/// Returns the public key.
-	fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
+	pub fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
         warn!("crypto::ecdsa_generate unimplemented");
         ecdsa::Public::default()
 	}
@@ -434,7 +436,7 @@ pub mod crypto {
 	/// key type in the keystore.
 	///
 	/// Returns the signature.
-	fn ecdsa_sign(
+	pub fn ecdsa_sign(
 		id: KeyTypeId,
 		pub_key: &ecdsa::Public,
 		msg: &[u8],
@@ -446,7 +448,7 @@ pub mod crypto {
 	/// Verify `ecdsa` signature.
 	///
 	/// Returns `true` when the verification was successful.
-	fn ecdsa_verify(
+	pub fn ecdsa_verify(
 		sig: &ecdsa::Signature,
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
@@ -462,7 +464,7 @@ pub mod crypto {
 	/// needs to be called.
 	///
 	/// Returns `true` when the verification is either successful or batched.
-	fn ecdsa_batch_verify(
+	pub fn ecdsa_batch_verify(
 		sig: &ecdsa::Signature,
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
