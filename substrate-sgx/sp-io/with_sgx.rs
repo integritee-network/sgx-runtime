@@ -193,13 +193,6 @@ pub mod storage {
     }
 }
 
-pub fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
-    // TODO: unimplemented
-    warn!("default_child_storage::get() unimplemented");
-    Some(vec![0, 1, 2, 3])
-}
-
-
 pub mod default_child_storage {
     use super::*;
     pub fn read(
@@ -213,7 +206,11 @@ pub mod default_child_storage {
         Some(0)
     }
 
-
+    pub fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
+        // TODO: unimplemented
+        warn!("default_child_storage::get() unimplemented");
+        Some(vec![0, 1, 2, 3])
+    }
 
     pub fn set(
         storage_key: &[u8], 
