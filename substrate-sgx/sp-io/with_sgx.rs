@@ -440,7 +440,7 @@ pub mod crypto {
 		msg: &[u8],
 	) -> Option<ecdsa::Signature> {
         warn!("crypto::ecdsa_sign unimplemented");
-        ecdsa::Signature::default()
+        None
 	}
 
 	/// Verify `ecdsa` signature.
