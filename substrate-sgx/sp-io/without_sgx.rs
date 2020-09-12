@@ -643,9 +643,12 @@ pub trait Crypto {
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
 	) -> bool {
-		self.extension::<VerificationExt>().map(
+/*		self.extension::<VerificationExt>().map(
 			|extension| extension.push_ecdsa(sig.clone(), pub_key.clone(), msg.to_vec())
-		).unwrap_or_else(|| ecdsa_verify(sig, msg, pub_key))
+        ).unwrap_or_else(|| ecdsa_verify(sig, msg, pub_key))
+        */
+        log::warn!("ecdsa_batch_verify unimplemented");
+        false
 	}
 
     /// Verify and recover a SECP256k1 ECDSA signature.

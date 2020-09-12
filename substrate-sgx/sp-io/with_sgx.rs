@@ -26,7 +26,7 @@ use sp_core::{
     offchain::{
         HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
     },
-    sr25519,
+    sr25519, ecdsa
 };
 
 use std::char;
@@ -585,7 +585,7 @@ pub mod offchain {
     pub fn local_storage_set(kind: offchain::StorageKind, key: &[u8], value: &[u8]) {
         warn!("offchain::local_storage_set unimplemented");
     }
-    pub fn local_storage_clear(&mut self, kind: StorageKind, key: &[u8]) {
+    pub fn local_storage_clear(kind: StorageKind, key: &[u8]) {
         warn!("offchain::local_storage_clear unimplemented");
 
     }
