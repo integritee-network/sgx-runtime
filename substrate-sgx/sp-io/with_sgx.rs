@@ -153,17 +153,55 @@ pub mod storage {
         warn!("storage::next_key unimplemented");
         Some([0u8; 32].to_vec())
     }
+
+	/// Start a new nested transaction.
+	///
+	/// This allows to either commit or roll back all changes that are made after this call.
+	/// For every transaction there must be a matching call to either `rollback_transaction`
+	/// or `commit_transaction`. This is also effective for all values manipulated using the
+	/// `DefaultChildStorage` API.
+	///
+	/// # Warning
+	///
+	/// This is a low level API that is potentially dangerous as it can easily result
+	/// in unbalanced transactions. For example, FRAME users should use high level storage
+	/// abstractions.
+	fn start_transaction(&mut self) {
+		warn!("storage::start_transaction unimplemented");
+	}
+
+	/// Rollback the last transaction started by `start_transaction`.
+	///
+	/// Any changes made during that transaction are discarded.
+	///
+	/// # Panics
+	///
+	/// Will panic if there is no open transaction.
+	fn rollback_transaction(&mut self) {
+		warn!("storage::rollback_transaction unimplemented");
+	}
+
+	/// Commit the last transaction started by `start_transaction`.
+	///
+	/// Any changes made during that transaction are committed.
+	///
+	/// # Panics
+	///
+	/// Will panic if there is no open transaction.
+	fn commit_transaction(&mut self) {
+        warn!("storage::commit_transaction unimplemented");
+    }
 }
+
+pub fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
+    // TODO: unimplemented
+    warn!("default_child_storage::get() unimplemented");
+    Some(vec![0, 1, 2, 3])
+}
+
 
 pub mod default_child_storage {
     use super::*;
-
-    pub fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
-        // TODO: unimplemented
-        warn!("default_child_storage::get() unimplemented");
-        Some(vec![0, 1, 2, 3])
-    }
-
     pub fn read(
         storage_key: &[u8],
         key: &[u8],
@@ -175,30 +213,56 @@ pub mod default_child_storage {
         Some(0)
     }
 
-    pub fn set(storage_key: &[u8], key: &[u8], value: &[u8]) {
+
+
+    pub fn set(
+        storage_key: &[u8], 
+        key: &[u8], 
+        value: &[u8],
+    ) {
         warn!("default_child_storage::set() unimplemented");
     }
 
-    pub fn clear(storage_key: &[u8], key: &[u8]) {
+    pub fn clear(
+        storage_key: &[u8], 
+        key: &[u8]
+    ) {
         warn!("storage::clear() unimplemented");
     }
 
-    pub fn storage_kill(storage_key: &[u8]) {
+    pub fn storage_kill(
+        storage_key: &[u8],
+    ) {
         warn!("storage::storage_kill() unimplemented");
     }
 
-    pub fn exists(storage_key: &[u8], key: &[u8]) -> bool {
+    pub fn exists(
+        storage_key: &[u8], 
+        key: &[u8]
+    ) -> bool {
         warn!("storage::exists() unimplemented");
         false
     }
 
-    pub fn clear_prefix(storage_key: &[u8], prefix: &[u8]) {
+    pub fn clear_prefix(
+        storage_key: &[u8], 
+        prefix: &[u8],
+    ) {
         warn!("storage::clear_prefix() unimplemented");
     }
 
-    pub fn root(storage_key: &[u8]) -> Vec<u8> {
+    pub fn root(
+        storage_key: &[u8]
+    ) -> Vec<u8> {
         warn!("storage::root() unimplemented");
         vec![0, 1, 2, 3]
+    }
+    fn next_key(
+        storage_key: &[u8],
+        key: &[u8],
+    ) -> Option<Vec<u8>> {
+        warn!("storage::next_key() unimplemented");    
+        Some(Vec::new())
     }
 }
 
@@ -216,6 +280,17 @@ pub mod trie {
         warn!("trie::blake2_256_ordered_root() unimplemented");
         H256::default()
     }
+    fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+        warn!("trie::keccak_256_root() unimplemented");
+        H256::default()
+	}
+
+	/// A trie root formed from the enumerated items.
+	fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+        warn!("trie::keccak_256_ordered_root() unimplemented");
+        H256::default()
+	}
+
 }
 
 pub mod misc {
@@ -265,18 +340,63 @@ pub mod crypto {
 
     pub fn ed25519_sign(
         id: KeyTypeId,
-        pubkey: &ed25519::Public,
+        pub_key: &ed25519::Public,
         msg: &[u8],
     ) -> Option<ed25519::Signature> {
         warn!("crypto::ed25519_sign unimplemented");
         Some(ed25519::Signature::default())
     }
 
-    pub fn ed25519_verify(sig: &ed25519::Signature, msg: &[u8], pubkey: &ed25519::Public) -> bool {
-        ed25519::Pair::verify(sig, msg, pubkey)
+    pub fn ed25519_verify(
+        sig: &ed25519::Signature, 
+        msg: &[u8], 
+        pub_key: &ed25519::Public,
+    ) -> bool {
+        ed25519::Pair::verify(sig, msg, pub_key)
     }
 
-    /// Start verification extension.
+    pub fn ed25519_batch_verify(
+        &mut self,
+        sig: &ed25519::Signature,
+        msg: &[u8],
+        pub_key: &ed25519::Public,
+    ) -> bool {
+        self.extension::<VerificationExt>().map(
+            |extension| extension.push_ed25519(sig.clone(), pub_key.clone(), msg.to_vec())
+        ).unwrap_or_else(|| ed25519_verify(sig, msg, pub_key))
+    }
+
+    /// Verify `sr25519` signature.
+	///
+	/// Returns `true` when the verification was successful.
+	#[version(2)]
+	fn sr25519_verify(
+		sig: &sr25519::Signature,
+		msg: &[u8],
+		pub_key: &sr25519::Public,
+	) -> bool {
+		sr25519::Pair::verify(sig, msg, pub_key)
+	}
+
+	/// Register a `sr25519` signature for batch verification.
+	///
+	/// Batch verification must be enabled by calling [`start_batch_verify`].
+	/// If batch verification is not enabled, the signature will be verified immediatley.
+	/// To get the result of the batch verification, [`finish_batch_verify`]
+	/// needs to be called.
+	///
+	/// Returns `true` when the verification is either successful or batched.
+	fn sr25519_batch_verify(
+		&mut self,
+		sig: &sr25519::Signature,
+		msg: &[u8],
+		pub_key: &sr25519::Public,
+	) -> bool {
+		self.extension::<VerificationExt>().map(
+			|extension| extension.push_sr25519(sig.clone(), pub_key.clone(), msg.to_vec())
+		).unwrap_or_else(|| sr25519_verify(sig, msg, pub_key))
+	}
+            /// Start verification extension.
     pub fn start_batch_verify() {
         warn!("crypto::start_batch_verify unimplemented");
     }
@@ -309,6 +429,66 @@ pub mod crypto {
         sr25519::Pair::verify(sig, msg, pubkey)
     }
 
+    /// Returns all `ecdsa` public keys for the given key id from the keystore.
+	fn ecdsa_public_keys(&mut self, id: KeyTypeId) -> Vec<ecdsa::Public> {
+        warn!("crypto::ecdsa_public_keys unimplemented");
+        Vec::new()
+	}
+
+	/// Generate an `ecdsa` key for the given key type using an optional `seed` and
+	/// store it in the keystore.
+	///
+	/// The `seed` needs to be a valid utf8.
+	///
+	/// Returns the public key.
+	fn ecdsa_generate(&mut self, id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
+        warn!("crypto::ecdsa_generate unimplemented");
+        ecdsa::Public::default()
+	}
+
+	/// Sign the given `msg` with the `ecdsa` key that corresponds to the given public key and
+	/// key type in the keystore.
+	///
+	/// Returns the signature.
+	fn ecdsa_sign(
+		&mut self,
+		id: KeyTypeId,
+		pub_key: &ecdsa::Public,
+		msg: &[u8],
+	) -> Option<ecdsa::Signature> {
+        warn!("crypto::ecdsa_sign unimplemented");
+        ecdsa::Signature::default()
+	}
+
+	/// Verify `ecdsa` signature.
+	///
+	/// Returns `true` when the verification was successful.
+	fn ecdsa_verify(
+		sig: &ecdsa::Signature,
+		msg: &[u8],
+		pub_key: &ecdsa::Public,
+	) -> bool {
+		ecdsa::Pair::verify(sig, msg, pub_key)
+	}
+
+	/// Register a `ecdsa` signature for batch verification.
+	///
+	/// Batch verification must be enabled by calling [`start_batch_verify`].
+	/// If batch verification is not enabled, the signature will be verified immediatley.
+	/// To get the result of the batch verification, [`finish_batch_verify`]
+	/// needs to be called.
+	///
+	/// Returns `true` when the verification is either successful or batched.
+	fn ecdsa_batch_verify(
+		&mut self,
+		sig: &ecdsa::Signature,
+		msg: &[u8],
+		pub_key: &ecdsa::Public,
+	) -> bool {
+        warn!("crypto::ecdsa_batch_verify unimplemented");
+        false
+    }
+    
     pub fn secp256k1_ecdsa_recover(
         sig: &[u8; 65],
         msg: &[u8; 32],
@@ -423,7 +603,11 @@ pub mod offchain {
     pub fn local_storage_set(kind: offchain::StorageKind, key: &[u8], value: &[u8]) {
         warn!("offchain::local_storage_set unimplemented");
     }
+    pub fn local_storage_clear(&mut self, kind: StorageKind, key: &[u8]) {
+        warn!("offchain::local_storage_clear unimplemented");
 
+    }
+		
     pub fn local_storage_compare_and_set(
         kind: offchain::StorageKind,
         key: &[u8],
