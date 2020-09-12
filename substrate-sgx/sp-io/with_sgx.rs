@@ -166,7 +166,7 @@ pub mod storage {
 	/// This is a low level API that is potentially dangerous as it can easily result
 	/// in unbalanced transactions. For example, FRAME users should use high level storage
 	/// abstractions.
-	fn start_transaction(&mut self) {
+	fn start_transaction() {
 		warn!("storage::start_transaction unimplemented");
 	}
 
@@ -177,7 +177,7 @@ pub mod storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	fn rollback_transaction(&mut self) {
+	fn rollback_transaction() {
 		warn!("storage::rollback_transaction unimplemented");
 	}
 
@@ -188,7 +188,7 @@ pub mod storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	fn commit_transaction(&mut self) {
+	fn commit_transaction() {
         warn!("storage::commit_transaction unimplemented");
     }
 }
@@ -356,27 +356,13 @@ pub mod crypto {
     }
 
     pub fn ed25519_batch_verify(
-        &mut self,
         sig: &ed25519::Signature,
         msg: &[u8],
         pub_key: &ed25519::Public,
     ) -> bool {
-        self.extension::<VerificationExt>().map(
-            |extension| extension.push_ed25519(sig.clone(), pub_key.clone(), msg.to_vec())
-        ).unwrap_or_else(|| ed25519_verify(sig, msg, pub_key))
+        warn!("crypto::ed25519_batch_verify unimplemented");
+        false
     }
-
-    /// Verify `sr25519` signature.
-	///
-	/// Returns `true` when the verification was successful.
-	#[version(2)]
-	fn sr25519_verify(
-		sig: &sr25519::Signature,
-		msg: &[u8],
-		pub_key: &sr25519::Public,
-	) -> bool {
-		sr25519::Pair::verify(sig, msg, pub_key)
-	}
 
 	/// Register a `sr25519` signature for batch verification.
 	///
@@ -387,14 +373,12 @@ pub mod crypto {
 	///
 	/// Returns `true` when the verification is either successful or batched.
 	fn sr25519_batch_verify(
-		&mut self,
 		sig: &sr25519::Signature,
 		msg: &[u8],
 		pub_key: &sr25519::Public,
 	) -> bool {
-		self.extension::<VerificationExt>().map(
-			|extension| extension.push_sr25519(sig.clone(), pub_key.clone(), msg.to_vec())
-		).unwrap_or_else(|| sr25519_verify(sig, msg, pub_key))
+        warn!("crypto::sr25519_batch_verify unimplemented");
+        false
 	}
             /// Start verification extension.
     pub fn start_batch_verify() {
@@ -430,7 +414,7 @@ pub mod crypto {
     }
 
     /// Returns all `ecdsa` public keys for the given key id from the keystore.
-	fn ecdsa_public_keys(&mut self, id: KeyTypeId) -> Vec<ecdsa::Public> {
+	fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
         warn!("crypto::ecdsa_public_keys unimplemented");
         Vec::new()
 	}
@@ -441,7 +425,7 @@ pub mod crypto {
 	/// The `seed` needs to be a valid utf8.
 	///
 	/// Returns the public key.
-	fn ecdsa_generate(&mut self, id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
+	fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
         warn!("crypto::ecdsa_generate unimplemented");
         ecdsa::Public::default()
 	}
@@ -451,7 +435,6 @@ pub mod crypto {
 	///
 	/// Returns the signature.
 	fn ecdsa_sign(
-		&mut self,
 		id: KeyTypeId,
 		pub_key: &ecdsa::Public,
 		msg: &[u8],
@@ -480,7 +463,6 @@ pub mod crypto {
 	///
 	/// Returns `true` when the verification is either successful or batched.
 	fn ecdsa_batch_verify(
-		&mut self,
 		sig: &ecdsa::Signature,
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
