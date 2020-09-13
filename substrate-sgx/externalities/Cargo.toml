@@ -1,7 +1,7 @@
 [package]
 name = "sgx-externalities"
 version = "0.2.0"
-authors = ["Supercomputing Systems AG <info@scs.ch>"]
+authors = ["Supercomputing Systems AG <info@scs.ch> and Parity Technologies <admin@parity.io>"]
 edition = "2018"
 
 [dependencies]
