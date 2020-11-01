@@ -675,6 +675,14 @@ pub mod logging {
     }
 }
 
+mod tracing_setup {
+	/// Initialize tracing of sp_tracing not necessary – noop. To enable build
+	/// without std and with the `with-tracing`-feature.
+	pub fn init_tracing() { }
+}
+
+pub use tracing_setup::init_tracing;
+
 #[cfg(test)]
 mod tests {
     use hex_literal::hex;
