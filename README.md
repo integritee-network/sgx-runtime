@@ -1,6 +1,6 @@
 # SGX-Runtime
 
-![badge](https://img.shields.io/badge/substrate-2.0.0--rc5-success)
+![badge](https://img.shields.io/badge/substrate-2.0.0-success)
 
 Based on [Substrate Node Template](https://github.com/scs/substrate-node-template)
 
