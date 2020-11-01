@@ -987,6 +987,14 @@ pub trait Logging {
     }
 }
 
+mod tracing_setup {
+	/// Initialize tracing of sp_tracing not necessary – noop. To enable build
+	/// without std and with the `with-tracing`-feature.
+	pub fn init_tracing() { }
+}
+
+pub use tracing_setup::init_tracing;
+
 #[cfg(feature = "std")]
 sp_externalities::decl_extension! {
 	/// Extension to allow running traces in wasm via Proxy
