@@ -28,8 +28,9 @@ use sp_core::{
     },
     sr25519, ecdsa
 };
-
+use sp_runtime_interface::pass_by::PassBy;
 use std::char;
+use std::println;
 
 #[allow(unused)]
 fn encode_hex_digit(digit: u8) -> char {
@@ -665,13 +666,15 @@ pub mod logging {
     /// Instead of using directly, prefer setting up `RuntimeLogger` and using `log` macros.
     pub fn log(level: LogLevel, target: &str, message: &[u8]) {
         if let Ok(message) = std::str::from_utf8(message) {
+            println!("\x1b[0;36m[stf runtime {}]\x1b[0m {}", target, message);
+            // TODO: Why does the following not work? (nor does all other logging in this crate)
             debug!(
                 target: target,
-                //				Level::from(level),
+                //Level::from(level),
                 "{}",
                 message,
             )
-        }
+        } 
     }
 }
 
