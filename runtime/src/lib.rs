@@ -23,6 +23,7 @@ use sp_runtime::traits::{
 };
 use sp_api::impl_runtime_apis;
 use sp_version::RuntimeVersion;
+use pallet_transaction_payment::CurrencyAdapter;
 
 // A few exports that help ease life for downstream crates.
 #[cfg(any(feature = "std", test))]
