@@ -28,7 +28,6 @@ use sp_core::{
     },
     sr25519, ecdsa
 };
-use sp_runtime_interface::pass_by::PassBy;
 use std::char;
 use std::println;
 
@@ -119,8 +118,9 @@ pub mod storage {
     }
 
     pub fn exists(key: &[u8]) -> bool {
-        warn!("storage::exists unimplemented");
-        false
+        with_externalities(|ext|
+            ext.contains_key(key)
+        ).expect("exists cannot be called outside of an Externalities-provided environment.")
     }
 
     pub fn clear_prefix(prefix: &[u8]) {
@@ -225,20 +225,20 @@ pub mod default_child_storage {
         storage_key: &[u8], 
         key: &[u8]
     ) {
-        warn!("storage::clear() unimplemented");
+        warn!("child storage::clear() unimplemented");
     }
 
     pub fn storage_kill(
         storage_key: &[u8],
     ) {
-        warn!("storage::storage_kill() unimplemented");
+        warn!("child storage::storage_kill() unimplemented");
     }
 
     pub fn exists(
         storage_key: &[u8], 
         key: &[u8]
     ) -> bool {
-        warn!("storage::exists() unimplemented");
+        warn!("child storage::exists() unimplemented");
         false
     }
 
@@ -246,13 +246,13 @@ pub mod default_child_storage {
         storage_key: &[u8], 
         prefix: &[u8],
     ) {
-        warn!("storage::clear_prefix() unimplemented");
+        warn!("child storage::clear_prefix() unimplemented");
     }
 
     pub fn root(
         storage_key: &[u8]
     ) -> Vec<u8> {
-        warn!("storage::root() unimplemented");
+        warn!("child storage::root() unimplemented");
         vec![0, 1, 2, 3]
     }
 
@@ -260,7 +260,7 @@ pub mod default_child_storage {
         storage_key: &[u8],
         key: &[u8],
     ) -> Option<Vec<u8>> {
-        warn!("storage::next_key() unimplemented");    
+        warn!("child storage::next_key() unimplemented");    
         Some(Vec::new())
     }
 }
@@ -666,17 +666,27 @@ pub mod logging {
     /// Instead of using directly, prefer setting up `RuntimeLogger` and using `log` macros.
     pub fn log(level: LogLevel, target: &str, message: &[u8]) {
         if let Ok(message) = std::str::from_utf8(message) {
-            println!("\x1b[0;36m[stf runtime {}]\x1b[0m {}", target, message);
-            // TODO: Why does the following not work? (nor does all other logging in this crate)
-            debug!(
+            // TODO remove this attention boost
+            println!("\x1b[0;36m[{}]\x1b[0m {}", target, message);
+            let level = match level {
+                LogLevel::Error => sgx_log::Level::Error,
+                LogLevel::Warn => sgx_log::Level::Warn,
+                LogLevel::Info => sgx_log::Level::Info,
+                LogLevel::Debug => sgx_log::Level::Debug,
+                LogLevel::Trace => sgx_log::Level::Trace,
+            };
+            // FIXME: this logs with target sp_io::logging instead of the provided target!
+            sgx_log::log!(
                 target: target,
-                //Level::from(level),
+                level,
                 "{}",
                 message,
-            )
-        } 
-    }
+            );
+
+        }
+    } 
 }
+
 
 mod tracing_setup {
 	/// Initialize tracing of sp_tracing not necessary – noop. To enable build

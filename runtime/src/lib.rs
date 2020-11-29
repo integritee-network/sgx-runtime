@@ -14,7 +14,6 @@
 #![recursion_limit="256"]
 
 use sp_std::prelude::*;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
 use sp_runtime::{
 	generic, create_runtime_str, MultiSignature
 };
