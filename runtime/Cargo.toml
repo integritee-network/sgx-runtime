@@ -1,11 +1,11 @@
 [package]
-authors = ['Anonymous']
+authors = ["Supercomputing Systems AG <info@scs.ch>"]
 edition = '2018'
-homepage = 'https://substrate.dev'
+homepage = 'https://www.scs.ch'
 license = 'Unlicense'
 name = 'sgx-runtime'
-repository = 'https://github.com/paritytech/substrate/'
-version = '0.6.15'
+repository = 'https://github.com/scs/sgx-runtime/'
+version = '0.7.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
@@ -19,30 +19,6 @@ default-features = false
 features = ['derive']
 package = 'parity-scale-codec'
 version = '1.3.4'
-
-[dependencies.encointer-scheduler]
-default-features = false
-git = "https://github.com/encointer/pallets"
-tag = "v0.3.7"
-package = "pallet-encointer-scheduler"
-
-[dependencies.encointer-ceremonies]
-default-features = false
-git = "https://github.com/encointer/pallets"
-tag = "v0.3.7"
-package = "pallet-encointer-ceremonies"
-
-[dependencies.encointer-currencies]
-default-features = false
-git = "https://github.com/encointer/pallets"
-tag = "v0.3.7"
-package = "pallet-encointer-currencies"
-
-[dependencies.encointer-balances]
-default-features = false
-git = "https://github.com/encointer/pallets"
-tag = "v0.3.7"
-package = "pallet-encointer-balances"
 
 [dependencies]
 hex-literal = { optional = true, version = '0.3.1' }

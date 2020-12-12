@@ -38,13 +38,6 @@ pub use frame_support::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 	},
 };
-pub use encointer_scheduler::Call as EncointerSchedulerCall;
-pub use encointer_ceremonies::Call as EncointerCeremoniesCall;
-pub use encointer_currencies::Call as EncointerCurrenciesCall;
-pub use encointer_balances::Call as EncointerBalancesCall;
-
-pub use encointer_scheduler::CeremonyPhaseType;
-pub use encointer_balances::{BalanceType, BalanceEntry};
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -231,29 +224,6 @@ impl pallet_sudo::Trait for Runtime {
 	type Call = Call;
 }
 
-parameter_types! {
-	pub const MomentsPerDay: Moment = 86_400_000; // [ms/d]
-}
-impl encointer_scheduler::Trait for Runtime {
-	type Event = Event;
-	type OnCeremonyPhaseChange = encointer_ceremonies::Module<Runtime>;
-	type MomentsPerDay = MomentsPerDay;
-}
-
-impl encointer_ceremonies::Trait for Runtime {
-	type Event = Event;
-	type Public = <MultiSignature as Verify>::Signer;
-	type Signature = MultiSignature;
-}
-
-impl encointer_currencies::Trait for Runtime {
-	type Event = Event;
-}
-
-impl encointer_balances::Trait for Runtime {
-	type Event = Event; 
-}
-
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
@@ -265,10 +235,6 @@ construct_runtime!(
 		Balances: pallet_balances::{Module, Call, Storage, Config<T>, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Module, Storage},
 		Sudo: pallet_sudo::{Module, Call, Config<T>, Storage, Event<T>},
-		EncointerScheduler: encointer_scheduler::{Module, Call, Storage, Config<T>, Event},
-		EncointerCeremonies: encointer_ceremonies::{Module, Call, Storage, Config<T>, Event<T>},
-		EncointerCurrencies: encointer_currencies::{Module, Call, Storage, Config<T>, Event<T>},
-		EncointerBalances: encointer_balances::{Module, Call, Storage, Event<T>},
 	}
 );
 

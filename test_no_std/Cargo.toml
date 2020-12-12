@@ -1,0 +1,39 @@
+[package]
+name = "test_no_std"
+version = "0.1.0"
+authors = ["Alain Brenzikofer <alain.brenzikofer@scs.ch>"]
+edition = "2018"
+
+[profile.dev]
+panic = "abort"
+
+[profile.release]
+panic = "abort"
+
+[target.'cfg(not(target_env = "sgx"))'.dependencies]
+sgx_tstd      = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs","net","backtrace"] }
+
+[dependencies]
+libc = { version="0.2", default-features=false }
+
+[dependencies.sgx-runtime]
+path = "../runtime"
+default-features = false
+
+[dependencies.sp-io]
+path = "../substrate-sgx/sp-io"
+default-features = false
+features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"]
+
+[dependencies.sp-application-crypto]
+git = "https://github.com/paritytech/substrate.git"
+rev = "a208da16"
+default-features = false
+features = ["full_crypto"]
+
+[dependencies.sp-core]
+git = "https://github.com/paritytech/substrate.git"
+rev = "a208da16"
+default-features = false
+features = ["full_crypto"]
+
