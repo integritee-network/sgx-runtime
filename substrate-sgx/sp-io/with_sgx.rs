@@ -58,7 +58,7 @@ use std::{vec, vec::Vec};
 
 // Reexport here, such that the worker does not need to import other crate.
 // Not sure if this is a good Idea though.
-pub use sgx_externalities::{with_externalities, SgxExternalities, SgxExternalitiesTrait};
+pub use sgx_externalities::{with_externalities, SgxExternalities, SgxExternalitiesTrait, SgxExternalitiesType};
 
 /// Error verifying ECDSA signature
 #[derive(Encode, Decode)]
