@@ -10,14 +10,26 @@ use sgx_serialize::{DeSerializeHelper, SerializeHelper};
 
 use environmental::environmental;
 
-pub type SgxExternalities = HashMap<Vec<u8>, Vec<u8>>;
+pub type SgxExternalitiesType = HashMap<Vec<u8>, Vec<u8>>;
+
+pub struct SgxExternalities {
+    pub state: SgxExternalitiesType,
+    pub state_diff: SgxExternalitiesType,
+}
+
+
+//pub type SgxExternalities = HashMap<Vec<u8>, Vec<u8>>;
+
 environmental!(ext: SgxExternalities);
 
 pub trait SgxExternalitiesTrait {
     fn new() -> Self;
-    fn decode(state: Vec<u8>) -> Self;
-    fn encode(self) -> Vec<u8>;
+    fn decode(state: Vec<u8>) -> SgxExternalitiesType;
+    fn encode(ext: SgxExternalitiesType) -> Vec<u8>;
     fn insert(&mut self, k: Vec<u8>, v: Vec<u8>) -> Option<Vec<u8>>;
+    fn remove(&mut self, k: &[u8]) -> Option<Vec<u8>>;
+    fn get(&mut self, k: &[u8]) -> Option<&Vec<u8>>;
+    fn contains_key(&mut self, k: &[u8]) -> bool;
     fn execute_with<R>(&mut self, f: impl FnOnce() -> R) -> R;
 }
 
@@ -25,22 +37,43 @@ pub trait SgxExternalitiesTrait {
 impl SgxExternalitiesTrait for SgxExternalities {
     /// Create a new instance of `BasicExternalities`
     fn new() -> Self {
-        SgxExternalities::default()
+        //SgxExternalities::default()
+        SgxExternalities{
+            state: Default::default(),
+            state_diff: Default::default(),
+        }
     }
 
-    fn decode(state: Vec<u8>) -> Self {
-        let helper = DeSerializeHelper::<SgxExternalities>::new(state);
+    fn decode(state: Vec<u8>) -> SgxExternalitiesType {
+        let helper = DeSerializeHelper::<SgxExternalitiesType>::new(state);
         helper.decode().unwrap()
     }
 
-    fn encode(self) -> Vec<u8> {
+    fn encode(ext: SgxExternalitiesType) -> Vec<u8> {
         let helper = SerializeHelper::new();
-        helper.encode(self).unwrap()
+        helper.encode(ext).unwrap()
     }
 
     /// Insert key/value
     fn insert(&mut self, k: Vec<u8>, v: Vec<u8>) -> Option<Vec<u8>> {
-        self.insert(k, v)
+        self.state_diff.insert(k.clone(), v.clone());
+        self.state.insert(k, v)
+    }
+
+    /// remove key
+    fn remove(&mut self, k: &[u8]) -> Option<Vec<u8>> {
+        self.state_diff.remove(k.clone());
+        self.state.remove(k)
+    }
+
+    /// get value from state of key
+    fn get(&mut self, k: &[u8]) -> Option<&Vec<u8>> {
+        self.state.get(k)
+    }
+
+    /// check if state contains key
+    fn contains_key(&mut self, k: &[u8]) -> bool {
+        self.state.contains_key(k)
     }
 
     /// Execute the given closure while `self` is set as externalities.
