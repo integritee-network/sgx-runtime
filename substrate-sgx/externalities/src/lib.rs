@@ -17,9 +17,6 @@ pub struct SgxExternalities {
     pub state_diff: SgxExternalitiesType,
 }
 
-
-//pub type SgxExternalities = HashMap<Vec<u8>, Vec<u8>>;
-
 environmental!(ext: SgxExternalities);
 
 pub trait SgxExternalitiesTrait {
@@ -37,7 +34,6 @@ pub trait SgxExternalitiesTrait {
 impl SgxExternalitiesTrait for SgxExternalities {
     /// Create a new instance of `BasicExternalities`
     fn new() -> Self {
-        //SgxExternalities::default()
         SgxExternalities{
             state: Default::default(),
             state_diff: Default::default(),
