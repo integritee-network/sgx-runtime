@@ -7,14 +7,14 @@ use std::{collections::HashMap, vec::Vec};
 
 #[cfg(not(feature = "std"))]
 use sgx_serialize::{DeSerializeHelper, SerializeHelper};
+#[cfg(not(feature = "std"))]
 use sgx_serialize_derive::{Serializable, DeSerializable};
 
 use environmental::environmental;
 
 pub type SgxExternalitiesType = HashMap<Vec<u8>, Vec<u8>>;
 
-#[cfg(not(feature = "std"))]
-#[derive(Serializable, DeSerializable)]
+#[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
 pub struct SgxExternalities {
     pub state: SgxExternalitiesType,
     pub state_diff: SgxExternalitiesType,
@@ -31,6 +31,28 @@ pub trait SgxExternalitiesTrait {
     fn get(&mut self, k: &[u8]) -> Option<&Vec<u8>>;
     fn contains_key(&mut self, k: &[u8]) -> bool;
     fn execute_with<R>(&mut self, f: impl FnOnce() -> R) -> R;
+}
+
+pub trait SgxExternalitiesTypeTrait {
+    fn new() -> Self;
+    fn decode(state: Vec<u8>) -> Self;
+    fn encode(self) -> Vec<u8>;
+}
+
+#[cfg(not(feature = "std"))]
+impl SgxExternalitiesTypeTrait for SgxExternalitiesType {
+    fn new() -> Self {
+            Default::default()
+    }
+    fn decode(state: Vec<u8>) -> Self {
+        let helper = DeSerializeHelper::<SgxExternalitiesType>::new(state);
+        helper.decode().unwrap()
+    }
+
+    fn encode(self) -> Vec<u8> {
+        let helper = SerializeHelper::new();
+        helper.encode(self).unwrap()
+    }
 }
 
 #[cfg(not(feature = "std"))]
