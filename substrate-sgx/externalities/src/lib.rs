@@ -78,8 +78,8 @@ impl SgxExternalitiesTrait for SgxExternalities {
     /// Create a new instance of `BasicExternalities`
     fn new() -> Self {
         SgxExternalities{
-            state: Default::default(),
-            state_diff: Default::default(),
+            state: SgxExternalitiesType::new(),
+            state_diff:SgxExternalitiesDiffType::new(),
         }
     }
  
