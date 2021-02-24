@@ -13,11 +13,12 @@ use sgx_serialize_derive::{Serializable, DeSerializable};
 use environmental::environmental;
 
 pub type SgxExternalitiesType = HashMap<Vec<u8>, Vec<u8>>;
+pub type SgxExternalitiesDiffType = HashMap<Vec<u8>, Option<Vec<u8>>>;
 
 #[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
 pub struct SgxExternalities {
     pub state: SgxExternalitiesType,
-    pub state_diff: SgxExternalitiesType,
+    pub state_diff: SgxExternalitiesDiffType,
 }
 
 environmental!(ext: SgxExternalities);
@@ -57,6 +58,22 @@ impl SgxExternalitiesTypeTrait for SgxExternalitiesType {
 }
 
 #[cfg(not(feature = "std"))]
+impl SgxExternalitiesTypeTrait for SgxExternalitiesDiffType {
+    fn new() -> Self {
+            Default::default()
+    }
+    fn decode(state: Vec<u8>) -> Self {
+        let helper = DeSerializeHelper::<SgxExternalitiesDiffType>::new(state);
+        helper.decode().unwrap()
+    }
+
+    fn encode(self) -> Vec<u8> {
+        let helper = SerializeHelper::new();
+        helper.encode(self).unwrap()
+    }
+}
+
+#[cfg(not(feature = "std"))]
 impl SgxExternalitiesTrait for SgxExternalities {
     /// Create a new instance of `BasicExternalities`
     fn new() -> Self {
@@ -78,13 +95,13 @@ impl SgxExternalitiesTrait for SgxExternalities {
 
     /// Insert key/value
     fn insert(&mut self, k: Vec<u8>, v: Vec<u8>) -> Option<Vec<u8>> {
-        self.state_diff.insert(k.clone(), v.clone());
+        self.state_diff.insert(k.clone(), Some(v.clone()));
         self.state.insert(k, v)
     }
 
     /// remove key
     fn remove(&mut self, k: &[u8]) -> Option<Vec<u8>> {
-        self.state_diff.remove(k.clone());
+        self.state_diff.insert(k.to_vec(), None);
         self.state.remove(k)
     }
 
@@ -98,7 +115,7 @@ impl SgxExternalitiesTrait for SgxExternalities {
         self.state.contains_key(k)
     }
 
-    /// check if state contains key
+    /// prunes the state diff
     fn prune_state_diff(&mut self) {
         self.state_diff.clear();
     }
