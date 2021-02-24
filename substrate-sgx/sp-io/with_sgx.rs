@@ -117,6 +117,12 @@ pub mod storage {
             });
     }
 
+    pub fn prune_state_diff() {
+        with_externalities(|ext|
+            ext.prune_state_diff()
+        );
+    }
+
     pub fn exists(key: &[u8]) -> bool {
         with_externalities(|ext|
             ext.contains_key(key)

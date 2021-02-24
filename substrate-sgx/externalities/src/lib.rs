@@ -30,6 +30,7 @@ pub trait SgxExternalitiesTrait {
     fn remove(&mut self, k: &[u8]) -> Option<Vec<u8>>;
     fn get(&mut self, k: &[u8]) -> Option<&Vec<u8>>;
     fn contains_key(&mut self, k: &[u8]) -> bool;
+    fn prune_state_diff(&mut self);
     fn execute_with<R>(&mut self, f: impl FnOnce() -> R) -> R;
 }
 
@@ -97,6 +98,11 @@ impl SgxExternalitiesTrait for SgxExternalities {
         self.state.contains_key(k)
     }
 
+    /// check if state contains key
+    fn prune_state_diff(&mut self) {
+        self.state_diff.clear();
+    }
+    
     /// Execute the given closure while `self` is set as externalities.
     ///
     /// Returns the result of the given closure.
