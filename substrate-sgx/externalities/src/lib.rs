@@ -16,6 +16,7 @@ pub type SgxExternalitiesType = HashMap<Vec<u8>, Vec<u8>>;
 pub type SgxExternalitiesDiffType = HashMap<Vec<u8>, Option<Vec<u8>>>;
 
 #[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
+#[derive(Debug, Clone)]
 pub struct SgxExternalities {
     pub state: SgxExternalitiesType,
     pub state_diff: SgxExternalitiesDiffType,
