@@ -58,7 +58,7 @@ use std::{vec, vec::Vec};
 
 // Reexport here, such that the worker does not need to import other crate.
 // Not sure if this is a good Idea though.
-pub use sgx_externalities::{with_externalities, SgxExternalities, SgxExternalitiesTrait};
+pub use sgx_externalities::{with_externalities, SgxExternalities, SgxExternalitiesTrait, SgxExternalitiesType};
 
 /// Error verifying ECDSA signature
 #[derive(Encode, Decode)]
@@ -113,7 +113,7 @@ pub mod storage {
     pub fn clear(key: &[u8]) {
         with_externalities(|ext|
             if let None = ext.remove(key) {
-                info!("Tried to clear storage, that was not existing");
+                info!("Tried to clear storage that was not existing");
             });
     }
 
