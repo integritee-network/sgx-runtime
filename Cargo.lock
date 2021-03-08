@@ -2810,7 +2810,7 @@ dependencies = [
 
 [[package]]
 name = "sgx-externalities"
-version = "0.2.0"
+version = "0.3.0"
 dependencies = [
  "environmental",
  "log",
@@ -3304,7 +3304,7 @@ dependencies = [
 
 [[package]]
 name = "sp-io"
-version = "2.0.0"
+version = "2.1.0"
 dependencies = [
  "environmental",
  "futures",
@@ -3946,7 +3946,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04f8ab788026715fa63b31960869617cba39117e520eb415b0139543e325ab59"
 dependencies = [
  "cfg-if 0.1.10",
- "rand 0.7.3",
+ "rand 0.5.6",
  "static_assertions",
 ]
 
