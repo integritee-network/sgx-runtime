@@ -2822,7 +2822,7 @@ dependencies = [
 
 [[package]]
 name = "sgx-runtime"
-version = "0.7.0"
+version = "0.8.0"
 dependencies = [
  "frame-benchmarking",
  "frame-executive",
@@ -3946,7 +3946,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04f8ab788026715fa63b31960869617cba39117e520eb415b0139543e325ab59"
 dependencies = [
  "cfg-if 0.1.10",
- "rand 0.5.6",
+ "rand 0.7.3",
  "static_assertions",
 ]
 
