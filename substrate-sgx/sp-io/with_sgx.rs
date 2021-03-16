@@ -20,16 +20,19 @@ use std::prelude::v1::String;
 
 use codec::{Decode, Encode};
 use sp_core::{
-    crypto::{KeyTypeId, Pair},
-    ed25519,
-    hash::H256,
-    offchain::{
-        HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
-    },
-    sr25519, ecdsa
+    crypto::Pair,
+	OpaquePeerId, crypto::KeyTypeId, ed25519, sr25519, ecdsa, H256, LogLevel,
+	offchain::{
+		Timestamp, HttpRequestId, HttpRequestStatus, HttpError, StorageKind, OpaqueNetworkState,
+	},
 };
+
+use sp_runtime_interface::{runtime_interface, Pointer};
+use sp_runtime_interface::pass_by::PassBy;
+
 use std::char;
 use std::println;
+
 
 #[allow(unused)]
 fn encode_hex_digit(digit: u8) -> char {
@@ -71,9 +74,9 @@ pub enum EcdsaVerifyError {
     BadSignature,
 }
 
-pub mod storage {
-    use super::*;
-    pub fn get(key: &[u8]) -> Option<Vec<u8>> {
+#[runtime_interface]
+pub trait Storage {
+    fn get(key: &[u8]) -> Option<Vec<u8>> {
         debug!("storage('{}')", encode_hex(key));
         with_externalities(|ext| {
             ext.get(key).map(|s| {
@@ -84,7 +87,7 @@ pub mod storage {
         .expect("storage cannot be called outside of an Externalities-provided environment.")
     }
 
-    pub fn read(key: &[u8], value_out: &mut [u8], value_offset: usize) -> Option<usize> {
+    fn read(key: &[u8], value_out: &mut [u8], value_offset: usize) -> Option<usize> {
         debug!(
             "read_storage('{}' with offset =  {:?}. value_out.len() is {})",
             encode_hex(key),
@@ -105,25 +108,25 @@ pub mod storage {
         .expect("read_storage cannot be called outside of an Externalities-provided environment.")
     }
 
-    pub fn set(key: &[u8], value: &[u8]) {
+    fn set(key: &[u8], value: &[u8]) {
         debug!("set_storage('{}', {:x?})", encode_hex(key), value);
         with_externalities(|ext| ext.insert(key.to_vec(), value.to_vec()));
     }
 
-    pub fn clear(key: &[u8]) {
+    fn clear(key: &[u8]) {
         with_externalities(|ext|
             if let None = ext.remove(key) {
                 info!("Tried to clear storage that was not existing");
             });
     }
 
-    pub fn exists(key: &[u8]) -> bool {
+    fn exists(key: &[u8]) -> bool {
         with_externalities(|ext|
             ext.contains_key(key)
         ).expect("exists cannot be called outside of an Externalities-provided environment.")
     }
 
-    pub fn clear_prefix(prefix: &[u8]) {
+    fn clear_prefix(prefix: &[u8]) {
         warn!("storage::clear_prefix() unimplemented");
     }
 
@@ -135,22 +138,22 @@ pub mod storage {
     ///
     /// If the storage item does not support [`EncodeAppend`](codec::EncodeAppend) or
     /// something else fails at appending, the storage item will be set to `[value]`.
-    pub fn append(key: &[u8], value: Vec<u8>) {
+    fn append(key: &[u8], value: Vec<u8>) {
         warn!("storage::append() unimplemented");
     }
 
-    pub fn root() -> [u8; 32] {
+    fn root() -> [u8; 32] {
         warn!("storage::root() unimplemented");
         [0u8; 32]
     }
 
-    pub fn changes_root(parent_hash: &[u8]) -> Option<[u8; 32]> {
+    fn changes_root(parent_hash: &[u8]) -> Option<[u8; 32]> {
         warn!("storage::changes_root() unimplemented");
         Some([0u8; 32])
     }
 
     /// Get the next key in storage after the given one in lexicographic order.
-    pub fn next_key(key: &[u8]) -> Option<Vec<u8>> {
+    fn next_key(key: &[u8]) -> Option<Vec<u8>> {
         warn!("storage::next_key unimplemented");
         Some([0u8; 32].to_vec())
     }
@@ -167,7 +170,7 @@ pub mod storage {
 	/// This is a low level API that is potentially dangerous as it can easily result
 	/// in unbalanced transactions. For example, FRAME users should use high level storage
 	/// abstractions.
-	pub fn start_transaction() {
+	fn start_transaction() {
 		warn!("storage::start_transaction unimplemented");
 	}
 
@@ -178,7 +181,7 @@ pub mod storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	pub fn rollback_transaction() {
+	fn rollback_transaction() {
 		warn!("storage::rollback_transaction unimplemented");
 	}
 
@@ -189,14 +192,14 @@ pub mod storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	pub fn commit_transaction() {
+	fn commit_transaction() {
         warn!("storage::commit_transaction unimplemented");
     }
 }
 
-pub mod default_child_storage {
-    use super::*;
-    pub fn read(
+#[runtime_interface]
+pub trait DefaultChildStorage {
+    fn read(
         storage_key: &[u8],
         key: &[u8],
         value_out: &mut [u8],
@@ -207,138 +210,136 @@ pub mod default_child_storage {
         Some(0)
     }
 
-    pub fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
+    fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
         // TODO: unimplemented
         warn!("default_child_storage::get() unimplemented");
         Some(vec![0, 1, 2, 3])
     }
 
-    pub fn set(
-        storage_key: &[u8], 
-        key: &[u8], 
+    fn set(
+        storage_key: &[u8],
+        key: &[u8],
         value: &[u8],
     ) {
         warn!("default_child_storage::set() unimplemented");
     }
 
-    pub fn clear(
-        storage_key: &[u8], 
+    fn clear(
+        storage_key: &[u8],
         key: &[u8]
     ) {
         warn!("child storage::clear() unimplemented");
     }
 
-    pub fn storage_kill(
+    /* fn storage_kill(
         storage_key: &[u8],
     ) {
         warn!("child storage::storage_kill() unimplemented");
-    }
+    } */
 
-    pub fn exists(
-        storage_key: &[u8], 
+	fn storage_kill(&mut self, storage_key: &[u8], limit: Option<u32>) -> bool {
+		warn!("child storageV2::storage_kill() unimplemented");
+        false
+	}
+
+
+    fn exists(
+        storage_key: &[u8],
         key: &[u8]
     ) -> bool {
         warn!("child storage::exists() unimplemented");
         false
     }
 
-    pub fn clear_prefix(
-        storage_key: &[u8], 
+    fn clear_prefix(
+        storage_key: &[u8],
         prefix: &[u8],
     ) {
         warn!("child storage::clear_prefix() unimplemented");
     }
 
-    pub fn root(
+    fn root(
         storage_key: &[u8]
     ) -> Vec<u8> {
         warn!("child storage::root() unimplemented");
         vec![0, 1, 2, 3]
     }
 
-    pub fn next_key(
+    fn next_key(
         storage_key: &[u8],
         key: &[u8],
     ) -> Option<Vec<u8>> {
-        warn!("child storage::next_key() unimplemented");    
+        warn!("child storage::next_key() unimplemented");
         Some(Vec::new())
     }
 }
 
-pub mod trie {
-    use super::*;
-
+pub trait Trie {
     /// A trie root formed from the iterated items.
-    pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+    fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::blake2_256_root() unimplemented");
         H256::default()
     }
 
     /// A trie root formed from the enumerated items.
-    pub fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+    fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::blake2_256_ordered_root() unimplemented");
         H256::default()
     }
-    
-    pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+
+    fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::keccak_256_root() unimplemented");
         H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::keccak_256_ordered_root() unimplemented");
         H256::default()
 	}
 
 }
 
-pub mod misc {
-    use super::*;
-    /// The current relay chain identifier.
-    pub fn chain_id() -> u64 {
-        warn!("OtherApi::chain_id unimplemented");
-        0
-    }
-
+#[runtime_interface]
+pub trait Misc {
     /// Print a number.
-    pub fn print_num(val: u64) {
+    fn print_num(val: u64) {
         debug!(target: "runtime", "{}", val);
     }
 
     /// Print any valid `utf8` buffer.
-    pub fn print_utf8(utf8: &[u8]) {
+    fn print_utf8(utf8: &[u8]) {
         if let Ok(data) = std::str::from_utf8(utf8) {
             debug!(target: "runtime", "{}", data)
         }
     }
 
     /// Print any `u8` slice as hex.
-    pub fn print_hex(data: &[u8]) {
+    fn print_hex(data: &[u8]) {
         debug!(target: "runtime", "{:?}", data);
     }
 
-    pub fn runtime_version(wasm: &[u8]) -> Option<Vec<u8>> {
+    fn runtime_version(wasm: &[u8]) -> Option<Vec<u8>> {
         warn!("misc::runtime_version unimplemented!");
         Some([2u8; 32].to_vec())
     }
 }
 
-/// Interfaces for working with crypto related types from within the runtime.
-pub mod crypto {
-    use super::*;
 
-    pub fn ed25519_public_keys(id: KeyTypeId) -> Vec<ed25519::Public> {
+/// Interfaces for working with crypto related types from within the runtime.
+#[runtime_interface]
+pub trait Crypto {
+    fn ed25519_public_keys(id: KeyTypeId) -> Vec<ed25519::Public> {
         warn!("crypto::ed25519_public_keys unimplemented");
         vec![ed25519::Public::default()]
     }
 
-    pub fn ed25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ed25519::Public {
+    fn ed25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ed25519::Public {
         warn!("crypto::ed25519_generate unimplemented");
         ed25519::Public::default()
     }
 
-    pub fn ed25519_sign(
+    fn ed25519_sign(
         id: KeyTypeId,
         pub_key: &ed25519::Public,
         msg: &[u8],
@@ -347,15 +348,15 @@ pub mod crypto {
         Some(ed25519::Signature::default())
     }
 
-    pub fn ed25519_verify(
-        sig: &ed25519::Signature, 
-        msg: &[u8], 
+    fn ed25519_verify(
+        sig: &ed25519::Signature,
+        msg: &[u8],
         pub_key: &ed25519::Public,
     ) -> bool {
         ed25519::Pair::verify(sig, msg, pub_key)
     }
 
-    pub fn ed25519_batch_verify(
+    fn ed25519_batch_verify(
         sig: &ed25519::Signature,
         msg: &[u8],
         pub_key: &ed25519::Public,
@@ -372,7 +373,7 @@ pub mod crypto {
 	/// needs to be called.
 	///
 	/// Returns `true` when the verification is either successful or batched.
-	pub fn sr25519_batch_verify(
+	fn sr25519_batch_verify(
 		sig: &sr25519::Signature,
 		msg: &[u8],
 		pub_key: &sr25519::Public,
@@ -381,26 +382,26 @@ pub mod crypto {
         false
 	}
             /// Start verification extension.
-    pub fn start_batch_verify() {
+    fn start_batch_verify() {
         warn!("crypto::start_batch_verify unimplemented");
     }
 
-    pub fn finish_batch_verify() -> bool {
+    fn finish_batch_verify() -> bool {
         warn!("crypto::finish_batch_verify unimplemented");
         true
     }
 
-    pub fn sr25519_public_keys(id: KeyTypeId) -> Vec<sr25519::Public> {
+    fn sr25519_public_keys(id: KeyTypeId) -> Vec<sr25519::Public> {
         warn!("crypto::sr25519_public_key unimplemented");
         vec![sr25519::Public::default()]
     }
 
-    pub fn sr25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> sr25519::Public {
+    fn sr25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> sr25519::Public {
         warn!("crypto::sr25519_generate unimplemented");
         sr25519::Public::default()
     }
 
-    pub fn sr25519_sign(
+    fn sr25519_sign(
         id: KeyTypeId,
         pubkey: &sr25519::Public,
         msg: &[u8],
@@ -409,12 +410,12 @@ pub mod crypto {
         Some(sr25519::Signature::default())
     }
 
-    pub fn sr25519_verify(sig: &sr25519::Signature, msg: &[u8], pubkey: &sr25519::Public) -> bool {
+    fn sr25519_verify(sig: &sr25519::Signature, msg: &[u8], pubkey: &sr25519::Public) -> bool {
         sr25519::Pair::verify(sig, msg, pubkey)
     }
 
     /// Returns all `ecdsa` public keys for the given key id from the keystore.
-	pub fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
+	fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
         warn!("crypto::ecdsa_public_keys unimplemented");
         Vec::new()
 	}
@@ -425,7 +426,7 @@ pub mod crypto {
 	/// The `seed` needs to be a valid utf8.
 	///
 	/// Returns the public key.
-	pub fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
+	fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
         warn!("crypto::ecdsa_generate unimplemented");
         ecdsa::Public::default()
 	}
@@ -434,7 +435,7 @@ pub mod crypto {
 	/// key type in the keystore.
 	///
 	/// Returns the signature.
-	pub fn ecdsa_sign(
+	fn ecdsa_sign(
 		id: KeyTypeId,
 		pub_key: &ecdsa::Public,
 		msg: &[u8],
@@ -446,7 +447,7 @@ pub mod crypto {
 	/// Verify `ecdsa` signature.
 	///
 	/// Returns `true` when the verification was successful.
-	pub fn ecdsa_verify(
+	fn ecdsa_verify(
 		sig: &ecdsa::Signature,
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
@@ -462,7 +463,7 @@ pub mod crypto {
 	/// needs to be called.
 	///
 	/// Returns `true` when the verification is either successful or batched.
-	pub fn ecdsa_batch_verify(
+	fn ecdsa_batch_verify(
 		sig: &ecdsa::Signature,
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
@@ -470,8 +471,8 @@ pub mod crypto {
         warn!("crypto::ecdsa_batch_verify unimplemented");
         false
     }
-    
-    pub fn secp256k1_ecdsa_recover(
+
+    fn secp256k1_ecdsa_recover(
         sig: &[u8; 65],
         msg: &[u8; 32],
     ) -> Result<[u8; 64], EcdsaVerifyError> {
@@ -479,7 +480,7 @@ pub mod crypto {
         Ok([0; 64])
     }
 
-    pub fn secp256k1_ecdsa_recover_compressed(
+    fn secp256k1_ecdsa_recover_compressed(
         sig: &[u8; 65],
         msg: &[u8; 32],
     ) -> Result<[u8; 33], EcdsaVerifyError> {
@@ -488,110 +489,113 @@ pub mod crypto {
     }
 }
 
-pub mod hashing {
-    use super::*;
-
-    pub fn keccak_256(data: &[u8]) -> [u8; 32] {
+#[runtime_interface]
+pub trait Hashing {
+    fn keccak_256(data: &[u8]) -> [u8; 32] {
         warn!("hashing::keccak256 unimplemented");
         [0u8; 32]
     }
 
-    pub fn sha2_256(data: &[u8]) -> [u8; 32] {
+    fn keccak_512(data: &[u8]) -> [u8; 64] {
+        warn!("hashing::keccak512 unimplemented");
+        [0u8; 64]
+    }
+
+    fn sha2_256(data: &[u8]) -> [u8; 32] {
         sp_core::hashing::sha2_256(data)
     }
 
-    pub fn blake2_128(data: &[u8]) -> [u8; 16] {
+    fn blake2_128(data: &[u8]) -> [u8; 16] {
         debug!("blake2_128 of {}", encode_hex(data));
-        let hash = sp_core::blake2_128(data);
+        let hash = sp_core::hashing::blake2_128(data);
         debug!("  returning hash {}", encode_hex(&hash));
         hash
     }
 
-    pub fn blake2_256(data: &[u8]) -> [u8; 32] {
+    fn blake2_256(data: &[u8]) -> [u8; 32] {
         debug!("blake2_256 of {}", encode_hex(data));
-        let hash = sp_core::blake2_256(data);
+        let hash = sp_core::hashing::blake2_256(data);
         debug!("  returning hash {}", encode_hex(&hash));
         hash
     }
 
-    pub fn twox_256(data: &[u8]) -> [u8; 32] {
+    fn twox_256(data: &[u8]) -> [u8; 32] {
         debug!("twox_256 of {}", encode_hex(data));
-        let hash = sp_core::twox_256(data);
+        let hash = sp_core::hashing::twox_256(data);
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
 
-    pub fn twox_128(data: &[u8]) -> [u8; 16] {
+    fn twox_128(data: &[u8]) -> [u8; 16] {
         debug!("twox_128 of {}", encode_hex(data));
-        let hash = sp_core::twox_128(data);
+        let hash = sp_core::hashing::twox_128(data);
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
 
-    pub fn twox_64(data: &[u8]) -> [u8; 8] {
+    fn twox_64(data: &[u8]) -> [u8; 8] {
         debug!("twox_64 of {}", encode_hex(data));
-        let hash = sp_core::twox_64(data);
+        let hash = sp_core::hashing::twox_64(data);
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
 }
 
-pub mod offchain_index {
-    use super::*;
 
+#[runtime_interface]
+pub trait OffchainIndex {
     /// Write a key value pair to the Offchain DB database in a buffered fashion.
-    pub fn set(key: &[u8], value: &[u8]) {
+    fn set(key: &[u8], value: &[u8]) {
         warn!("offchain_index::set unimplemented");
     }
 
     /// Remove a key and its associated value from the Offchain DB.
-    pub fn clear(key: &[u8]) {
+    fn clear(key: &[u8]) {
         warn!("offchain_index::clear unimplemented");
     }
 }
 
-pub mod offchain {
-    use super::*;
-
-    pub fn is_validator() -> bool {
+#[runtime_interface]
+pub trait Offchain {
+    fn is_validator() -> bool {
         warn!("offchain::is_validator unimplemented");
         false
     }
 
-    pub fn submit_transaction(data: Vec<u8>) -> Result<(), ()> {
+    fn submit_transaction(data: Vec<u8>) -> Result<(), ()> {
         warn!("offchain::submit_transaction unimplemented");
         Err(())
     }
 
-    pub fn network_state() -> Result<OpaqueNetworkState, ()> {
+    fn network_state() -> Result<OpaqueNetworkState, ()> {
         warn!("offchain::network_state unimplemented");
         Err(())
     }
 
-    pub fn timestamp() -> offchain::Timestamp {
+    fn timestamp() -> Timestamp {
         warn!("offchain::timestamp unimplemented");
-        offchain::Timestamp::default()
+        Timestamp::default()
     }
 
-    pub fn sleep_until(deadline: offchain::Timestamp) {
+    fn sleep_until(deadline: Timestamp) {
         warn!("offchain::sleep_until unimplemented");
     }
 
-    pub fn random_seed() -> [u8; 32] {
+    fn random_seed() -> [u8; 32] {
         warn!("offchain::random_seed unimplemented");
         [0; 32]
     }
 
-    pub fn local_storage_set(kind: offchain::StorageKind, key: &[u8], value: &[u8]) {
+    fn local_storage_set(kind: StorageKind, key: &[u8], value: &[u8]) {
         warn!("offchain::local_storage_set unimplemented");
     }
-    pub fn local_storage_clear(kind: StorageKind, key: &[u8]) {
+    fn local_storage_clear(kind: StorageKind, key: &[u8]) {
         warn!("offchain::local_storage_clear unimplemented");
 
     }
-		
-    pub fn local_storage_compare_and_set(
-        kind: offchain::StorageKind,
+
+    fn local_storage_compare_and_set(
+        kind: StorageKind,
         key: &[u8],
         old_value: Option<Vec<u8>>,
         new_value: &[u8],
@@ -600,22 +604,22 @@ pub mod offchain {
         false
     }
 
-    pub fn local_storage_get(kind: offchain::StorageKind, key: &[u8]) -> Option<Vec<u8>> {
+    fn local_storage_get(kind: StorageKind, key: &[u8]) -> Option<Vec<u8>> {
         warn!("offchain::local_storage_get unimplemented");
         None
     }
 
-    pub fn http_request_start(
+    fn http_request_start(
         method: &str,
         uri: &str,
         meta: &[u8],
-    ) -> Result<offchain::HttpRequestId, ()> {
+    ) -> Result<HttpRequestId, ()> {
         warn!("offchain::http_request_start unimplemented");
         Err(())
     }
 
-    pub fn http_request_add_header(
-        request_id: offchain::HttpRequestId,
+    fn http_request_add_header(
+        request_id: HttpRequestId,
         name: &str,
         value: &str,
     ) -> Result<(), ()> {
@@ -623,48 +627,52 @@ pub mod offchain {
         Err(())
     }
 
-    pub fn http_request_write_body(
-        request_id: offchain::HttpRequestId,
+    fn http_request_write_body(
+        request_id: HttpRequestId,
         chunk: &[u8],
-        deadline: Option<offchain::Timestamp>,
-    ) -> Result<(), offchain::HttpError> {
+        deadline: Option<Timestamp>,
+    ) -> Result<(), HttpError> {
         warn!("offchain::http_request_write_body unimplemented");
-        Err(offchain::HttpError::IoError)
+        Err(HttpError::IoError)
     }
 
-    pub fn http_response_wait(
-        ids: &[offchain::HttpRequestId],
-        deadline: Option<offchain::Timestamp>,
-    ) -> Vec<offchain::HttpRequestStatus> {
+    fn http_response_wait(
+        ids: &[HttpRequestId],
+        deadline: Option<Timestamp>,
+    ) -> Vec<HttpRequestStatus> {
         warn!("offchain::http_response_wait unimplemented");
         Vec::new()
     }
 
-    pub fn http_response_headers(request_id: offchain::HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
+    fn http_response_headers(request_id: HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
         warn!("offchain::http_response_wait unimplemented");
         Vec::new()
     }
 
-    pub fn http_response_read_body(
-        request_id: offchain::HttpRequestId,
+    fn http_response_read_body(
+        request_id: HttpRequestId,
         buffer: &mut [u8],
-        deadline: Option<offchain::Timestamp>,
-    ) -> Result<usize, offchain::HttpError> {
+        deadline: Option<Timestamp>,
+    ) -> Result<usize, HttpError> {
         warn!("offchain::http_response_read_body unimplemented");
-        Err(offchain::HttpError::IoError)
+        Err(HttpError::IoError)
     }
+
+    /// Set the authorized nodes and authorized_only flag.
+	fn set_authorized_nodes( nodes: Vec<OpaquePeerId>, authorized_only: bool) {
+		warn!("offchain::set_authorized_nodes unimplemented");
+	}
 }
 
-pub mod logging {
-    use super::*;
-    use sp_core::LogLevel;
+#[runtime_interface]
+pub trait Logging {
     /// Request to print a log message on the host.
     ///
     /// Note that this will be only displayed if the host is enabled to display log messages with
     /// given level and target.
     ///
     /// Instead of using directly, prefer setting up `RuntimeLogger` and using `log` macros.
-    pub fn log(level: LogLevel, target: &str, message: &[u8]) {
+    fn log(level: LogLevel, target: &str, message: &[u8]) {
         if let Ok(message) = std::str::from_utf8(message) {
             // TODO remove this attention boost
             println!("\x1b[0;36m[{}]\x1b[0m {}", target, message);
@@ -684,7 +692,7 @@ pub mod logging {
             );
 
         }
-    } 
+    }
 }
 
 
