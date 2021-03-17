@@ -39,6 +39,7 @@ use sp_core::{
 use sp_trie::{TrieConfiguration, trie_types::Layout};
 
 use sp_runtime_interface::{runtime_interface, Pointer};
+use sp_runtime_interface::pass_by::PassBy;
 
 use codec::{Encode, Decode};
 
@@ -1425,4 +1426,32 @@ mod tests {
             assert!(!crypto::finish_batch_verify());
         });
     }
+}
+
+
+#[derive(Encode, Decode)]
+/// Crossing is a helper wrapping any Encode-Decodeable type
+/// for transferring over the wasm barrier.
+pub struct Crossing<T: Encode + Decode>(T);
+
+impl<T: Encode + Decode> PassBy for Crossing<T> {
+	type PassBy = sp_runtime_interface::pass_by::Codec<Self>;
+}
+
+impl<T: Encode + Decode> Crossing<T> {
+
+	/// Convert into the inner type
+	pub fn into_inner(self) -> T {
+		self.0
+	}
+}
+
+// useful for testing
+impl<T> core::default::Default for Crossing<T>
+	where T: core::default::Default + Encode + Decode
+{
+	fn default() -> Self {
+		Self(Default::default())
+	}
+
 }

@@ -31,6 +31,10 @@ use sp_core::{
 use std::char;
 use std::println;
 
+
+use sp_runtime_interface::{runtime_interface, Pointer};
+
+
 #[allow(unused)]
 fn encode_hex_digit(digit: u8) -> char {
     match char::from_digit(u32::from(digit), 16) {
@@ -308,6 +312,11 @@ pub mod misc {
         debug!(target: "runtime", "{}", val);
     }
 
+    /// Print a number.
+    pub fn print_num_version_1(val: u64) {
+        debug!(target: "runtime", "{}", val);
+    }
+
     /// Print any valid `utf8` buffer.
     pub fn print_utf8(utf8: &[u8]) {
         if let Ok(data) = std::str::from_utf8(utf8) {
@@ -414,6 +423,11 @@ pub mod crypto {
     pub fn sr25519_verify(sig: &sr25519::Signature, msg: &[u8], pubkey: &sr25519::Public) -> bool {
         sr25519::Pair::verify(sig, msg, pubkey)
     }
+/*
+    pub fn sr25519_verify_version_2(sig: &sr25519::Signature, msg: &[u8], pubkey: &sr25519::Public) -> bool {
+        sr25519::Pair::verify(sig, msg, pubkey)
+    } */
+
 
     /// Returns all `ecdsa` public keys for the given key id from the keystore.
 	pub fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
@@ -488,8 +502,138 @@ pub mod crypto {
         warn!("crypto::secp256k1_ecdsa_recover unimplemented");
         Ok([0; 33])
     }
+
+    pub mod extern_host_function_impls {
+        use super::*;
+        pub mod ed25519_verify {
+            use super::*;
+            pub fn ext_crypto_ed25519_verify_version_1(
+                sig: &ed25519::Signature,
+                msg: &[u8],
+                pub_key: &ed25519::Public,) -> bool{
+                    ed25519_batch_verify(sig, msg, pub_key)
+                }
+        }
+    }
 }
 
+/* /// Interface that provides functions for hashing with different algorithms.
+#[runtime_interface]
+pub trait Hashing {
+    /// Conduct a 256-bit Keccak hash.
+    fn keccak_256(data: &[u8]) -> [u8; 32] {
+        sp_core::hashing::keccak_256(data)
+    }
+
+    /// Conduct a 512-bit Keccak hash.
+	fn keccak_512(data: &[u8]) -> [u8; 64] {
+		sp_core::hashing::keccak_512(data)
+	}
+
+
+    /// Conduct a 256-bit Sha2 hash.
+    fn sha2_256(data: &[u8]) -> [u8; 32] {
+        sp_core::hashing::sha2_256(data)
+    }
+
+    /// Conduct a 128-bit Blake2 hash.
+    fn blake2_128(data: &[u8]) -> [u8; 16] {
+        sp_core::hashing::blake2_128(data)
+    }
+
+    /// Conduct a 256-bit Blake2 hash.
+    fn blake2_256(data: &[u8]) -> [u8; 32] {
+        sp_core::hashing::blake2_256(data)
+    }
+
+    /// Conduct four XX hashes to give a 256-bit result.
+    fn twox_256(data: &[u8]) -> [u8; 32] {
+        sp_core::hashing::twox_256(data)
+    }
+
+    /// Conduct two XX hashes to give a 128-bit result.
+    fn twox_128(data: &[u8]) -> [u8; 16] {
+        sp_core::hashing::twox_128(data)
+    }
+
+    /// Conduct two XX hashes to give a 64-bit result.
+    fn twox_64(data: &[u8]) -> [u8; 8] {
+        sp_core::hashing::twox_64(data)
+    }
+
+} */
+/* pub mod hashing {
+    use super::*;
+
+    trait Hashing {
+        fn blake2_128_version_1(data: &[u8]) -> [u8; 16];
+    }
+
+    /* impl Hashing for &mut dyn SgxExternalities {
+        fn blake2_128_version_1(data: &[u8]) ->[u8; 16] {let hash = sp_core::blake2_128(data) }
+    } */
+
+    pub fn blake2_128(data: &[u8]) -> Vec<u8> {
+        // only latest version is exposed
+        blake2_128_version_1(data)
+    }
+
+   /*  fn blake2_128_version_1(data: &[u8]) -> Vec<u8> {
+        <&mut dyn SgxExternalities as Hashing>::blake2_128_version_1(data)
+    }
+ */
+    pub struct HostFunctions;
+
+
+    pub fn keccak_256(data: &[u8]) -> [u8; 32] {
+        warn!("hashing::keccak256 unimplemented");
+        [0u8; 32]
+    }
+
+    pub fn keccak_512(data: &[u8]) -> [u8; 64] {
+        warn!("hashing::keccak512 unimplemented");
+        [0u8; 64]
+    }
+
+    pub fn sha2_256(data: &[u8]) -> [u8; 32] {
+        sp_core::hashing::sha2_256(data)
+    }
+
+    pub fn blake2_128(data: &[u8]) -> [u8; 16] {
+        debug!("blake2_128 of {}", encode_hex(data));
+        let hash = sp_core::blake2_128(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
+    }
+
+    /* pub fn blake2_256(data: &[u8]) -> [u8; 32] {
+        debug!("blake2_256 of {}", encode_hex(data));
+        let hash = sp_core::blake2_256(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
+    } */
+
+    pub fn twox_256(data: &[u8]) -> [u8; 32] {
+        debug!("twox_256 of {}", encode_hex(data));
+        let hash = sp_core::twox_256(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
+    }
+
+    pub fn twox_128(data: &[u8]) -> [u8; 16] {
+        debug!("twox_128 of {}", encode_hex(data));
+        let hash = sp_core::twox_128(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
+    }
+
+    pub fn twox_64(data: &[u8]) -> [u8; 8] {
+        debug!("twox_64 of {}", encode_hex(data));
+        let hash = sp_core::twox_64(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
+    }
+} */
 pub mod hashing {
     use super::*;
 
@@ -507,7 +651,18 @@ pub mod hashing {
         sp_core::hashing::sha2_256(data)
     }
 
+    pub fn sha2_256_version_1(data: &[u8]) -> [u8; 32] {
+        sp_core::hashing::sha2_256(data)
+    }
+
     pub fn blake2_128(data: &[u8]) -> [u8; 16] {
+        debug!("blake2_128 of {}", encode_hex(data));
+        let hash = sp_core::blake2_128(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
+    }
+
+    pub fn ext_hashing_blake2_128_version_1(data: &[u8]) -> [u8; 16] {
         debug!("blake2_128 of {}", encode_hex(data));
         let hash = sp_core::blake2_128(data);
         debug!("  returning hash {}", encode_hex(&hash));
@@ -541,6 +696,9 @@ pub mod hashing {
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
+
+
+    pub struct HostFunctions;
 }
 
 pub mod offchain_index {
