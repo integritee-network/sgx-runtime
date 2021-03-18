@@ -75,10 +75,8 @@ pub enum EcdsaVerifyError {
     BadSignature,
 }
 
-/// Interface for accessing the storage from within the runtime.
-#[runtime_interface]
-pub trait Storage {
-    fn get(key: &[u8]) -> Option<Vec<u8>> {
+pub mod storage {
+    pub fn get(key: &[u8]) -> Option<Vec<u8>> {
         debug!("storage('{}')", encode_hex(key));
         with_externalities(|ext| {
             ext.get(key).map(|s| {
@@ -89,7 +87,7 @@ pub trait Storage {
         .expect("storage cannot be called outside of an Externalities-provided environment.")
     }
 
-    fn read(key: &[u8], value_out: &mut [u8], value_offset: u32) -> Option<u32> {
+    pub fn read(key: &[u8], value_out: &mut [u8], value_offset: u32) -> Option<u32> {
         debug!(
             "read_storage('{}' with offset =  {:?}. value_out.len() is {})",
             encode_hex(key),
@@ -110,25 +108,25 @@ pub trait Storage {
         .expect("read_storage cannot be called outside of an Externalities-provided environment.")
     }
 
-    fn set(key: &[u8], value: &[u8]) {
+    pub fn set(key: &[u8], value: &[u8]) {
         debug!("set_storage('{}', {:x?})", encode_hex(key), value);
         with_externalities(|ext| ext.insert(key.to_vec(), value.to_vec()));
     }
 
-    fn clear(key: &[u8]) {
+    pub fn clear(key: &[u8]) {
         with_externalities(|ext|
             if let None = ext.remove(key) {
                 info!("Tried to clear storage that was not existing");
             });
     }
 
-    fn exists(key: &[u8]) -> bool {
+    pub fn exists(key: &[u8]) -> bool {
         with_externalities(|ext|
             ext.contains_key(key)
         ).expect("exists cannot be called outside of an Externalities-provided environment.")
     }
 
-    fn clear_prefix(prefix: &[u8]) {
+    pub fn clear_prefix(prefix: &[u8]) {
         warn!("storage::clear_prefix() unimplemented");
     }
 
@@ -140,22 +138,22 @@ pub trait Storage {
     ///
     /// If the storage item does not support [`EncodeAppend`](codec::EncodeAppend) or
     /// something else fails at appending, the storage item will be set to `[value]`.
-    fn append(key: &[u8], value: Vec<u8>) {
+    pub fn append(key: &[u8], value: Vec<u8>) {
         warn!("storage::append() unimplemented");
     }
 
-    fn root() -> [u8; 32] {
+    pub fn root() -> [u8; 32] {
         warn!("storage::root() unimplemented");
         [0u8; 32]
     }
 
-    fn changes_root(parent_hash: &[u8]) -> Option<[u8; 32]> {
+    pub fn changes_root(parent_hash: &[u8]) -> Option<[u8; 32]> {
         warn!("storage::changes_root() unimplemented");
         Some([0u8; 32])
     }
 
     /// Get the next key in storage after the given one in lexicographic order.
-    fn next_key(key: &[u8]) -> Option<Vec<u8>> {
+    pub fn next_key(key: &[u8]) -> Option<Vec<u8>> {
         warn!("storage::next_key unimplemented");
         Some([0u8; 32].to_vec())
     }
@@ -172,7 +170,7 @@ pub trait Storage {
 	/// This is a low level API that is potentially dangerous as it can easily result
 	/// in unbalanced transactions. For example, FRAME users should use high level storage
 	/// abstractions.
-	fn start_transaction() {
+	pub fn start_transaction() {
 		warn!("storage::start_transaction unimplemented");
 	}
 
@@ -183,7 +181,7 @@ pub trait Storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	fn rollback_transaction() {
+	pub fn rollback_transaction() {
 		warn!("storage::rollback_transaction unimplemented");
 	}
 
@@ -194,7 +192,7 @@ pub trait Storage {
 	/// # Panics
 	///
 	/// Will panic if there is no open transaction.
-	fn commit_transaction() {
+	pub fn commit_transaction() {
         warn!("storage::commit_transaction unimplemented");
     }
 }
