@@ -198,26 +198,26 @@ pub mod storage {
     }
 }
 
-pub mod default_child_storage {
-    use super::*;
-    pub fn read(
+#[runtime_interface]
+pub trait DefaultChildStorage  {
+    fn read(
         storage_key: &[u8],
         key: &[u8],
         value_out: &mut [u8],
-        value_offset: usize,
-    ) -> Option<usize> {
+        value_offset: u32,
+    ) -> Option<u32> {
         // TODO unimplemented
         warn!("default_child_storage::read() unimplemented");
         Some(0)
     }
 
-    pub fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
+    fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
         // TODO: unimplemented
         warn!("default_child_storage::get() unimplemented");
         Some(vec![0, 1, 2, 3])
     }
 
-    pub fn set(
+    fn set(
         storage_key: &[u8],
         key: &[u8],
         value: &[u8],
@@ -225,20 +225,21 @@ pub mod default_child_storage {
         warn!("default_child_storage::set() unimplemented");
     }
 
-    pub fn clear(
+    fn clear(
         storage_key: &[u8],
         key: &[u8]
     ) {
         warn!("child storage::clear() unimplemented");
     }
 
-    /* pub fn storage_kill(
+    fn storage_kill(
         storage_key: &[u8],
     ) {
         warn!("child storage::storage_kill() unimplemented");
-    } */
-    /// V2
-    pub fn storage_kill(
+    }
+
+    #[version(2)]
+    fn storage_kill(
         storage_key: &[u8],
         limit: Option<u32>
     ) -> bool {
@@ -246,7 +247,7 @@ pub mod default_child_storage {
         false
     }
 
-    pub fn exists(
+    fn exists(
         storage_key: &[u8],
         key: &[u8]
     ) -> bool {
@@ -254,21 +255,21 @@ pub mod default_child_storage {
         false
     }
 
-    pub fn clear_prefix(
+    fn clear_prefix(
         storage_key: &[u8],
         prefix: &[u8],
     ) {
         warn!("child storage::clear_prefix() unimplemented");
     }
 
-    pub fn root(
+    fn root(
         storage_key: &[u8]
     ) -> Vec<u8> {
         warn!("child storage::root() unimplemented");
         vec![0, 1, 2, 3]
     }
 
-    pub fn next_key(
+    fn next_key(
         storage_key: &[u8],
         key: &[u8],
     ) -> Option<Vec<u8>> {
@@ -277,28 +278,28 @@ pub mod default_child_storage {
     }
 }
 
-pub mod trie {
-    use super::*;
 
+#[runtime_interface]
+pub trait Trie {
     /// A trie root formed from the iterated items.
-    pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+    fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::blake2_256_root() unimplemented");
         H256::default()
     }
 
     /// A trie root formed from the enumerated items.
-    pub fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+    fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::blake2_256_ordered_root() unimplemented");
         H256::default()
     }
 
-    pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+    fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::keccak_256_root() unimplemented");
         H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::keccak_256_ordered_root() unimplemented");
         H256::default()
 	}
@@ -517,7 +518,7 @@ pub mod crypto {
     }
 }
 
-/* /// Interface that provides functions for hashing with different algorithms.
+ /// Interface that provides functions for hashing with different algorithms.
 #[runtime_interface]
 pub trait Hashing {
     /// Conduct a 256-bit Keccak hash.
@@ -561,144 +562,6 @@ pub trait Hashing {
         sp_core::hashing::twox_64(data)
     }
 
-} */
-/* pub mod hashing {
-    use super::*;
-
-    trait Hashing {
-        fn blake2_128_version_1(data: &[u8]) -> [u8; 16];
-    }
-
-    /* impl Hashing for &mut dyn SgxExternalities {
-        fn blake2_128_version_1(data: &[u8]) ->[u8; 16] {let hash = sp_core::blake2_128(data) }
-    } */
-
-    pub fn blake2_128(data: &[u8]) -> Vec<u8> {
-        // only latest version is exposed
-        blake2_128_version_1(data)
-    }
-
-   /*  fn blake2_128_version_1(data: &[u8]) -> Vec<u8> {
-        <&mut dyn SgxExternalities as Hashing>::blake2_128_version_1(data)
-    }
- */
-    pub struct HostFunctions;
-
-
-    pub fn keccak_256(data: &[u8]) -> [u8; 32] {
-        warn!("hashing::keccak256 unimplemented");
-        [0u8; 32]
-    }
-
-    pub fn keccak_512(data: &[u8]) -> [u8; 64] {
-        warn!("hashing::keccak512 unimplemented");
-        [0u8; 64]
-    }
-
-    pub fn sha2_256(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::sha2_256(data)
-    }
-
-    pub fn blake2_128(data: &[u8]) -> [u8; 16] {
-        debug!("blake2_128 of {}", encode_hex(data));
-        let hash = sp_core::blake2_128(data);
-        debug!("  returning hash {}", encode_hex(&hash));
-        hash
-    }
-
-    /* pub fn blake2_256(data: &[u8]) -> [u8; 32] {
-        debug!("blake2_256 of {}", encode_hex(data));
-        let hash = sp_core::blake2_256(data);
-        debug!("  returning hash {}", encode_hex(&hash));
-        hash
-    } */
-
-    pub fn twox_256(data: &[u8]) -> [u8; 32] {
-        debug!("twox_256 of {}", encode_hex(data));
-        let hash = sp_core::twox_256(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn twox_128(data: &[u8]) -> [u8; 16] {
-        debug!("twox_128 of {}", encode_hex(data));
-        let hash = sp_core::twox_128(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn twox_64(data: &[u8]) -> [u8; 8] {
-        debug!("twox_64 of {}", encode_hex(data));
-        let hash = sp_core::twox_64(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
-    }
-} */
-pub mod hashing {
-    use super::*;
-
-    pub fn keccak_256(data: &[u8]) -> [u8; 32] {
-        warn!("hashing::keccak256 unimplemented");
-        [0u8; 32]
-    }
-
-    pub fn keccak_512(data: &[u8]) -> [u8; 64] {
-        warn!("hashing::keccak512 unimplemented");
-        [0u8; 64]
-    }
-
-    pub fn sha2_256(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::sha2_256(data)
-    }
-
-    pub fn sha2_256_version_1(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::sha2_256(data)
-    }
-
-    pub fn blake2_128(data: &[u8]) -> [u8; 16] {
-        debug!("blake2_128 of {}", encode_hex(data));
-        let hash = sp_core::blake2_128(data);
-        debug!("  returning hash {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn ext_hashing_blake2_128_version_1(data: &[u8]) -> [u8; 16] {
-        debug!("blake2_128 of {}", encode_hex(data));
-        let hash = sp_core::blake2_128(data);
-        debug!("  returning hash {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn blake2_256(data: &[u8]) -> [u8; 32] {
-        debug!("blake2_256 of {}", encode_hex(data));
-        let hash = sp_core::blake2_256(data);
-        debug!("  returning hash {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn twox_256(data: &[u8]) -> [u8; 32] {
-        debug!("twox_256 of {}", encode_hex(data));
-        let hash = sp_core::twox_256(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn twox_128(data: &[u8]) -> [u8; 16] {
-        debug!("twox_128 of {}", encode_hex(data));
-        let hash = sp_core::twox_128(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
-    }
-
-    pub fn twox_64(data: &[u8]) -> [u8; 8] {
-        debug!("twox_64 of {}", encode_hex(data));
-        let hash = sp_core::twox_64(data);
-        debug!("  returning {}", encode_hex(&hash));
-        hash
-    }
-
-
-    pub struct HostFunctions;
 }
 
 pub mod offchain_index {

@@ -707,7 +707,7 @@ dependencies = [
  "parity-scale-codec",
  "paste 1.0.5",
  "sp-api",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-runtime-interface",
  "sp-std",
@@ -724,7 +724,7 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-core",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-std",
  "sp-tracing",
@@ -759,7 +759,7 @@ dependencies = [
  "sp-arithmetic",
  "sp-core",
  "sp-inherents",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-staking",
  "sp-state-machine",
@@ -811,7 +811,7 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-core",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-std",
  "sp-version",
@@ -1797,7 +1797,7 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-core",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-session",
  "sp-staking",
@@ -1814,7 +1814,7 @@ dependencies = [
  "frame-system",
  "parity-scale-codec",
  "serde",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -1831,7 +1831,7 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-inherents",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-std",
  "sp-timestamp",
@@ -1848,7 +1848,7 @@ dependencies = [
  "serde",
  "smallvec",
  "sp-core",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-runtime",
  "sp-std",
 ]
@@ -2860,7 +2860,7 @@ dependencies = [
  "parity-scale-codec",
  "serde",
  "sp-core",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-std",
 ]
 
@@ -3074,7 +3074,7 @@ dependencies = [
 
 [[package]]
 name = "sp-io"
-version = "2.1.0"
+version = "3.1.0"
 dependencies = [
  "environmental",
  "futures",
@@ -3086,30 +3086,6 @@ dependencies = [
  "sgx-externalities",
  "sgx_tstd",
  "sgx_types",
- "sp-core",
- "sp-externalities",
- "sp-keystore",
- "sp-runtime-interface",
- "sp-state-machine",
- "sp-std",
- "sp-tracing",
- "sp-trie",
- "sp-wasm-interface",
- "tracing",
- "tracing-core",
-]
-
-[[package]]
-name = "sp-io"
-version = "3.0.0"
-source = "git+https://github.com/paritytech/substrate.git#743accbe3256de2fc615adcaa3ab03ebdbbb4dbd"
-dependencies = [
- "futures",
- "hash-db",
- "libsecp256k1",
- "log",
- "parity-scale-codec",
- "parking_lot",
  "sp-core",
  "sp-externalities",
  "sp-keystore",
@@ -3175,7 +3151,7 @@ dependencies = [
  "sp-application-crypto",
  "sp-arithmetic",
  "sp-core",
- "sp-io 3.0.0",
+ "sp-io",
  "sp-std",
 ]
 
@@ -3495,7 +3471,7 @@ dependencies = [
  "sgx_tstd",
  "sp-application-crypto",
  "sp-core",
- "sp-io 2.1.0",
+ "sp-io",
 ]
 
 [[package]]
