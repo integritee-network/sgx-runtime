@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Substrate.  If not, see <http://www.gnu.org/licenses/>.
 
+
+/// Note: #[runtime_interface] can not be used because hosting function
+/// will then expect non existent functions.
+/// Hence, for now the output of runtime_interface is coded directly
+/// according to
+/// https://docs.rs/sp-runtime-interface/3.0.0/sp_runtime_interface/attr.runtime_interface.html
 extern crate sgx_tstd as std;
 
 use std::prelude::v1::String;
@@ -199,9 +205,10 @@ pub mod storage {
     }
 }
 
-#[runtime_interface]
-pub trait DefaultChildStorage  {
-    fn read(
+pub mod default_child_storage  {
+    use super::*;
+
+    pub fn read(
         storage_key: &[u8],
         key: &[u8],
         value_out: &mut [u8],
@@ -212,13 +219,13 @@ pub trait DefaultChildStorage  {
         Some(0)
     }
 
-    fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
+    pub fn get(storage_key: &[u8], key: &[u8]) -> Option<Vec<u8>> {
         // TODO: unimplemented
         warn!("default_child_storage::get() unimplemented");
         Some(vec![0, 1, 2, 3])
     }
 
-    fn set(
+    pub fn set(
         storage_key: &[u8],
         key: &[u8],
         value: &[u8],
@@ -226,21 +233,20 @@ pub trait DefaultChildStorage  {
         warn!("default_child_storage::set() unimplemented");
     }
 
-    fn clear(
+    pub fn clear(
         storage_key: &[u8],
         key: &[u8]
     ) {
         warn!("child storage::clear() unimplemented");
     }
 
-    fn storage_kill(
+    pub fn storage_kill_version_1(
         storage_key: &[u8],
     ) {
         warn!("child storage::storage_kill() unimplemented");
     }
 
-    #[version(2)]
-    fn storage_kill(
+    pub fn storage_kill(
         storage_key: &[u8],
         limit: Option<u32>
     ) -> bool {
@@ -248,7 +254,7 @@ pub trait DefaultChildStorage  {
         false
     }
 
-    fn exists(
+    pub fn exists(
         storage_key: &[u8],
         key: &[u8]
     ) -> bool {
@@ -256,21 +262,21 @@ pub trait DefaultChildStorage  {
         false
     }
 
-    fn clear_prefix(
+    pub fn clear_prefix(
         storage_key: &[u8],
         prefix: &[u8],
     ) {
         warn!("child storage::clear_prefix() unimplemented");
     }
 
-    fn root(
+    pub fn root(
         storage_key: &[u8]
     ) -> Vec<u8> {
         warn!("child storage::root() unimplemented");
         vec![0, 1, 2, 3]
     }
 
-    fn next_key(
+    pub fn next_key(
         storage_key: &[u8],
         key: &[u8],
     ) -> Option<Vec<u8>> {
@@ -280,77 +286,77 @@ pub trait DefaultChildStorage  {
 }
 
 
-#[runtime_interface]
-pub trait Trie {
+pub mod trie {
+    use super::*;
     /// A trie root formed from the iterated items.
-    fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+    pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::blake2_256_root() unimplemented");
         H256::default()
     }
 
     /// A trie root formed from the enumerated items.
-    fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+    pub fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::blake2_256_ordered_root() unimplemented");
         H256::default()
     }
 
-    fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+    pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::keccak_256_root() unimplemented");
         H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::keccak_256_ordered_root() unimplemented");
         H256::default()
 	}
 
 }
 
-#[runtime_interface]
-pub trait Misc {
+pub mod misc {
+    use super::*;
     /// Print a number.
-    fn print_num(val: u64) {
+    pub fn print_num(val: u64) {
         debug!(target: "runtime", "{}", val);
     }
 
     /// Print a number.
-    fn print_num_version_1(val: u64) {
+    pub fn print_num_version_1(val: u64) {
         debug!(target: "runtime", "{}", val);
     }
 
     /// Print any valid `utf8` buffer.
-    fn print_utf8(utf8: &[u8]) {
+    pub fn print_utf8(utf8: &[u8]) {
         if let Ok(data) = std::str::from_utf8(utf8) {
             debug!(target: "runtime", "{}", data)
         }
     }
 
     /// Print any `u8` slice as hex.
-    fn print_hex(data: &[u8]) {
+    pub fn print_hex(data: &[u8]) {
         debug!(target: "runtime", "{:?}", data);
     }
 
-    fn runtime_version(wasm: &[u8]) -> Option<Vec<u8>> {
+    pub fn runtime_version(wasm: &[u8]) -> Option<Vec<u8>> {
         warn!("misc::runtime_version unimplemented!");
         Some([2u8; 32].to_vec())
     }
 }
 
 /// Interfaces for working with crypto related types from within the runtime.
-#[runtime_interface]
-pub trait Crypto {
-    fn ed25519_public_keys(id: KeyTypeId) -> Vec<ed25519::Public> {
+pub mod crypto {
+    use super::*;
+    pub fn ed25519_public_keys(id: KeyTypeId) -> Vec<ed25519::Public> {
         warn!("crypto::ed25519_public_keys unimplemented");
         vec![ed25519::Public::default()]
     }
 
-    fn ed25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ed25519::Public {
+    pub fn ed25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ed25519::Public {
         warn!("crypto::ed25519_generate unimplemented");
         ed25519::Public::default()
     }
 
-    fn ed25519_sign(
+    pub fn ed25519_sign(
         id: KeyTypeId,
         pub_key: &ed25519::Public,
         msg: &[u8],
@@ -359,7 +365,7 @@ pub trait Crypto {
         Some(ed25519::Signature::default())
     }
 
-    fn ed25519_verify(
+    pub fn ed25519_verify(
         sig: &ed25519::Signature,
         msg: &[u8],
         pub_key: &ed25519::Public,
@@ -367,7 +373,7 @@ pub trait Crypto {
         ed25519::Pair::verify(sig, msg, pub_key)
     }
 
-    fn ed25519_batch_verify(
+    pub fn ed25519_batch_verify(
         sig: &ed25519::Signature,
         msg: &[u8],
         pub_key: &ed25519::Public,
@@ -384,7 +390,7 @@ pub trait Crypto {
 	/// needs to be called.
 	///
 	/// Returns `true` when the verification is either successful or batched.
-	fn sr25519_batch_verify(
+	pub fn sr25519_batch_verify(
 		sig: &sr25519::Signature,
 		msg: &[u8],
 		pub_key: &sr25519::Public,
@@ -393,26 +399,26 @@ pub trait Crypto {
         false
 	}
             /// Start verification extension.
-    fn start_batch_verify() {
+    pub fn start_batch_verify() {
         warn!("crypto::start_batch_verify unimplemented");
     }
 
-    fn finish_batch_verify() -> bool {
+    pub fn finish_batch_verify() -> bool {
         warn!("crypto::finish_batch_verify unimplemented");
         true
     }
 
-    fn sr25519_public_keys(id: KeyTypeId) -> Vec<sr25519::Public> {
+    pub fn sr25519_public_keys(id: KeyTypeId) -> Vec<sr25519::Public> {
         warn!("crypto::sr25519_public_key unimplemented");
         vec![sr25519::Public::default()]
     }
 
-    fn sr25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> sr25519::Public {
+    pub fn sr25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> sr25519::Public {
         warn!("crypto::sr25519_generate unimplemented");
         sr25519::Public::default()
     }
 
-    fn sr25519_sign(
+    pub fn sr25519_sign(
         id: KeyTypeId,
         pubkey: &sr25519::Public,
         msg: &[u8],
@@ -421,15 +427,10 @@ pub trait Crypto {
         Some(sr25519::Signature::default())
     }
 
-    fn sr25519_verify(sig: &sr25519::Signature, msg: &[u8], pubkey: &sr25519::Public) -> bool {
-        sr25519::Pair::verify_deprecated(sig, msg, pubkey)
-    }
-
     /// Verify `sr25519` signature.
 	///
 	/// Returns `true` when the verification was successful.
-	#[version(2)]
-	fn sr25519_verify(
+	pub fn sr25519_verify(
 		sig: &sr25519::Signature,
 		msg: &[u8],
 		pub_key: &sr25519::Public,
@@ -439,7 +440,7 @@ pub trait Crypto {
 
 
     /// Returns all `ecdsa` public keys for the given key id from the keystore.
-	fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
+	pub fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
         warn!("crypto::ecdsa_public_keys unimplemented");
         Vec::new()
 	}
@@ -450,7 +451,7 @@ pub trait Crypto {
 	/// The `seed` needs to be a valid utf8.
 	///
 	/// Returns the public key.
-	fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
+	pub fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
         warn!("crypto::ecdsa_generate unimplemented");
         ecdsa::Public::default()
 	}
@@ -459,7 +460,7 @@ pub trait Crypto {
 	/// key type in the keystore.
 	///
 	/// Returns the signature.
-	fn ecdsa_sign(
+	pub fn ecdsa_sign(
 		id: KeyTypeId,
 		pub_key: &ecdsa::Public,
 		msg: &[u8],
@@ -471,7 +472,7 @@ pub trait Crypto {
 	/// Verify `ecdsa` signature.
 	///
 	/// Returns `true` when the verification was successful.
-	fn ecdsa_verify(
+	pub fn ecdsa_verify(
 		sig: &ecdsa::Signature,
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
@@ -487,7 +488,7 @@ pub trait Crypto {
 	/// needs to be called.
 	///
 	/// Returns `true` when the verification is either successful or batched.
-	fn ecdsa_batch_verify(
+	pub fn ecdsa_batch_verify(
 		sig: &ecdsa::Signature,
 		msg: &[u8],
 		pub_key: &ecdsa::Public,
@@ -496,7 +497,7 @@ pub trait Crypto {
         false
     }
 
-    fn secp256k1_ecdsa_recover(
+    pub fn secp256k1_ecdsa_recover(
         sig: &[u8; 65],
         msg: &[u8; 32],
     ) -> Result<[u8; 64], EcdsaVerifyError> {
@@ -504,7 +505,7 @@ pub trait Crypto {
         Ok([0; 64])
     }
 
-    fn secp256k1_ecdsa_recover_compressed(
+    pub fn secp256k1_ecdsa_recover_compressed(
         sig: &[u8; 65],
         msg: &[u8; 32],
     ) -> Result<[u8; 33], EcdsaVerifyError> {
@@ -514,60 +515,61 @@ pub trait Crypto {
 }
 
  /// Interface that provides functions for hashing with different algorithms.
-#[runtime_interface]
-pub trait Hashing {
+pub mod hashing {
+    use super::*;
     /// Conduct a 256-bit Keccak hash.
-    fn keccak_256(data: &[u8]) -> [u8; 32] {
+    pub fn keccak_256(data: &[u8]) -> [u8; 32] {
         sp_core::hashing::keccak_256(data)
     }
 
     /// Conduct a 512-bit Keccak hash.
-	fn keccak_512(data: &[u8]) -> [u8; 64] {
+	pub fn keccak_512(data: &[u8]) -> [u8; 64] {
 		sp_core::hashing::keccak_512(data)
 	}
 
 
     /// Conduct a 256-bit Sha2 hash.
-    fn sha2_256(data: &[u8]) -> [u8; 32] {
+    pub fn sha2_256(data: &[u8]) -> [u8; 32] {
         sp_core::hashing::sha2_256(data)
     }
 
     /// Conduct a 128-bit Blake2 hash.
-    fn blake2_128(data: &[u8]) -> [u8; 16] {
+    pub fn blake2_128(data: &[u8]) -> [u8; 16] {
         sp_core::hashing::blake2_128(data)
     }
 
     /// Conduct a 256-bit Blake2 hash.
-    fn blake2_256(data: &[u8]) -> [u8; 32] {
+    pub fn blake2_256(data: &[u8]) -> [u8; 32] {
         sp_core::hashing::blake2_256(data)
     }
 
     /// Conduct four XX hashes to give a 256-bit result.
-    fn twox_256(data: &[u8]) -> [u8; 32] {
+    pub fn twox_256(data: &[u8]) -> [u8; 32] {
         sp_core::hashing::twox_256(data)
     }
 
     /// Conduct two XX hashes to give a 128-bit result.
-    fn twox_128(data: &[u8]) -> [u8; 16] {
+    pub fn twox_128(data: &[u8]) -> [u8; 16] {
         sp_core::hashing::twox_128(data)
     }
 
     /// Conduct two XX hashes to give a 64-bit result.
-    fn twox_64(data: &[u8]) -> [u8; 8] {
+    pub fn twox_64(data: &[u8]) -> [u8; 8] {
         sp_core::hashing::twox_64(data)
     }
 
 }
 
-#[runtime_interface]
-pub trait OffchainIndex {
+
+pub mod offchainIndex {
+    use super::*;
     /// Write a key value pair to the Offchain DB database in a buffered fashion.
-    fn set(key: &[u8], value: &[u8]) {
+    pub fn set(key: &[u8], value: &[u8]) {
         warn!("offchain_index::set unimplemented");
     }
 
     /// Remove a key and its associated value from the Offchain DB.
-    fn clear(key: &[u8]) {
+    pub fn clear(key: &[u8]) {
         warn!("offchain_index::clear unimplemented");
     }
 }
@@ -576,46 +578,46 @@ pub trait OffchainIndex {
 /// Interface that provides functions to access the offchain functionality.
 ///
 /// These functions are being made available to the runtime and are called by the runtime.
-#[runtime_interface]
-pub trait Offchain {
-    fn is_validator() -> bool {
+pub mod offchain {
+    use super::*;
+    pub fn is_validator() -> bool {
         warn!("offchain::is_validator unimplemented");
         false
     }
 
-    fn submit_transaction(data: Vec<u8>) -> Result<(), ()> {
+    pub fn submit_transaction(data: Vec<u8>) -> Result<(), ()> {
         warn!("offchain::submit_transaction unimplemented");
         Err(())
     }
 
-    fn network_state() -> Result<OpaqueNetworkState, ()> {
+    pub fn network_state() -> Result<OpaqueNetworkState, ()> {
         warn!("offchain::network_state unimplemented");
         Err(())
     }
 
-    fn timestamp() -> offchain::Timestamp {
+    pub fn timestamp() -> offchain::Timestamp {
         warn!("offchain::timestamp unimplemented");
         offchain::Timestamp::default()
     }
 
-    fn sleep_until(deadline: offchain::Timestamp) {
+    pub fn sleep_until(deadline: offchain::Timestamp) {
         warn!("offchain::sleep_until unimplemented");
     }
 
-    fn random_seed() -> [u8; 32] {
+    pub fn random_seed() -> [u8; 32] {
         warn!("offchain::random_seed unimplemented");
         [0; 32]
     }
 
-    fn local_storage_set(kind: offchain::StorageKind, key: &[u8], value: &[u8]) {
+    pub fn local_storage_set(kind: offchain::StorageKind, key: &[u8], value: &[u8]) {
         warn!("offchain::local_storage_set unimplemented");
     }
-    fn local_storage_clear(kind: StorageKind, key: &[u8]) {
+    pub fn local_storage_clear(kind: StorageKind, key: &[u8]) {
         warn!("offchain::local_storage_clear unimplemented");
 
     }
 
-    fn local_storage_compare_and_set(
+    pub fn local_storage_compare_and_set(
         kind: offchain::StorageKind,
         key: &[u8],
         old_value: Option<Vec<u8>>,
@@ -625,12 +627,12 @@ pub trait Offchain {
         false
     }
 
-    fn local_storage_get(kind: offchain::StorageKind, key: &[u8]) -> Option<Vec<u8>> {
+    pub fn local_storage_get(kind: offchain::StorageKind, key: &[u8]) -> Option<Vec<u8>> {
         warn!("offchain::local_storage_get unimplemented");
         None
     }
 
-    fn http_request_start(
+    pub fn http_request_start(
         method: &str,
         uri: &str,
         meta: &[u8],
@@ -639,7 +641,7 @@ pub trait Offchain {
         Err(())
     }
 
-    fn http_request_add_header(
+    pub fn http_request_add_header(
         request_id: offchain::HttpRequestId,
         name: &str,
         value: &str,
@@ -648,7 +650,7 @@ pub trait Offchain {
         Err(())
     }
 
-    fn http_request_write_body(
+    pub fn http_request_write_body(
         request_id: offchain::HttpRequestId,
         chunk: &[u8],
         deadline: Option<offchain::Timestamp>,
@@ -657,7 +659,7 @@ pub trait Offchain {
         Err(offchain::HttpError::IoError)
     }
 
-    fn http_response_wait(
+    pub fn http_response_wait(
         ids: &[offchain::HttpRequestId],
         deadline: Option<offchain::Timestamp>,
     ) -> Vec<offchain::HttpRequestStatus> {
@@ -665,12 +667,12 @@ pub trait Offchain {
         Vec::new()
     }
 
-    fn http_response_headers(request_id: offchain::HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
+    pub fn http_response_headers(request_id: offchain::HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
         warn!("offchain::http_response_wait unimplemented");
         Vec::new()
     }
 
-    fn http_response_read_body(
+    pub fn http_response_read_body(
         request_id: offchain::HttpRequestId,
         buffer: &mut [u8],
         deadline: Option<offchain::Timestamp>,
@@ -681,15 +683,15 @@ pub trait Offchain {
 }
 
 /// Interface that provides functions for logging from within the runtime.
-#[runtime_interface]
-pub trait Logging {
+pub mod logging {
+    use super::*;
     /// Request to print a log message on the host.
     ///
     /// Note that this will be only displayed if the host is enabled to display log messages with
     /// given level and target.
     ///
     /// Instead of using directly, prefer setting up `RuntimeLogger` and using `log` macros.
-    fn log(level: LogLevel, target: &str, message: &[u8]) {
+    pub fn log(level: LogLevel, target: &str, message: &[u8]) {
         if let Ok(message) = std::str::from_utf8(message) {
             // TODO remove this attention boost
             println!("\x1b[0;36m[{}]\x1b[0m {}", target, message);
