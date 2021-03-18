@@ -76,6 +76,8 @@ pub enum EcdsaVerifyError {
 }
 
 pub mod storage {
+    use super::*;
+
     pub fn get(key: &[u8]) -> Option<Vec<u8>> {
         debug!("storage('{}')", encode_hex(key));
         with_externalities(|ext| {
@@ -87,7 +89,7 @@ pub mod storage {
         .expect("storage cannot be called outside of an Externalities-provided environment.")
     }
 
-    pub fn read(key: &[u8], value_out: &mut [u8], value_offset: u32) -> Option<u32> {
+    pub fn read(key: &[u8], value_out: &mut [u8], value_offset: usize) -> Option<usize> {
         debug!(
             "read_storage('{}' with offset =  {:?}. value_out.len() is {})",
             encode_hex(key),
