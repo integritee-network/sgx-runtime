@@ -514,43 +514,67 @@ pub mod hashing {
     use super::*;
     /// Conduct a 256-bit Keccak hash.
     pub fn keccak_256(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::keccak_256(data)
+        debug!("keccak_256 of {}", encode_hex(data));
+        let hash = sp_core::hashing::keccak_256(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
     }
 
     /// Conduct a 512-bit Keccak hash.
 	pub fn keccak_512(data: &[u8]) -> [u8; 64] {
-		sp_core::hashing::keccak_512(data)
+        debug!("keccak_512 of {}", encode_hex(data));
+        let hash = sp_core::hashing::keccak_512(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
 	}
 
 
     /// Conduct a 256-bit Sha2 hash.
     pub fn sha2_256(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::sha2_256(data)
+        debug!("sha2_256 of {}", encode_hex(data));
+        let hash = sp_core::hashing::sha2_256(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
     }
 
     /// Conduct a 128-bit Blake2 hash.
     pub fn blake2_128(data: &[u8]) -> [u8; 16] {
-        sp_core::hashing::blake2_128(data)
+        debug!("blake2_128 of {}", encode_hex(data));
+        let hash = sp_core::hashing::blake2_128(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
     }
 
     /// Conduct a 256-bit Blake2 hash.
     pub fn blake2_256(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::blake2_256(data)
+        debug!("blake2_256 of {}", encode_hex(data));
+        let hash = sp_core::hashing::blake2_256(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
     }
 
     /// Conduct four XX hashes to give a 256-bit result.
     pub fn twox_256(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::twox_256(data)
+        debug!("twox_256 of {}", encode_hex(data));
+        let hash = sp_core::hashing::twox_256(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
     }
 
     /// Conduct two XX hashes to give a 128-bit result.
     pub fn twox_128(data: &[u8]) -> [u8; 16] {
-        sp_core::hashing::twox_128(data)
+        debug!("twox_128 of {}", encode_hex(data));
+        let hash = sp_core::hashing::twox_128(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
     }
 
     /// Conduct two XX hashes to give a 64-bit result.
     pub fn twox_64(data: &[u8]) -> [u8; 8] {
-        sp_core::hashing::twox_64(data)
+        debug!("twox_64 of {}", encode_hex(data));
+        let hash = sp_core::hashing::twox_64(data);
+        debug!("  returning {}", encode_hex(&hash));
+        hash
     }
 
 }
