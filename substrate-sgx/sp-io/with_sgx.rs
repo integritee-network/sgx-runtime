@@ -14,6 +14,12 @@
 // You should have received a copy of the GNU General Public License
 // along with Substrate.  If not, see <http://www.gnu.org/licenses/>.
 
+
+/// Note: #[runtime_interface] can not be used because hosting function
+/// will then expect non existent functions.
+/// Hence, for now the output of runtime_interface is coded directly
+/// according to
+/// https://docs.rs/sp-runtime-interface/3.0.0/sp_runtime_interface/attr.runtime_interface.html
 extern crate sgx_tstd as std;
 
 use std::prelude::v1::String;
@@ -30,6 +36,9 @@ use sp_core::{
 };
 use std::char;
 use std::println;
+
+use sp_runtime_interface::{runtime_interface, Pointer};
+
 
 #[allow(unused)]
 fn encode_hex_digit(digit: u8) -> char {
@@ -73,6 +82,7 @@ pub enum EcdsaVerifyError {
 
 pub mod storage {
     use super::*;
+
     pub fn get(key: &[u8]) -> Option<Vec<u8>> {
         debug!("storage('{}')", encode_hex(key));
         with_externalities(|ext| {
@@ -196,12 +206,13 @@ pub mod storage {
 
 pub mod default_child_storage {
     use super::*;
+
     pub fn read(
         storage_key: &[u8],
         key: &[u8],
         value_out: &mut [u8],
-        value_offset: usize,
-    ) -> Option<usize> {
+        value_offset: u32,
+    ) -> Option<u32> {
         // TODO unimplemented
         warn!("default_child_storage::read() unimplemented");
         Some(0)
@@ -214,28 +225,36 @@ pub mod default_child_storage {
     }
 
     pub fn set(
-        storage_key: &[u8], 
-        key: &[u8], 
+        storage_key: &[u8],
+        key: &[u8],
         value: &[u8],
     ) {
         warn!("default_child_storage::set() unimplemented");
     }
 
     pub fn clear(
-        storage_key: &[u8], 
+        storage_key: &[u8],
         key: &[u8]
     ) {
         warn!("child storage::clear() unimplemented");
     }
 
-    pub fn storage_kill(
+    pub fn storage_kill_version_1(
         storage_key: &[u8],
     ) {
         warn!("child storage::storage_kill() unimplemented");
     }
 
+    pub fn storage_kill(
+        storage_key: &[u8],
+        limit: Option<u32>
+    ) -> bool {
+        warn!("child storage::storage_kill() unimplemented");
+        false
+    }
+
     pub fn exists(
-        storage_key: &[u8], 
+        storage_key: &[u8],
         key: &[u8]
     ) -> bool {
         warn!("child storage::exists() unimplemented");
@@ -243,7 +262,7 @@ pub mod default_child_storage {
     }
 
     pub fn clear_prefix(
-        storage_key: &[u8], 
+        storage_key: &[u8],
         prefix: &[u8],
     ) {
         warn!("child storage::clear_prefix() unimplemented");
@@ -260,10 +279,11 @@ pub mod default_child_storage {
         storage_key: &[u8],
         key: &[u8],
     ) -> Option<Vec<u8>> {
-        warn!("child storage::next_key() unimplemented");    
+        warn!("child storage::next_key() unimplemented");
         Some(Vec::new())
     }
 }
+
 
 pub mod trie {
     use super::*;
@@ -279,7 +299,7 @@ pub mod trie {
         warn!("trie::blake2_256_ordered_root() unimplemented");
         H256::default()
     }
-    
+
     pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::keccak_256_root() unimplemented");
         H256::default()
@@ -295,12 +315,6 @@ pub mod trie {
 
 pub mod misc {
     use super::*;
-    /// The current relay chain identifier.
-    pub fn chain_id() -> u64 {
-        warn!("OtherApi::chain_id unimplemented");
-        0
-    }
-
     /// Print a number.
     pub fn print_num(val: u64) {
         debug!(target: "runtime", "{}", val);
@@ -327,7 +341,6 @@ pub mod misc {
 /// Interfaces for working with crypto related types from within the runtime.
 pub mod crypto {
     use super::*;
-
     pub fn ed25519_public_keys(id: KeyTypeId) -> Vec<ed25519::Public> {
         warn!("crypto::ed25519_public_keys unimplemented");
         vec![ed25519::Public::default()]
@@ -348,8 +361,8 @@ pub mod crypto {
     }
 
     pub fn ed25519_verify(
-        sig: &ed25519::Signature, 
-        msg: &[u8], 
+        sig: &ed25519::Signature,
+        msg: &[u8],
         pub_key: &ed25519::Public,
     ) -> bool {
         ed25519::Pair::verify(sig, msg, pub_key)
@@ -409,9 +422,17 @@ pub mod crypto {
         Some(sr25519::Signature::default())
     }
 
-    pub fn sr25519_verify(sig: &sr25519::Signature, msg: &[u8], pubkey: &sr25519::Public) -> bool {
-        sr25519::Pair::verify(sig, msg, pubkey)
-    }
+    /// Verify `sr25519` signature.
+	///
+	/// Returns `true` when the verification was successful.
+	pub fn sr25519_verify(
+		sig: &sr25519::Signature,
+		msg: &[u8],
+		pub_key: &sr25519::Public,
+	) -> bool {
+		sr25519::Pair::verify(sig, msg, pub_key)
+	}
+
 
     /// Returns all `ecdsa` public keys for the given key id from the keystore.
 	pub fn ecdsa_public_keys(id: KeyTypeId) -> Vec<ecdsa::Public> {
@@ -470,7 +491,7 @@ pub mod crypto {
         warn!("crypto::ecdsa_batch_verify unimplemented");
         false
     }
-    
+
     pub fn secp256k1_ecdsa_recover(
         sig: &[u8; 65],
         msg: &[u8; 32],
@@ -488,57 +509,79 @@ pub mod crypto {
     }
 }
 
+ /// Interface that provides functions for hashing with different algorithms.
 pub mod hashing {
     use super::*;
-
+    /// Conduct a 256-bit Keccak hash.
     pub fn keccak_256(data: &[u8]) -> [u8; 32] {
-        warn!("hashing::keccak256 unimplemented");
-        [0u8; 32]
+        debug!("keccak_256 of {}", encode_hex(data));
+        let hash = sp_core::hashing::keccak_256(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
     }
 
+    /// Conduct a 512-bit Keccak hash.
+	pub fn keccak_512(data: &[u8]) -> [u8; 64] {
+        debug!("keccak_512 of {}", encode_hex(data));
+        let hash = sp_core::hashing::keccak_512(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
+	}
+
+
+    /// Conduct a 256-bit Sha2 hash.
     pub fn sha2_256(data: &[u8]) -> [u8; 32] {
-        sp_core::hashing::sha2_256(data)
+        debug!("sha2_256 of {}", encode_hex(data));
+        let hash = sp_core::hashing::sha2_256(data);
+        debug!("  returning hash {}", encode_hex(&hash));
+        hash
     }
 
+    /// Conduct a 128-bit Blake2 hash.
     pub fn blake2_128(data: &[u8]) -> [u8; 16] {
         debug!("blake2_128 of {}", encode_hex(data));
-        let hash = sp_core::blake2_128(data);
+        let hash = sp_core::hashing::blake2_128(data);
         debug!("  returning hash {}", encode_hex(&hash));
         hash
     }
 
+    /// Conduct a 256-bit Blake2 hash.
     pub fn blake2_256(data: &[u8]) -> [u8; 32] {
         debug!("blake2_256 of {}", encode_hex(data));
-        let hash = sp_core::blake2_256(data);
+        let hash = sp_core::hashing::blake2_256(data);
         debug!("  returning hash {}", encode_hex(&hash));
         hash
     }
 
+    /// Conduct four XX hashes to give a 256-bit result.
     pub fn twox_256(data: &[u8]) -> [u8; 32] {
         debug!("twox_256 of {}", encode_hex(data));
-        let hash = sp_core::twox_256(data);
+        let hash = sp_core::hashing::twox_256(data);
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
 
+    /// Conduct two XX hashes to give a 128-bit result.
     pub fn twox_128(data: &[u8]) -> [u8; 16] {
         debug!("twox_128 of {}", encode_hex(data));
-        let hash = sp_core::twox_128(data);
+        let hash = sp_core::hashing::twox_128(data);
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
 
+    /// Conduct two XX hashes to give a 64-bit result.
     pub fn twox_64(data: &[u8]) -> [u8; 8] {
         debug!("twox_64 of {}", encode_hex(data));
-        let hash = sp_core::twox_64(data);
+        let hash = sp_core::hashing::twox_64(data);
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
+
 }
+
 
 pub mod offchain_index {
     use super::*;
-
     /// Write a key value pair to the Offchain DB database in a buffered fashion.
     pub fn set(key: &[u8], value: &[u8]) {
         warn!("offchain_index::set unimplemented");
@@ -550,6 +593,10 @@ pub mod offchain_index {
     }
 }
 
+
+/// Interface that provides functions to access the offchain functionality.
+///
+/// These functions are being made available to the runtime and are called by the runtime.
 pub mod offchain {
     use super::*;
 
@@ -589,7 +636,7 @@ pub mod offchain {
         warn!("offchain::local_storage_clear unimplemented");
 
     }
-		
+
     pub fn local_storage_compare_and_set(
         kind: offchain::StorageKind,
         key: &[u8],
@@ -649,12 +696,13 @@ pub mod offchain {
         request_id: offchain::HttpRequestId,
         buffer: &mut [u8],
         deadline: Option<offchain::Timestamp>,
-    ) -> Result<usize, offchain::HttpError> {
+    ) -> Result<u32, offchain::HttpError> {
         warn!("offchain::http_response_read_body unimplemented");
         Err(offchain::HttpError::IoError)
     }
 }
 
+/// Interface that provides functions for logging from within the runtime.
 pub mod logging {
     use super::*;
     use sp_core::LogLevel;
@@ -684,7 +732,7 @@ pub mod logging {
             );
 
         }
-    } 
+    }
 }
 
 
