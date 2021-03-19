@@ -36,7 +36,6 @@ use sp_core::{
 };
 use std::char;
 use std::println;
-use sp_core::LogLevel;
 
 use sp_runtime_interface::{runtime_interface, Pointer};
 
@@ -205,7 +204,7 @@ pub mod storage {
     }
 }
 
-pub mod default_child_storage  {
+pub mod default_child_storage {
     use super::*;
 
     pub fn read(
@@ -288,6 +287,7 @@ pub mod default_child_storage  {
 
 pub mod trie {
     use super::*;
+
     /// A trie root formed from the iterated items.
     pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
         warn!("trie::blake2_256_root() unimplemented");
@@ -317,11 +317,6 @@ pub mod misc {
     use super::*;
     /// Print a number.
     pub fn print_num(val: u64) {
-        debug!(target: "runtime", "{}", val);
-    }
-
-    /// Print a number.
-    pub fn print_num_version_1(val: u64) {
         debug!(target: "runtime", "{}", val);
     }
 
@@ -561,7 +556,7 @@ pub mod hashing {
 }
 
 
-pub mod offchainIndex {
+pub mod offchain_index {
     use super::*;
     /// Write a key value pair to the Offchain DB database in a buffered fashion.
     pub fn set(key: &[u8], value: &[u8]) {
@@ -580,6 +575,7 @@ pub mod offchainIndex {
 /// These functions are being made available to the runtime and are called by the runtime.
 pub mod offchain {
     use super::*;
+
     pub fn is_validator() -> bool {
         warn!("offchain::is_validator unimplemented");
         false
@@ -685,6 +681,7 @@ pub mod offchain {
 /// Interface that provides functions for logging from within the runtime.
 pub mod logging {
     use super::*;
+    use sp_core::LogLevel;
     /// Request to print a log message on the host.
     ///
     /// Note that this will be only displayed if the host is enabled to display log messages with
