@@ -730,6 +730,7 @@ pub mod logging {
                 "{}",
                 message,
             );
+        }
     }
 
     /// Returns the max log level used by the host.
