@@ -705,7 +705,7 @@ pub mod offchain {
 /// Interface that provides functions for logging from within the runtime.
 pub mod logging {
     use super::*;
-    use sp_core::LogLevel;
+    use sp_core::{LogLevel, LogLevelFilter};
     /// Request to print a log message on the host.
     ///
     /// Note that this will be only displayed if the host is enabled to display log messages with
