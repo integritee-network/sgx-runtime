@@ -734,7 +734,7 @@ pub mod logging {
 
     /// Returns the max log level used by the host.
 	pub fn max_level() -> LogLevelFilter {
-		log::max_level().into()
+		sgx_log::max_level().into()
 	}
 }
 
