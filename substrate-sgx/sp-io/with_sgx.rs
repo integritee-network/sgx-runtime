@@ -82,7 +82,7 @@ pub enum EcdsaVerifyError {
 
 /// The outcome of calling `storage_kill`. Returned value is the number of storage items
 /// removed from the trie from making the `storage_kill` call.
-#[derive(PassByCodec, Encode, Decode)]
+#[derive(Encode, Decode)]
 pub enum KillChildStorageResult {
 	/// No key remains in the child trie.
 	AllRemoved(u32),
