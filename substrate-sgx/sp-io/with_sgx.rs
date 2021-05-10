@@ -287,7 +287,7 @@ pub mod default_child_storage {
 	/// not make much sense because it is not cumulative when called inside the same block.
 	/// Use this function to distribute the deletion of a single child trie across multiple
 	/// blocks.
-	fn storage_kill(storage_key: &[u8], limit: Option<u32>) -> KillChildStorageResult {
+	pub fn storage_kill(storage_key: &[u8], limit: Option<u32>) -> KillChildStorageResult {
 		warn!("child storage::storage_kill() unimplemented");
         KillChildStorageResult::AllRemoved(0)
 	}
