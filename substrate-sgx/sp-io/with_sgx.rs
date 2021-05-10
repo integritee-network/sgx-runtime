@@ -714,13 +714,22 @@ pub mod logging {
     /// Instead of using directly, prefer setting up `RuntimeLogger` and using `log` macros.
     pub fn log(level: LogLevel, target: &str, message: &[u8]) {
         if let Ok(message) = std::str::from_utf8(message) {
-            log::log!(
-				target: target,
-				log::Level::from(level),
-				"{}",
-				message,
-			)
-        }
+            // TODO remove this attention boost
+            println!("\x1b[0;36m[{}]\x1b[0m {}", target, message);
+            let level = match level {
+                LogLevel::Error => sgx_log::Level::Error,
+                LogLevel::Warn => sgx_log::Level::Warn,
+                LogLevel::Info => sgx_log::Level::Info,
+                LogLevel::Debug => sgx_log::Level::Debug,
+                LogLevel::Trace => sgx_log::Level::Trace,
+            };
+            // FIXME: this logs with target sp_io::logging instead of the provided target!
+            sgx_log::log!(
+                target: target,
+                level,
+                "{}",
+                message,
+            );
     }
 
     /// Returns the max log level used by the host.
