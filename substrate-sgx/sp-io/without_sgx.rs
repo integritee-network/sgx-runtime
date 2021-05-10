@@ -23,13 +23,13 @@ use sp_std::ops::Deref;
 use sp_core::{
     crypto::Pair,
     traits::{KeystoreExt, CallInWasmExt, TaskExecutorExt},
-    offchain::{OffchainExt, TransactionPoolExt},
+    offchain::{OffchainDbExt, OffchainWorkerExt, TransactionPoolExt},
     hexdisplay::HexDisplay,
     storage::ChildInfo,
 };
 
 use sp_core::{
-    crypto::KeyTypeId, ed25519, sr25519, ecdsa, H256, LogLevel,
+    crypto::KeyTypeId, ed25519, sr25519, ecdsa, H256, LogLevel, LogLevelFilter,
     offchain::{
         Timestamp, HttpRequestId, HttpRequestStatus, HttpError, StorageKind, OpaqueNetworkState,
     },
@@ -39,6 +39,7 @@ use sp_core::{
 use sp_trie::{TrieConfiguration, trie_types::Layout};
 
 use sp_runtime_interface::{runtime_interface, Pointer};
+use sp_runtime_interface::pass_by::{PassBy, PassByCodec};
 
 use codec::{Encode, Decode};
 
@@ -60,6 +61,16 @@ pub enum EcdsaVerifyError {
     BadV,
     /// Invalid signature
     BadSignature,
+}
+
+/// The outcome of calling `storage_kill`. Returned value is the number of storage items
+/// removed from the trie from making the `storage_kill` call.
+#[derive(PassByCodec, Encode, Decode)]
+pub enum KillChildStorageResult {
+	/// No key remains in the child trie.
+	AllRemoved(u32),
+	/// At least one key still resides in the child trie due to the supplied limit.
+	SomeRemaining(u32),
 }
 
 /// Interface for accessing the storage from within the runtime.
@@ -288,7 +299,41 @@ pub trait DefaultChildStorage {
 	#[version(2)]
 	fn storage_kill(&mut self, storage_key: &[u8], limit: Option<u32>) -> bool {
 		let child_info = ChildInfo::new_default(storage_key);
-		self.kill_child_storage(&child_info, limit)
+		let (all_removed, _num_removed) = self.kill_child_storage(&child_info, limit);
+		all_removed
+	}
+
+    /// Clear a child storage key.
+	///
+	/// Deletes all keys from the overlay and up to `limit` keys from the backend if
+	/// it is set to `Some`. No limit is applied when `limit` is set to `None`.
+	///
+	/// The limit can be used to partially delete a child trie in case it is too large
+	/// to delete in one go (block).
+	///
+	/// It returns a boolean false iff some keys are remaining in
+	/// the child trie after the functions returns. Also returns a `u32` with
+	/// the number of keys removed from the process.
+	///
+	/// # Note
+	///
+	/// Please note that keys that are residing in the overlay for that child trie when
+	/// issuing this call are all deleted without counting towards the `limit`. Only keys
+	/// written during the current block are part of the overlay. Deleting with a `limit`
+	/// mostly makes sense with an empty overlay for that child trie.
+	///
+	/// Calling this function multiple times per block for the same `storage_key` does
+	/// not make much sense because it is not cumulative when called inside the same block.
+	/// Use this function to distribute the deletion of a single child trie across multiple
+	/// blocks.
+	#[version(3)]
+	fn storage_kill(&mut self, storage_key: &[u8], limit: Option<u32>) -> KillChildStorageResult {
+		let child_info = ChildInfo::new_default(storage_key);
+		let (all_removed, num_removed) = self.kill_child_storage(&child_info, limit);
+		match all_removed {
+			true => KillChildStorageResult::AllRemoved(num_removed),
+			false => KillChildStorageResult::SomeRemaining(num_removed),
+		}
 	}
 
     /// Check a child storage key.
@@ -454,12 +499,12 @@ pub trait Crypto {
         pub_key: &ed25519::Public,
         msg: &[u8],
     ) -> Option<ed25519::Signature> {
-        self.extension::<KeystoreExt>()
-            .expect("No `keystore` associated for the current context!")
-            .read()
-            .sign_with(id, &pub_key.into(), msg)
-            .map(|sig| ed25519::Signature::from_slice(sig.as_slice()))
-            .ok()
+        let keystore = &***self.extension::<KeystoreExt>()
+			.expect("No `keystore` associated for the current context!");
+		SyncCryptoStore::sign_with(keystore, id, &pub_key.into(), msg)
+			.ok()
+			.flatten()
+			.map(|sig| ed25519::Signature::from_slice(sig.as_slice()))
     }
 
     /// Verify `ed25519` signature.
@@ -584,12 +629,12 @@ pub trait Crypto {
         pub_key: &sr25519::Public,
         msg: &[u8],
     ) -> Option<sr25519::Signature> {
-        self.extension::<KeystoreExt>()
-            .expect("No `keystore` associated for the current context!")
-            .read()
-            .sign_with(id, &pub_key.into(), msg)
-            .map(|sig| sr25519::Signature::from_slice(sig.as_slice()))
-            .ok()
+        let keystore = &***self.extension::<KeystoreExt>()
+			.expect("No `keystore` associated for the current context!");
+		SyncCryptoStore::sign_with(keystore, id, &pub_key.into(), msg)
+			.ok()
+			.flatten()
+			.map(|sig| sr25519::Signature::from_slice(sig.as_slice()))
     }
 
     /// Verify an `sr25519` signature.
@@ -633,12 +678,12 @@ pub trait Crypto {
 		pub_key: &ecdsa::Public,
 		msg: &[u8],
 	) -> Option<ecdsa::Signature> {
-		self.extension::<KeystoreExt>()
-			.expect("No `keystore` associated for the current context!")
-			.read()
-			.sign_with(id, &pub_key.into(), msg)
-			.map(|sig| ecdsa::Signature::from_slice(sig.as_slice()))
+		let keystore = &***self.extension::<KeystoreExt>()
+			.expect("No `keystore` associated for the current context!");
+		SyncCryptoStore::sign_with(keystore, id, &pub_key.into(), msg)
 			.ok()
+			.flatten()
+			.map(|sig| ecdsa::Signature::from_slice(sig.as_slice()))
 	}
 
 	/// Verify `ecdsa` signature.
@@ -790,7 +835,7 @@ pub trait Offchain {
     /// Even if this function returns `true`, it does not mean that any keys are configured
     /// and that the validator is registered in the chain.
     fn is_validator(&mut self) -> bool {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("is_validator can be called only in the offchain worker context")
             .is_validator()
     }
@@ -807,21 +852,21 @@ pub trait Offchain {
 
     /// Returns information about the local node's network state.
     fn network_state(&mut self) -> Result<OpaqueNetworkState, ()> {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("network_state can be called only in the offchain worker context")
             .network_state()
     }
 
     /// Returns current UNIX timestamp (in millis)
     fn timestamp(&mut self) -> Timestamp {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("timestamp can be called only in the offchain worker context")
             .timestamp()
     }
 
     /// Pause the execution until `deadline` is reached.
     fn sleep_until(&mut self, deadline: Timestamp) {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("sleep_until can be called only in the offchain worker context")
             .sleep_until(deadline)
     }
@@ -831,7 +876,7 @@ pub trait Offchain {
     /// This is a truly random, non-deterministic seed generated by host environment.
     /// Obviously fine in the off-chain worker context.
     fn random_seed(&mut self) -> [u8; 32] {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("random_seed can be called only in the offchain worker context")
             .random_seed()
     }
@@ -841,7 +886,7 @@ pub trait Offchain {
     /// Note this storage is not part of the consensus, it's only accessible by
     /// offchain worker tasks running on the same machine. It IS persisted between runs.
     fn local_storage_set(&mut self, kind: StorageKind, key: &[u8], value: &[u8]) {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainDbExt>()
             .expect("local_storage_set can be called only in the offchain worker context")
             .local_storage_set(kind, key, value)
     }
@@ -851,7 +896,7 @@ pub trait Offchain {
 	/// Note this storage is not part of the consensus, it's only accessible by
 	/// offchain worker tasks running on the same machine. It IS persisted between runs.
 	fn local_storage_clear(&mut self, kind: StorageKind, key: &[u8]) {
-		self.extension::<OffchainExt>()
+		self.extension::<OffchainDbExt>()
 			.expect("local_storage_clear can be called only in the offchain worker context")
 			.local_storage_clear(kind, key)
 	}
@@ -872,9 +917,15 @@ pub trait Offchain {
         old_value: Option<Vec<u8>>,
         new_value: &[u8],
     ) -> bool {
-        self.extension::<OffchainExt>()
-            .expect("local_storage_compare_and_set can be called only in the offchain worker context")
-            .local_storage_compare_and_set(kind, key, old_value.as_ref().map(|v| v.deref()), new_value)
+        self.extension::<OffchainDbExt>()
+			.expect("local_storage_compare_and_set can be called only in the offchain call context
+				with OffchainDb extension")
+			.local_storage_compare_and_set(
+				kind,
+				key,
+				old_value.as_ref().map(|v| v.deref()),
+				new_value,
+			)
     }
 
     /// Gets a value from the local storage.
@@ -883,9 +934,10 @@ pub trait Offchain {
     /// Note this storage is not part of the consensus, it's only accessible by
     /// offchain worker tasks running on the same machine. It IS persisted between runs.
     fn local_storage_get(&mut self, kind: StorageKind, key: &[u8]) -> Option<Vec<u8>> {
-        self.extension::<OffchainExt>()
-            .expect("local_storage_get can be called only in the offchain worker context")
-            .local_storage_get(kind, key)
+        self.extension::<OffchainDbExt>()
+			.expect("local_storage_get can be called only in the offchain call context with
+				OffchainDb extension")
+			.local_storage_get(kind, key)
     }
 
     /// Initiates a http request given HTTP verb and the URL.
@@ -898,7 +950,7 @@ pub trait Offchain {
         uri: &str,
         meta: &[u8],
     ) -> Result<HttpRequestId, ()> {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("http_request_start can be called only in the offchain worker context")
             .http_request_start(method, uri, meta)
     }
@@ -910,7 +962,7 @@ pub trait Offchain {
         name: &str,
         value: &str,
     ) -> Result<(), ()> {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("http_request_add_header can be called only in the offchain worker context")
             .http_request_add_header(request_id, name, value)
     }
@@ -927,7 +979,7 @@ pub trait Offchain {
         chunk: &[u8],
         deadline: Option<Timestamp>,
     ) -> Result<(), HttpError> {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("http_request_write_body can be called only in the offchain worker context")
             .http_request_write_body(request_id, chunk, deadline)
     }
@@ -944,7 +996,7 @@ pub trait Offchain {
         ids: &[HttpRequestId],
         deadline: Option<Timestamp>,
     ) -> Vec<HttpRequestStatus> {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("http_response_wait can be called only in the offchain worker context")
             .http_response_wait(ids, deadline)
     }
@@ -954,7 +1006,7 @@ pub trait Offchain {
     /// Returns a vector of pairs `(HeaderKey, HeaderValue)`.
     /// NOTE response headers have to be read before response body.
     fn http_response_headers(&mut self, request_id: HttpRequestId) -> Vec<(Vec<u8>, Vec<u8>)> {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("http_response_headers can be called only in the offchain worker context")
             .http_response_headers(request_id)
     }
@@ -973,7 +1025,7 @@ pub trait Offchain {
         buffer: &mut [u8],
         deadline: Option<Timestamp>,
     ) -> Result<u32, HttpError> {
-        self.extension::<OffchainExt>()
+        self.extension::<OffchainWorkerExt>()
             .expect("http_response_read_body can be called only in the offchain worker context")
             .http_response_read_body(request_id, buffer, deadline)
             .map(|r| r as u32)
@@ -1013,6 +1065,11 @@ pub trait Logging {
 			)
         }
     }
+
+    /// Returns the max log level used by the host.
+	fn max_level() -> LogLevelFilter {
+		log::max_level().into()
+	}
 }
 
 mod tracing_setup {
