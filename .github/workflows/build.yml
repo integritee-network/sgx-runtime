@@ -1,0 +1,22 @@
+name: Check
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: init-rust-target
+        run: rustup target add wasm32-unknown-unknown
+      - name: test_no_std
+        # We can only run cargo check here, as the linker will fail, as we don't have the sgx `c` files in the repo
+        run: cd test_no_std && cargo check
