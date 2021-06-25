@@ -37,9 +37,6 @@ use sp_core::{
 use std::char;
 use std::println;
 
-use sp_runtime_interface::{runtime_interface, Pointer};
-
-
 #[allow(unused)]
 fn encode_hex_digit(digit: u8) -> char {
     match char::from_digit(u32::from(digit), 16) {
@@ -83,7 +80,7 @@ pub enum EcdsaVerifyError {
 /// The outcome of calling `storage_kill`. Returned value is the number of storage items
 /// removed from the trie from making the `storage_kill` call.
 #[derive(Encode, Decode)]
-pub enum KillChildStorageResult {
+pub enum KillStorageResult {
 	/// No key remains in the child trie.
 	AllRemoved(u32),
 	/// At least one key still resides in the child trie due to the supplied limit.
@@ -144,8 +141,9 @@ pub mod storage {
         ).expect("exists cannot be called outside of an Externalities-provided environment.")
     }
 
-    pub fn clear_prefix(prefix: &[u8]) {
+    pub fn clear_prefix(prefix: &[u8], limit: Option<u32>) -> KillStorageResult{
         warn!("storage::clear_prefix() unimplemented");
+        KillStorageResult::AllRemoved(0)
     }
 
     /// Append the encoded `value` to the storage item at `key`.
@@ -287,9 +285,9 @@ pub mod default_child_storage {
 	/// not make much sense because it is not cumulative when called inside the same block.
 	/// Use this function to distribute the deletion of a single child trie across multiple
 	/// blocks.
-	pub fn storage_kill(storage_key: &[u8], limit: Option<u32>) -> KillChildStorageResult {
+	pub fn storage_kill(storage_key: &[u8], limit: Option<u32>) -> KillStorageResult {
 		warn!("child storage::storage_kill() unimplemented");
-        KillChildStorageResult::AllRemoved(0)
+        KillStorageResult::AllRemoved(0)
 	}
 
     pub fn exists(
@@ -303,8 +301,10 @@ pub mod default_child_storage {
     pub fn clear_prefix(
         storage_key: &[u8],
         prefix: &[u8],
-    ) {
+        limit: Option<u32>,
+    ) -> KillStorageResult {
         warn!("child storage::clear_prefix() unimplemented");
+        KillStorageResult::AllRemoved(0)
     }
 
     pub fn root(

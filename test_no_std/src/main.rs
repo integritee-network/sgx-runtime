@@ -10,7 +10,7 @@ extern crate sgx_tstd as std;
 
 // The libc crate allows importing functions from C.
 extern crate libc;
-use core::panic::PanicInfo;
+
 // A list of C functions that are being imported
 extern {
     pub fn printf(format: *const u8, ...) -> i32;
@@ -27,17 +27,3 @@ pub extern fn main(_nargs: i32, _args: *const *const u8) -> i32 {
     // Exit with a return status of 0.
     0
 }
-/*
-#[panic_handler]
-fn panic(_panic: &PanicInfo<'_>) -> ! {
-    loop {}
-}
-*/
-
-/*
-#[alloc_error_handler]
-fn foo(_: core::alloc::Layout) -> ! {
-    extern "C" { fn abort() -> !; }
-    unsafe { abort() }
-}
-*/
