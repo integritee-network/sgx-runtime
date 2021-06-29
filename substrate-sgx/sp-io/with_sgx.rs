@@ -37,9 +37,6 @@ use sp_core::{
 use std::char;
 use std::println;
 
-use sp_runtime_interface::{runtime_interface, Pointer};
-
-
 #[allow(unused)]
 fn encode_hex_digit(digit: u8) -> char {
     match char::from_digit(u32::from(digit), 16) {
@@ -79,6 +76,17 @@ pub enum EcdsaVerifyError {
     /// Invalid signature
     BadSignature,
 }
+
+/// The outcome of calling `storage_kill`. Returned value is the number of storage items
+/// removed from the trie from making the `storage_kill` call.
+#[derive(Encode, Decode)]
+pub enum KillStorageResult {
+	/// No key remains in the child trie.
+	AllRemoved(u32),
+	/// At least one key still resides in the child trie due to the supplied limit.
+	SomeRemaining(u32),
+}
+
 
 pub mod storage {
     use super::*;
@@ -133,8 +141,9 @@ pub mod storage {
         ).expect("exists cannot be called outside of an Externalities-provided environment.")
     }
 
-    pub fn clear_prefix(prefix: &[u8]) {
+    pub fn clear_prefix(prefix: &[u8], limit: Option<u32>) -> KillStorageResult{
         warn!("storage::clear_prefix() unimplemented");
+        KillStorageResult::AllRemoved(0)
     }
 
     /// Append the encoded `value` to the storage item at `key`.
@@ -245,13 +254,41 @@ pub mod default_child_storage {
         warn!("child storage::storage_kill() unimplemented");
     }
 
-    pub fn storage_kill(
+    pub fn storage_kill_version_2(
         storage_key: &[u8],
         limit: Option<u32>
     ) -> bool {
         warn!("child storage::storage_kill() unimplemented");
         false
     }
+
+    /// Clear a child storage key.
+	///
+	/// Deletes all keys from the overlay and up to `limit` keys from the backend if
+	/// it is set to `Some`. No limit is applied when `limit` is set to `None`.
+	///
+	/// The limit can be used to partially delete a child trie in case it is too large
+	/// to delete in one go (block).
+	///
+	/// It returns a boolean false iff some keys are remaining in
+	/// the child trie after the functions returns. Also returns a `u32` with
+	/// the number of keys removed from the process.
+	///
+	/// # Note
+	///
+	/// Please note that keys that are residing in the overlay for that child trie when
+	/// issuing this call are all deleted without counting towards the `limit`. Only keys
+	/// written during the current block are part of the overlay. Deleting with a `limit`
+	/// mostly makes sense with an empty overlay for that child trie.
+	///
+	/// Calling this function multiple times per block for the same `storage_key` does
+	/// not make much sense because it is not cumulative when called inside the same block.
+	/// Use this function to distribute the deletion of a single child trie across multiple
+	/// blocks.
+	pub fn storage_kill(storage_key: &[u8], limit: Option<u32>) -> KillStorageResult {
+		warn!("child storage::storage_kill() unimplemented");
+        KillStorageResult::AllRemoved(0)
+	}
 
     pub fn exists(
         storage_key: &[u8],
@@ -264,8 +301,10 @@ pub mod default_child_storage {
     pub fn clear_prefix(
         storage_key: &[u8],
         prefix: &[u8],
-    ) {
+        limit: Option<u32>,
+    ) -> KillStorageResult {
         warn!("child storage::clear_prefix() unimplemented");
+        KillStorageResult::AllRemoved(0)
     }
 
     pub fn root(
@@ -705,7 +744,7 @@ pub mod offchain {
 /// Interface that provides functions for logging from within the runtime.
 pub mod logging {
     use super::*;
-    use sp_core::LogLevel;
+    use sp_core::{LogLevel, LogLevelFilter};
     /// Request to print a log message on the host.
     ///
     /// Note that this will be only displayed if the host is enabled to display log messages with
@@ -730,9 +769,13 @@ pub mod logging {
                 "{}",
                 message,
             );
-
         }
     }
+
+    /// Returns the max log level used by the host.
+	pub fn max_level() -> LogLevelFilter {
+		sgx_log::max_level().into()
+	}
 }
 
 
