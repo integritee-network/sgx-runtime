@@ -22,3 +22,8 @@ sp-io = { path = "substrate-sgx/sp-io", default-features = false, features = ["d
 sgx-runtime = { path = "runtime", default-features = false}
 sp-io = { path = "substrate-sgx/sp-io", default-features = false, features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"]}
 sgx-externalities = { path = "substrate-sgx/externalities", default-features = false}
+
+[patch."https://github.com/integritee-network/sgx-runtime"]
+sgx-runtime = { path = "runtime", default-features = false}
+sp-io = { path = "substrate-sgx/sp-io", default-features = false, features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"]}
+sgx-externalities = { path = "substrate-sgx/externalities", default-features = false}
