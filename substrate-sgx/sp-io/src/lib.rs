@@ -24,12 +24,12 @@
 #![cfg_attr(not(feature = "std"), feature(alloc_error_handler))]
 #![cfg_attr(not(feature = "std"), feature(core_intrinsics))]
 #![cfg_attr(
-feature = "std",
-doc = "Substrate runtime standard library as compiled when linked with Rust's standard library."
+	feature = "std",
+	doc = "Substrate runtime standard library as compiled when linked with Rust's standard library."
 )]
 #![cfg_attr(
-not(feature = "std"),
-doc = "Substrate's runtime standard library as compiled without Rust's standard library."
+	not(feature = "std"),
+	doc = "Substrate's runtime standard library as compiled without Rust's standard library."
 )]
 
 // Starting from here, the content of the lib.rs file has been moved to without_sgx.rs.

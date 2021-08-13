@@ -141,6 +141,36 @@ pub mod storage {
         ).expect("exists cannot be called outside of an Externalities-provided environment.")
     }
 
+    /// Clear the storage of each key-value pair where the key starts with the given `prefix`.
+	fn clear_prefix_version_1(prefix: &[u8]) {
+		warn!("storage::clear_prefix() unimplemented");
+	}
+
+    /// Clear the storage of each key-value pair where the key starts with the given `prefix`.
+	///
+	/// # Limit
+	///
+	/// Deletes all keys from the overlay and up to `limit` keys from the backend if
+	/// it is set to `Some`. No limit is applied when `limit` is set to `None`.
+	///
+	/// The limit can be used to partially delete a prefix storage in case it is too large
+	/// to delete in one go (block).
+	///
+	/// It returns a boolean false iff some keys are remaining in
+	/// the prefix after the functions returns. Also returns a `u32` with
+	/// the number of keys removed from the process.
+	///
+	/// # Note
+	///
+	/// Please note that keys that are residing in the overlay for that prefix when
+	/// issuing this call are all deleted without counting towards the `limit`. Only keys
+	/// written during the current block are part of the overlay. Deleting with a `limit`
+	/// mostly makes sense with an empty overlay for that prefix.
+	///
+	/// Calling this function multiple times per block for the same `prefix` does
+	/// not make much sense because it is not cumulative when called inside the same block.
+	/// Use this function to distribute the deletion of a single child trie across multiple
+	/// blocks.
     pub fn clear_prefix(prefix: &[u8], limit: Option<u32>) -> KillStorageResult{
         warn!("storage::clear_prefix() unimplemented");
         KillStorageResult::AllRemoved(0)
@@ -264,27 +294,7 @@ pub mod default_child_storage {
 
     /// Clear a child storage key.
 	///
-	/// Deletes all keys from the overlay and up to `limit` keys from the backend if
-	/// it is set to `Some`. No limit is applied when `limit` is set to `None`.
-	///
-	/// The limit can be used to partially delete a child trie in case it is too large
-	/// to delete in one go (block).
-	///
-	/// It returns a boolean false iff some keys are remaining in
-	/// the child trie after the functions returns. Also returns a `u32` with
-	/// the number of keys removed from the process.
-	///
-	/// # Note
-	///
-	/// Please note that keys that are residing in the overlay for that child trie when
-	/// issuing this call are all deleted without counting towards the `limit`. Only keys
-	/// written during the current block are part of the overlay. Deleting with a `limit`
-	/// mostly makes sense with an empty overlay for that child trie.
-	///
-	/// Calling this function multiple times per block for the same `storage_key` does
-	/// not make much sense because it is not cumulative when called inside the same block.
-	/// Use this function to distribute the deletion of a single child trie across multiple
-	/// blocks.
+	/// See `Storage` module `clear_prefix` documentation for `limit` usage.
 	pub fn storage_kill(storage_key: &[u8], limit: Option<u32>) -> KillStorageResult {
 		warn!("child storage::storage_kill() unimplemented");
         KillStorageResult::AllRemoved(0)
@@ -298,6 +308,16 @@ pub mod default_child_storage {
         false
     }
 
+    /// Clear child default key by prefix.
+	///
+	/// Clear the child storage of each key-value pair where the key starts with the given `prefix`.
+	fn clear_prefix_version_1(storage_key: &[u8], prefix: &[u8]) {
+		warn!("child storage::clear_prefix() unimplemented");
+	}
+
+    /// Clear the child storage of each key-value pair where the key starts with the given `prefix`.
+	///
+	/// See `Storage` module `clear_prefix` documentation for `limit` usage.
     pub fn clear_prefix(
         storage_key: &[u8],
         prefix: &[u8],
@@ -348,6 +368,17 @@ pub mod trie {
 	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
         warn!("trie::keccak_256_ordered_root() unimplemented");
         H256::default()
+	}
+    /// Verify trie proof
+	fn blake2_256_verify_proof(root: H256, proof: &[Vec<u8>], key: &[u8], value: &[u8]) -> bool {
+		warn!("trie::blake2_256_verify_proof() unimplemented");
+        false
+	}
+
+	/// Verify trie proof
+	fn keccak_256_verify_proof(root: H256, proof: &[Vec<u8>], key: &[u8], value: &[u8]) -> bool {
+		warn!("trie::keccak_256_verify_proof() unimplemented");
+        false
 	}
 
 }
@@ -615,9 +646,21 @@ pub mod hashing {
         debug!("  returning {}", encode_hex(&hash));
         hash
     }
-
 }
 
+/// Interface that provides transaction indexing API.
+pub mod transaction_index {
+    use super::*;
+    /// Add transaction index. Returns indexed content hash.
+	fn index(extrinsic: u32, size: u32, context_hash: [u8; 32]) {
+		warn!("transaction_index::index unimplemented");
+	}
+
+	/// Conduct a 512-bit Keccak hash.
+	fn renew(extrinsic: u32, context_hash: [u8; 32]) {
+		warn!("transaction_index::renew unimplemented");
+	}
+}
 
 pub mod offchain_index {
     use super::*;
@@ -631,7 +674,6 @@ pub mod offchain_index {
         warn!("offchain_index::clear unimplemented");
     }
 }
-
 
 /// Interface that provides functions to access the offchain functionality.
 ///
