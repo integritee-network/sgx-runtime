@@ -1,5 +1,5 @@
 [package]
-authors = ["Supercomputing Systems AG <info@scs.ch>"]
+authors = ["Integritee AG <hello@integritee.network>"]
 edition = '2018'
 homepage = 'https://www.scs.ch'
 license = 'Unlicense'
