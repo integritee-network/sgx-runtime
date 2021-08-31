@@ -1,10 +1,10 @@
 [package]
 authors = ["Integritee AG <hello@integritee.network>"]
 edition = '2018'
-homepage = 'https://www.scs.ch'
+homepage = 'https://www.integritee.network/'
 license = 'Unlicense'
 name = 'sgx-runtime'
-repository = 'https://github.com/scs/sgx-runtime/'
+repository = 'https://github.com/integritee-network/sgx-runtime/'
 version = '0.8.0'
 
 [package.metadata.docs.rs]
