@@ -16,7 +16,7 @@
 
 //#![warn(missing_docs)]
 
-// Added by SCS. Prevents warnings during compilation with sgx features at all those
+// Added by Integritee. Prevents warnings during compilation with sgx features at all those
 // unimplemented method stubs.
 #![allow(unused_variables)]
 #![cfg_attr(not(feature = "std"), no_std)]
