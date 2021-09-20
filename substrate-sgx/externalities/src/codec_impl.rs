@@ -5,13 +5,12 @@
 
 use crate::{SgxExternalitiesType, SgxExternalitiesDiffType};
 use std::{vec::Vec};
-use sgx_serialize::{SerializeHelper, DeSerializable, DeSerializeHelper};
+use sgx_serialize::{SerializeHelper, DeSerializable, DeSerializeHelper, Serializable};
 use codec::{Input, Decode, Encode};
 
 impl Encode for SgxExternalitiesType {
 	fn encode(&self) -> Vec<u8> {
-		let helper = SerializeHelper::new();
-		helper.encode(self).unwrap()
+		encode_with_serialize(self)
 	}
 }
 
@@ -23,8 +22,7 @@ impl Decode for SgxExternalitiesType {
 
 impl Encode for SgxExternalitiesDiffType {
 	fn encode(&self) -> Vec<u8> {
-		let helper = SerializeHelper::new();
-		helper.encode(self.clone()).unwrap()
+		encode_with_serialize(self)
 	}
 }
 
@@ -34,11 +32,21 @@ impl Decode for SgxExternalitiesDiffType {
 	}
 }
 
+fn encode_with_serialize<T: Serializable>(source: &T) -> Vec<u8> {
+	match SerializeHelper::new().encode(source) {
+		Some(t) => t,
+		None => {
+			sgx_log::warn!("`encode_with_serialize` returned None");
+			Default::default()
+		}
+	}
+}
+
 fn decode_with_deserialize<I: Input, T: DeSerializable>(input: &mut I) -> Result<T, codec::Error> {
 	let mut buff = Vec::with_capacity(input.remaining_len()?
 		.ok_or_else(|| codec::Error::from("Could not read length from input data"))?);
 
 	input.read(&mut buff)?;
 
-	DeSerializeHelper::<T>::new(buff).decode().ok_or_else(|| codec::Error::from("Could decode with deserialize"))
+	DeSerializeHelper::<T>::new(buff).decode().ok_or_else(|| codec::Error::from("Could not decode with deserialize"))
 }
