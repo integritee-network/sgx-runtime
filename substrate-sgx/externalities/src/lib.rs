@@ -51,8 +51,8 @@ pub trait SgxExternalitiesTrait: {
 	fn new() -> Self;
 	fn insert(&mut self, k: Vec<u8>, v: Vec<u8>) -> Option<Vec<u8>>;
 	fn remove(&mut self, k: &[u8]) -> Option<Vec<u8>>;
-	fn get(&mut self, k: &[u8]) -> Option<&Vec<u8>>;
-	fn contains_key(&mut self, k: &[u8]) -> bool;
+	fn get(&self, k: &[u8]) -> Option<&Vec<u8>>;
+	fn contains_key(&self, k: &[u8]) -> bool;
 	fn prune_state_diff(&mut self);
 	fn execute_with<R>(&mut self, f: impl FnOnce() -> R) -> R;
 }
@@ -76,12 +76,12 @@ impl SgxExternalitiesTrait for SgxExternalities {
 	}
 
 	/// get value from state of key
-	fn get(&mut self, k: &[u8]) -> Option<&Vec<u8>> {
+	fn get(&self, k: &[u8]) -> Option<&Vec<u8>> {
 		self.state.get(k)
 	}
 
 	/// check if state contains key
-	fn contains_key(&mut self, k: &[u8]) -> bool {
+	fn contains_key(&self, k: &[u8]) -> bool {
 		self.state.contains_key(k)
 	}
 
