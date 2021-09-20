@@ -2382,8 +2382,10 @@ dependencies = [
 name = "sgx-externalities"
 version = "0.3.0"
 dependencies = [
+ "derive_more",
  "environmental",
  "log",
+ "parity-scale-codec",
  "sgx_serialize",
  "sgx_serialize_derive",
  "sgx_tstd",
