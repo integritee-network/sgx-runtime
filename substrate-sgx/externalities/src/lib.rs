@@ -1,27 +1,27 @@
 /*
-    Copyright 2021 Integritee AG and Supercomputing Systems AG
+	Copyright 2021 Integritee AG and Supercomputing Systems AG
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+		http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
 */
 #![cfg_attr(not(feature = "std"), no_std)]
 
 #[cfg(not(feature = "std"))]
 extern crate sgx_tstd as std;
 
-use std::{collections::HashMap, vec::Vec};
-use codec::{Encode, Decode};
-use derive_more::{From, Deref, DerefMut};
+use codec::{Decode, Encode};
+use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
+use std::{collections::HashMap, vec::Vec};
 
 #[cfg(not(feature = "std"))]
 use sgx_serialize_derive::{DeSerializable, Serializable};
@@ -47,7 +47,7 @@ pub struct SgxExternalities {
 
 environmental!(ext: SgxExternalities);
 
-pub trait SgxExternalitiesTrait: {
+pub trait SgxExternalitiesTrait {
 	fn new() -> Self;
 	fn insert(&mut self, k: Vec<u8>, v: Vec<u8>) -> Option<Vec<u8>>;
 	fn remove(&mut self, k: &[u8]) -> Option<Vec<u8>>;
