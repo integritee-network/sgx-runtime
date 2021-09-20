@@ -31,14 +31,15 @@ mod codec_impl;
 
 // new-type pattern to implement `Encode` `Decode` for Hashmap.
 #[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
-#[derive(From, Deref, DerefMut, Debug, Default, PartialEq, Eq, Clone)]
+#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq)]
 pub struct SgxExternalitiesType(HashMap<Vec<u8>, Vec<u8>>);
+
 #[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
-#[derive(From, Deref, DerefMut, Debug, Default, PartialEq, Eq, Clone)]
+#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq)]
 pub struct SgxExternalitiesDiffType(HashMap<Vec<u8>, Option<Vec<u8>>>);
 
 #[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable, Encode, Decode))]
-#[derive(Debug, Clone)]
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
 pub struct SgxExternalities {
 	pub state: SgxExternalitiesType,
 	pub state_diff: SgxExternalitiesDiffType,
@@ -56,25 +57,10 @@ pub trait SgxExternalitiesTrait: {
 	fn execute_with<R>(&mut self, f: impl FnOnce() -> R) -> R;
 }
 
-impl SgxExternalitiesType {
-	fn new() -> Self {
-		Default::default()
-	}
-}
-
-impl SgxExternalitiesDiffType {
-	fn new() -> Self {
-		Default::default()
-	}
-}
-
 impl SgxExternalitiesTrait for SgxExternalities {
 	/// Create a new instance of `BasicExternalities`
 	fn new() -> Self {
-		SgxExternalities {
-			state: SgxExternalitiesType::new(),
-			state_diff: SgxExternalitiesDiffType::new(),
-		}
+		Default::default()
 	}
 
 	/// Insert key/value

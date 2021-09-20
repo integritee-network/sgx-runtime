@@ -1,5 +1,5 @@
 
-//! Implement `parity-scale-codec` for the externalities
+//! Implement `parity-scale-codec` for the externalities.
 //!
 //! This is little workaround, as `Encode` and `Decode` can't directly be implemented on `HashMap`.
 
