@@ -5,7 +5,7 @@
 use crate::{SgxExternalitiesDiffType, SgxExternalitiesType};
 use codec::{Decode, Encode, Input};
 use sgx_serialize::{DeSerializable, DeSerializeHelper, Serializable, SerializeHelper};
-use std::vec::Vec;
+use std::{vec, vec::Vec};
 
 impl Encode for SgxExternalitiesType {
 	fn encode(&self) -> Vec<u8> {
@@ -42,11 +42,12 @@ fn encode_with_serialize<T: Serializable>(source: &T) -> Vec<u8> {
 }
 
 fn decode_with_deserialize<I: Input, T: DeSerializable>(input: &mut I) -> Result<T, codec::Error> {
-	let mut buff = Vec::with_capacity(
-		input
-			.remaining_len()?
-			.ok_or_else(|| codec::Error::from("Could not read length from input data"))?,
-	);
+	let mut buff = vec![
+		0u8;
+		input.remaining_len()?.ok_or_else(|| codec::Error::from(
+			"Could not read length from input data"
+		))?
+	];
 
 	input.read(&mut buff)?;
 
