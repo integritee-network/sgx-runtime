@@ -1,52 +1,47 @@
 [package]
-authors = ["Supercomputing Systems AG <info@scs.ch>"]
+authors = ["Integritee AG <hello@integritee.network>"]
 edition = '2018'
-homepage = 'https://www.scs.ch'
+homepage = 'https://www.integritee.network/'
 license = 'Unlicense'
 name = 'sgx-runtime'
-repository = 'https://github.com/scs/sgx-runtime/'
+repository = 'https://github.com/integritee-network/sgx-runtime/'
 version = '0.8.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
-# alias "parity-scale-code" to "codec"
-[dependencies.codec]
-default-features = false
-features = ['derive']
-package = 'parity-scale-codec'
-version = "2.0.0"
-
 [dependencies]
 hex-literal = { optional = true, version = '0.3.1' }
 serde = { features = ['derive'], optional = true, version = '1.0.101' }
+# alias "parity-scale-code" to "codec"
+codec = { package = 'parity-scale-codec', version = "2.0.0", default-features = false,  features = ['derive']}
 
 # Substrate dependencies
-frame-benchmarking = { default-features = false, optional = true, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-frame-executive = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-frame-support = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-frame-system = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-frame-system-benchmarking = { default-features = false, optional = true, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-frame-system-rpc-runtime-api = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-pallet-aura = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-pallet-balances = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-pallet-grandpa = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-pallet-randomness-collective-flip = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-pallet-sudo = { default-features = false, git = "https://github.com/paritytech/substrate.git",branch = "master" }
-pallet-timestamp = { default-features = false, git = "https://github.com/paritytech/substrate.git",branch = "master" }
-pallet-transaction-payment = { default-features = false, git = "https://github.com/paritytech/substrate.git",branch = "master" }
-pallet-transaction-payment-rpc-runtime-api = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-api = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-block-builder = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-consensus-aura = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-core = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-inherents = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-offchain = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-runtime = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-session = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-std = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-transaction-pool = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-version = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+frame-benchmarking = { version = "4.0.0-dev", default-features = false, optional = true, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+frame-executive = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+frame-support = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+frame-system = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+frame-system-benchmarking = { version = "4.0.0-dev", default-features = false, optional = true, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+frame-system-rpc-runtime-api = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+pallet-aura = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+pallet-balances = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+pallet-grandpa = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+pallet-randomness-collective-flip = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+pallet-sudo = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git",branch = "master" }
+pallet-timestamp = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git",branch = "master" }
+pallet-transaction-payment = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git",branch = "master" }
+pallet-transaction-payment-rpc-runtime-api = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-api = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-block-builder = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-consensus-aura = { version = "0.10.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-core = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-inherents = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-offchain = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-runtime = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-session = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-std = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-transaction-pool = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-version = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
 
 [features]
 default = ['std']

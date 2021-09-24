@@ -1,8 +1,8 @@
 # SGX-Runtime
 
-Based on [Substrate Node Template](https://github.com/scs/substrate-node-template)
+Based on [Integritee Node Template](https://github.com/integritee-network/integritee-node)
 
-This substrate runtime is instantiated inside a Intel SGX enclave in the [SubstraTEE framework](https://www.substratee.com). Probably all substrate compatible pallets can be integrated and executed confidentially
+This substrate runtime is instantiated inside a Intel SGX enclave in the [Integritee framework](https://book.integritee.network/). Probably all substrate compatible pallets can be integrated and executed confidentially
 
 This repo also hosts our SGX patchese for `sr-io` and `externalities`.
 
