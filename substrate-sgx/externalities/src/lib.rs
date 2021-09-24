@@ -18,6 +18,7 @@
 #[cfg(not(feature = "std"))]
 extern crate sgx_tstd as std;
 
+#[cfg(not(feature = "std"))]
 use codec::{Decode, Encode};
 use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
