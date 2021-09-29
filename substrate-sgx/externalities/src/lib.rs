@@ -18,6 +18,7 @@
 #[cfg(not(feature = "std"))]
 extern crate sgx_tstd as std;
 
+#[cfg(not(feature = "std"))]
 use codec::{Decode, Encode};
 use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
@@ -49,6 +50,8 @@ environmental!(ext: SgxExternalities);
 
 pub trait SgxExternalitiesTrait {
 	fn new() -> Self;
+	fn state(&self) -> &SgxExternalitiesType;
+	fn state_diff(&self) -> &SgxExternalitiesDiffType;
 	fn insert(&mut self, k: Vec<u8>, v: Vec<u8>) -> Option<Vec<u8>>;
 	fn remove(&mut self, k: &[u8]) -> Option<Vec<u8>>;
 	fn get(&self, k: &[u8]) -> Option<&Vec<u8>>;
@@ -61,6 +64,14 @@ impl SgxExternalitiesTrait for SgxExternalities {
 	/// Create a new instance of `BasicExternalities`
 	fn new() -> Self {
 		Default::default()
+	}
+
+	fn state(&self) -> &SgxExternalitiesType {
+		&self.state
+	}
+
+	fn state_diff(&self) -> &SgxExternalitiesDiffType {
+		&self.state_diff
 	}
 
 	/// Insert key/value
