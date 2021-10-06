@@ -1,17 +1,17 @@
 /*
-    Copyright 2021 Integritee AG and Supercomputing Systems AG
+	Copyright 2021 Integritee AG and Supercomputing Systems AG
 
-    Licensed under the Apache License, Version 2.0 (the "License");
-    you may not use this file except in compliance with the License.
-    You may obtain a copy of the License at
+	Licensed under the Apache License, Version 2.0 (the "License");
+	you may not use this file except in compliance with the License.
+	You may obtain a copy of the License at
 
-        http://www.apache.org/licenses/LICENSE-2.0
+		http://www.apache.org/licenses/LICENSE-2.0
 
-    Unless required by applicable law or agreed to in writing, software
-    distributed under the License is distributed on an "AS IS" BASIS,
-    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-    See the License for the specific language governing permissions and
-    limitations under the License.
+	Unless required by applicable law or agreed to in writing, software
+	distributed under the License is distributed on an "AS IS" BASIS,
+	WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+	See the License for the specific language governing permissions and
+	limitations under the License.
 */
 
 //! The Substrate Node Template runtime for SGX.
@@ -53,6 +53,10 @@ pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
+
+/// litentry pallets
+pub use pallet_sgx_account_linker;
+pub use pallet_sgx_account_linker::Call as SgxAccountLinkerCall;
 
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -233,6 +237,11 @@ impl pallet_sudo::Config for Runtime {
 	type Call = Call;
 }
 
+impl pallet_sgx_account_linker::Config for Runtime {
+	type Event = Event;
+	type WeightInfo = pallet_sgx_account_linker::weights::SubstrateWeight<Runtime>;
+}
+
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
@@ -244,6 +253,7 @@ construct_runtime!(
 		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
+		SgxAccountLinker: pallet_sgx_account_linker::{Pallet, Call, Storage, Event<T>},
 	}
 );
 

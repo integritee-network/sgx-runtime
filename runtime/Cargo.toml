@@ -16,6 +16,9 @@ serde = { features = ['derive'], optional = true, version = '1.0.101' }
 # alias "parity-scale-code" to "codec"
 codec = { package = 'parity-scale-codec', version = "2.0.0", default-features = false,  features = ['derive']}
 
+# litentry
+pallet-sgx-account-linker = { default-features = false, git = "https://github.com/litentry/litentry-pallets", branch = "sgx-pallets" }
+
 # Substrate dependencies
 frame-benchmarking = { version = "4.0.0-dev", default-features = false, optional = true, git = "https://github.com/paritytech/substrate.git", branch = "master" }
 frame-executive = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
@@ -81,4 +84,5 @@ std = [
     'sp-std/std',
     'sp-transaction-pool/std',
     'sp-version/std',
+    'pallet-sgx-account-linker/std',
 ]
