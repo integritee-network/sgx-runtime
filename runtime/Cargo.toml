@@ -16,6 +16,9 @@ serde = { features = ['derive'], optional = true, version = '1.0.101' }
 # alias "parity-scale-code" to "codec"
 codec = { package = 'parity-scale-codec', version = "2.0.0", default-features = false,  features = ['derive']}
 
+# use case specific
+pallet-rps = { package = "pallet-jton_rps", default-features = false, git = "https://github.com/integritee-network/pallet-jton-rps.git", branch = "integritee-demo" }
+
 # Substrate dependencies
 frame-benchmarking = { version = "4.0.0-dev", default-features = false, optional = true, git = "https://github.com/paritytech/substrate.git", branch = "master" }
 frame-executive = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
@@ -65,6 +68,7 @@ std = [
     'pallet-aura/std',
     'pallet-balances/std',
     'pallet-grandpa/std',
+    'pallet-rps/std',
     'pallet-randomness-collective-flip/std',
     'pallet-sudo/std',
     'pallet-timestamp/std',
