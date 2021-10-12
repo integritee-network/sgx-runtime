@@ -1,5 +1,7 @@
 # SGX-Runtime
 
+[![Check](https://github.com/litentry/sgx-runtime/actions/workflows/build.yml/badge.svg)](https://github.com/litentry/sgx-runtime/actions/workflows/build.yml)
+
 Based on [Integritee Node Template](https://github.com/integritee-network/integritee-node)
 
 This substrate runtime is instantiated inside a Intel SGX enclave in the [Integritee framework](https://book.integritee.network/). Probably all substrate compatible pallets can be integrated and executed confidentially
