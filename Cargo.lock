@@ -1700,7 +1700,7 @@ dependencies = [
 [[package]]
 name = "pallet-sgx-account-linker"
 version = "0.1.0"
-source = "git+https://github.com/litentry/litentry-pallets?branch=sgx-pallets#f302bab5916996c2b4b5835beef72885e1cba787"
+source = "git+https://github.com/litentry/litentry-pallets?branch=sgx-pallets#52b2e74515da93a315876abf9fa882b688fa551b"
 dependencies = [
  "frame-support",
  "frame-system",
