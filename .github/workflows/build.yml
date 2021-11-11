@@ -18,6 +18,8 @@ jobs:
       - uses: actions/checkout@v2
       - name: init-rust-target
         run: rustup target add wasm32-unknown-unknown
+      - name: pin-sgx
+        run: cargo update -p sgx_tstd --precise 6cf73140d5e9b05366a2ae4f8fe8141449e7204f
       - name: cargo-test-externalities
         run: cd substrate-sgx/externalities && cargo test
       - name: test_no_std
