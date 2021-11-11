@@ -5,15 +5,31 @@ authors = ["Integritee AG <hello@integritee.network> and Parity Technologies <ad
 edition = "2018"
 
 [dependencies]
+
+# no_std
 codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false, features = ["derive", "chain-error"]}
 derive_more = "0.99.16"
-environmental = { version = "1.0.1", default-features = false}
-sgx_tstd      = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs","net","backtrace"]}
-sgx_types     = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git"}
-sgx_serialize = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git" }
-sgx_serialize_derive = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git" }
-sgx_log       = { package = "log", git = "https://github.com/mesalock-linux/log-sgx"}
+environmental = { version = "1.0.1", default-features = false }
+log = { version = "0.4", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc", "preserve_order"] }
+serde_with = { version = "1.11.0", features = ["json"] }
+
+# sgx dependencies
+sgx_tstd      = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs","net","backtrace"], optional = true }
+sgx_types     = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git" }
+sgx_serialize = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true }
+sgx_serialize_derive = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true }
 
 [features]
 default = ["std"]
-std = []
+std = [
+    "log/std",
+    "serde/std",
+    "serde_json/std",
+]
+sgx = [
+    "sgx_tstd",
+    "sgx_serialize",
+    "sgx_serialize_derive",
+]

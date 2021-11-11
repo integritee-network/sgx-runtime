@@ -32,10 +32,13 @@
 	doc = "Substrate's runtime standard library as compiled without Rust's standard library."
 )]
 
+#[cfg(all(feature = "std", feature = "sgx"))]
+compile_error!("feature \"std\" and feature \"sgx\" cannot be enabled at the same time");
+
 // Starting from here, the content of the lib.rs file has been moved to without_sgx.rs.
 
-#[cfg(not(feature = "sgx"))]
+#[cfg(all(not(feature = "sgx"), feature = "std"))]
 include!("../without_sgx.rs");
 
-#[cfg(feature = "sgx")]
+#[cfg(all(not(feature = "std"), feature = "sgx"))]
 include!("../with_sgx.rs");

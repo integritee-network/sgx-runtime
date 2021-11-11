@@ -49,16 +49,16 @@ std = [
 	"sp-wasm-interface/std",
 	"futures",
 	"parking_lot",
+	"sgx-externalities/std",
 ]
 
 sgx = [
 	"sgx_tstd",
 	"sgx_types",
 	"sgx_log",
-	"sgx-externalities",
+	"sgx-externalities/sgx",
 	"environmental",
 	"sp-runtime-interface/disable_target_static_assertions",
-	"sp-core/full_crypto",
 ]
 
 # These two features are used for `no_std` builds for the environments which already provides

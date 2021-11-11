@@ -15,32 +15,33 @@
 */
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(not(feature = "std"))]
+#[cfg(all(feature = "std", feature = "sgx"))]
+compile_error!("feature \"std\" and feature \"sgx\" cannot be enabled at the same time");
+
+#[cfg(all(not(feature = "std"), feature = "sgx"))]
 extern crate sgx_tstd as std;
 
-#[cfg(not(feature = "std"))]
 use codec::{Decode, Encode};
 use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
-use std::{collections::HashMap, vec::Vec};
+use serde::{Deserialize, Serialize};
+use serde_with::serde_as;
+use std::{collections::BTreeMap, vec::Vec};
 
-#[cfg(not(feature = "std"))]
-use sgx_serialize_derive::{DeSerializable, Serializable};
-
-#[cfg(not(feature = "std"))]
 mod codec_impl;
 
 // new-type pattern to implement `Encode` `Decode` for Hashmap.
-#[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
-#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq)]
-pub struct SgxExternalitiesType(HashMap<Vec<u8>, Vec<u8>>);
+#[serde_as]
+#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SgxExternalitiesType(#[serde_as(as = "Vec<(_, _)>")] BTreeMap<Vec<u8>, Vec<u8>>);
 
-#[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
-#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq)]
-pub struct SgxExternalitiesDiffType(HashMap<Vec<u8>, Option<Vec<u8>>>);
+#[serde_as]
+#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SgxExternalitiesDiffType(
+	#[serde_as(as = "Vec<(_, _)>")] BTreeMap<Vec<u8>, Option<Vec<u8>>>,
+);
 
-#[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable, Encode, Decode))]
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, Encode, Decode, Serialize, Deserialize)]
 pub struct SgxExternalities {
 	pub state: SgxExternalitiesType,
 	pub state_diff: SgxExternalitiesDiffType,
