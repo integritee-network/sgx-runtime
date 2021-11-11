@@ -25,20 +25,26 @@ use codec::{Decode, Encode};
 use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
 use serde::{Deserialize, Serialize};
-use serde_with::serde_as;
 use std::{collections::BTreeMap, vec::Vec};
 
+// unfortunately we cannot use `serde_with::serde_as` to serialize our map (which would be very convenient)
+// because it has pulls in the serde and serde_json dependency with `std`, not `default-features=no`.
+// instead we use https://github.com/DenisKolodin/vectorize which is very little code, copy-pasted
+// directly into this code base.
+//use serde_with::serde_as;
+
 mod codec_impl;
+// these are used to serialize a map with keys that are not string
+mod bypass;
+mod vectorize;
 
 // new-type pattern to implement `Encode` `Decode` for Hashmap.
-#[serde_as]
 #[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SgxExternalitiesType(#[serde_as(as = "Vec<(_, _)>")] BTreeMap<Vec<u8>, Vec<u8>>);
+pub struct SgxExternalitiesType(#[serde(with = "vectorize")] BTreeMap<Vec<u8>, Vec<u8>>);
 
-#[serde_as]
 #[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SgxExternalitiesDiffType(
-	#[serde_as(as = "Vec<(_, _)>")] BTreeMap<Vec<u8>, Option<Vec<u8>>>,
+	#[serde(with = "vectorize")] BTreeMap<Vec<u8>, Option<Vec<u8>>>,
 );
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Encode, Decode, Serialize, Deserialize)]

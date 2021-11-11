@@ -1,6 +1,6 @@
 [package]
 name = "sgx-externalities"
-version = "0.3.0"
+version = "0.4.0"
 authors = ["Integritee AG <hello@integritee.network> and Parity Technologies <admin@parity.io>"]
 edition = "2018"
 
@@ -12,14 +12,11 @@ derive_more = "0.99.16"
 environmental = { version = "1.0.1", default-features = false }
 log = { version = "0.4", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
-serde_json = { version = "1.0", default-features = false, features = ["alloc", "preserve_order"] }
-serde_with = { version = "1.11.0", features = ["json"] }
+serde_json = { version = "1.0", default-features = false, features = ["alloc"] }
 
 # sgx dependencies
 sgx_tstd      = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs","net","backtrace"], optional = true }
 sgx_types     = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git" }
-sgx_serialize = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true }
-sgx_serialize_derive = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true }
 
 [features]
 default = ["std"]
@@ -30,6 +27,4 @@ std = [
 ]
 sgx = [
     "sgx_tstd",
-    "sgx_serialize",
-    "sgx_serialize_derive",
 ]

@@ -13,11 +13,12 @@ futures = { version = "0.3.1", features = ["thread-pool"], optional = true }
 parking_lot = { version = "0.11.1", optional = true }
 tracing = { version = "0.1.25", default-features = false }
 tracing-core = { version = "0.1.17", default-features = false}
+log = { version = "0.4", default-features = false }
 
 environmental = { version = "1.0.1", default-features = false, optional = true }
 sgx_tstd      = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs","net","backtrace"], optional = true}
 sgx_types     = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true}
-sgx_log       = { package = "log", git = "https://github.com/mesalock-linux/log-sgx", optional =true }
+#sgx_log       = { package = "log", git = "https://github.com/mesalock-linux/log-sgx", optional =true }
 sgx-externalities = { default-features = false, path = "../externalities", optional = true }
 
 # Substrate dependencies
@@ -36,6 +37,7 @@ sp-externalities = { version = "0.10.0-dev", git = "https://github.com/paritytec
 default = ["std"]
 
 std = [
+	"log/std",
 	"sp-core/std",
 	"codec/std",
 	"sp-std/std",
@@ -55,7 +57,6 @@ std = [
 sgx = [
 	"sgx_tstd",
 	"sgx_types",
-	"sgx_log",
 	"sgx-externalities/sgx",
 	"environmental",
 	"sp-runtime-interface/disable_target_static_assertions",
