@@ -25,10 +25,7 @@ use codec::{Decode, Encode};
 use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
 use serde::{Deserialize, Serialize};
-use std::{
-	collections::{BTreeMap, HashMap},
-	vec::Vec,
-};
+use std::{collections::BTreeMap, vec::Vec};
 
 // unfortunately we cannot use `serde_with::serde_as` to serialize our map (which would be very convenient)
 // because it has pulls in the serde and serde_json dependency with `std`, not `default-features=no`.
@@ -41,7 +38,7 @@ mod codec_impl;
 mod bypass;
 mod vectorize;
 
-type InternalMap<V> = HashMap<Vec<u8>, V>;
+type InternalMap<V> = BTreeMap<Vec<u8>, V>;
 
 // new-type pattern to implement `Encode` `Decode` for Hashmap.
 #[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
@@ -131,4 +128,34 @@ pub fn set_and_run_with_externalities<F: FnOnce() -> R, R>(ext: &mut SgxExternal
 /// Returns `None` if no externalities are set or `Some(_)` with the result of the closure.
 pub fn with_externalities<F: FnOnce(&mut SgxExternalities) -> R, R>(f: F) -> Option<R> {
 	ext::with(f)
+}
+
+#[cfg(test)]
+pub mod tests {
+
+	use super::*;
+
+	#[test]
+	fn environmental_externalities_works() {
+		let mut externalities = SgxExternalities::default();
+
+		externalities.execute_with(|| {
+			with_externalities(|e| {
+				e.insert("building".encode(), "empire_state".encode());
+				e.insert("house".encode(), "ginger_bread".encode());
+			})
+			.unwrap()
+		});
+
+		let state_len =
+			externalities.execute_with(|| with_externalities(|e| e.state.0.len()).unwrap());
+
+		assert_eq!(2, state_len);
+	}
+
+	#[test]
+	fn basic_externalities_is_empty() {
+		let mut ext = SgxExternalities::default();
+		assert!(ext.state.0.is_empty());
+	}
 }

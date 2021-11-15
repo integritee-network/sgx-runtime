@@ -784,28 +784,22 @@ mod tests {
 	use hex_literal::hex;
 	use sp_core::{map, storage::well_known_keys::CODE, H256};
 
-	// #[test]
-	// fn commit_should_work() {
-	// 	let mut ext = SgxExternalities::default();
-	// 	ext.insert(b"doe".to_vec(), b"reindeer".to_vec());
-	// 	ext.insert(b"dog".to_vec(), b"puppy".to_vec());
-	// 	ext.insert(b"dogglesworth".to_vec(), b"cat".to_vec());
-	// 	const ROOT: [u8; 32] =
-	// 		hex!("39245109cef3758c2eed2ccba8d9b370a917850af3824bc8348d505df2c298fa");
-	//
-	// 	assert_eq!(ext.storage_root(), H256::from(ROOT));
-	// }
-
 	#[test]
 	fn storage_set_and_retrieve_works() {
-		storage::set(b"doe".to_vec().as_slice(), b"reindeer".to_vec().as_slice());
-		storage::set(b"dog".to_vec().as_slice(), b"puppy".to_vec().as_slice());
-		storage::set(b"dogglesworth".to_vec().as_slice(), b"cat".to_vec().as_slice());
+		let mut ext = SgxExternalities::default();
 
-		assert!(storage::get(b"doe".to_vec().as_slice()).is_some());
-		assert!(storage::get(b"dog".to_vec().as_slice()).is_some());
-		assert!(storage::get(b"dogglesworth".to_vec().as_slice()).is_some());
-		assert!(storage::get(b"boat".to_vec().as_slice()).is_none());
+		ext.execute_with(|| {
+			storage::set(b"doe".to_vec().as_slice(), b"reindeer".to_vec().as_slice());
+			storage::set(b"dog".to_vec().as_slice(), b"puppy".to_vec().as_slice());
+			storage::set(b"dogglesworth".to_vec().as_slice(), b"cat".to_vec().as_slice());
+		});
+
+		ext.execute_with(|| {
+			assert!(storage::get(b"doe".to_vec().as_slice()).is_some());
+			assert!(storage::get(b"dog".to_vec().as_slice()).is_some());
+			assert!(storage::get(b"dogglesworth".to_vec().as_slice()).is_some());
+			assert!(storage::get(b"boat".to_vec().as_slice()).is_none());
+		});
 	}
 
 	#[test]
@@ -817,13 +811,4 @@ mod tests {
 
 		assert_eq!(ext.get(CODE).unwrap(), &code);
 	}
-
-	// #[test]
-	// fn basic_externalities_is_empty() {
-	// 	// Make sure no values are set by default in `BasicExternalities`.
-	// 	let (storage, child_storage) =
-	// 		SgxExternalities::new(Default::default(), Default::default()).into_storages();
-	// 	assert!(storage.is_empty());
-	// 	assert!(child_storage.is_empty());
-	// }
 }
