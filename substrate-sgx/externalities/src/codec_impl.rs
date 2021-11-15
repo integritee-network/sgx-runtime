@@ -62,9 +62,9 @@ fn decode_with_deserialize<I: Input, T: DeserializeOwned>(
 #[cfg(test)]
 mod tests {
 	use super::*;
-	use crate::SgxExternalities;
+	use crate::{InternalMap, SgxExternalities};
 	use std::{
-		collections::{hash_map::DefaultHasher, BTreeMap},
+		collections::hash_map::DefaultHasher,
 		hash::{Hash, Hasher},
 	};
 
@@ -103,7 +103,7 @@ mod tests {
 	}
 
 	fn create_default_state_diff() -> SgxExternalitiesDiffType {
-		let mut map = BTreeMap::<Vec<u8>, Option<Vec<u8>>>::new();
+		let mut map = InternalMap::<Option<Vec<u8>>>::new();
 		map.insert(Encode::encode("dings"), Some(Encode::encode("other")));
 		map.insert(Encode::encode("item"), Some(Encode::encode("crate")));
 		map.insert(Encode::encode("key"), None);
@@ -111,7 +111,7 @@ mod tests {
 	}
 
 	fn create_default_state() -> SgxExternalitiesType {
-		let mut map = BTreeMap::<Vec<u8>, Vec<u8>>::new();
+		let mut map = InternalMap::<Vec<u8>>::new();
 		map.insert(Encode::encode("dings"), Encode::encode("other"));
 		map.insert(Encode::encode("item"), Encode::encode("crate"));
 		SgxExternalitiesType(map)

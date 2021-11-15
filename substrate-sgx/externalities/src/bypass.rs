@@ -5,6 +5,7 @@
 
 use serde::{Deserialize, Deserializer, Serialize, Serializer};
 
+#[allow(unused)]
 pub fn serialize<'a, T, S>(target: T, ser: S) -> Result<S::Ok, S::Error>
 where
 	S: Serializer,
@@ -13,6 +14,7 @@ where
 	serde::Serialize::serialize(&target, ser)
 }
 
+#[allow(unused)]
 pub fn deserialize<'de, T, D>(des: D) -> Result<T, D::Error>
 where
 	D: Deserializer<'de>,

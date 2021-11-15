@@ -32,6 +32,8 @@ sp-trie = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrat
 sp-keystore = {  version = "0.10.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
 sp-externalities = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
 
+[dev-dependencies]
+hex-literal = { version = "0.3.4" }
 
 [features]
 default = ["std"]

@@ -25,7 +25,10 @@ use codec::{Decode, Encode};
 use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
 use serde::{Deserialize, Serialize};
-use std::{collections::BTreeMap, vec::Vec};
+use std::{
+	collections::{BTreeMap, HashMap},
+	vec::Vec,
+};
 
 // unfortunately we cannot use `serde_with::serde_as` to serialize our map (which would be very convenient)
 // because it has pulls in the serde and serde_json dependency with `std`, not `default-features=no`.
@@ -38,14 +41,14 @@ mod codec_impl;
 mod bypass;
 mod vectorize;
 
+type InternalMap<V> = HashMap<Vec<u8>, V>;
+
 // new-type pattern to implement `Encode` `Decode` for Hashmap.
 #[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SgxExternalitiesType(#[serde(with = "vectorize")] BTreeMap<Vec<u8>, Vec<u8>>);
+pub struct SgxExternalitiesType(#[serde(with = "vectorize")] InternalMap<Vec<u8>>);
 
 #[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
-pub struct SgxExternalitiesDiffType(
-	#[serde(with = "vectorize")] BTreeMap<Vec<u8>, Option<Vec<u8>>>,
-);
+pub struct SgxExternalitiesDiffType(#[serde(with = "vectorize")] InternalMap<Option<Vec<u8>>>);
 
 #[derive(Clone, Debug, Default, PartialEq, Eq, Encode, Decode, Serialize, Deserialize)]
 pub struct SgxExternalities {
