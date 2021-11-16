@@ -51,9 +51,8 @@ mod tests {
 		let mut map = HashMap::new();
 		map.insert(key.clone(), "value".into());
 		let instance = MyComplexType { map };
-		let serialized = serde_json::to_string(&instance)?;
-		println!("JSON: {}", serialized);
-		let deserialized: MyComplexType = serde_json::from_str(&serialized)?;
+		let serialized = postcard::to_allocvec(&instance)?;
+		let deserialized: MyComplexType = postcard::from_bytes(&serialized)?;
 		let expected_value = "value".to_string();
 		assert_eq!(deserialized.map.get(&key), Some(&expected_value));
 		Ok(())
