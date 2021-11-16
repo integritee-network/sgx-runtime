@@ -33,7 +33,7 @@ impl Decode for SgxExternalitiesDiffType {
 }
 
 fn encode_with_serialize<T: Serialize>(source: &T) -> Vec<u8> {
-	match serde_json::to_vec(source) {
+	match postcard::to_allocvec(source) {
 		Ok(s) => s,
 		Err(e) => {
 			log::error!("failed to serialize SgxExternalitiesType, returning empty vec: {:?}", e);
@@ -53,7 +53,7 @@ fn decode_with_deserialize<I: Input, T: DeserializeOwned>(
 
 	input.read(&mut buff)?;
 
-	serde_json::from_slice::<'_, T>(buff.as_slice()).map_err(|e| {
+	postcard::from_bytes::<'_, T>(buff.as_slice()).map_err(|e| {
 		log::error!("deserialization failed: {:?}", e);
 		codec::Error::from("Could not decode with deserialize")
 	})
@@ -122,8 +122,8 @@ mod tests {
 	>(
 		item: T,
 	) {
-		let serialized_item = serde_json::to_string(&item).unwrap();
-		let deserialized_item = serde_json::from_str::<'_, T>(serialized_item.as_str()).unwrap();
+		let serialized_item = postcard::to_allocvec(&item).unwrap();
+		let deserialized_item = postcard::from_bytes::<'_, T>(serialized_item.as_slice()).unwrap();
 		assert_eq!(item, deserialized_item);
 	}
 
