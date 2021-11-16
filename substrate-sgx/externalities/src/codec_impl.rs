@@ -1,6 +1,6 @@
 //! Implement `parity-scale-codec` for the externalities.
 //!
-//! This is little workaround, as `Encode` and `Decode` can't directly be implemented on `HashMap`.
+//! This is necessary workaround, as `Encode` and `Decode` can't directly be implemented on `HashMap` or `BTreeMap`.
 
 use codec::{Decode, Encode, Input};
 use serde::{de::DeserializeOwned, Serialize};
@@ -10,7 +10,7 @@ use crate::{SgxExternalitiesDiffType, SgxExternalitiesType};
 
 impl Encode for SgxExternalitiesType {
 	fn encode(&self) -> Vec<u8> {
-		serde_json::to_vec(&self).unwrap()
+		encode_with_serialize(&self)
 	}
 }
 

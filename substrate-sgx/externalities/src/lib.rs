@@ -18,7 +18,7 @@
 #[cfg(all(feature = "std", feature = "sgx"))]
 compile_error!("feature \"std\" and feature \"sgx\" cannot be enabled at the same time");
 
-#[cfg(all(not(feature = "std"), feature = "sgx"))]
+#[cfg(feature = "sgx")]
 extern crate sgx_tstd as std;
 
 use codec::{Decode, Encode};
@@ -27,20 +27,19 @@ use environmental::environmental;
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, vec::Vec};
 
-// unfortunately we cannot use `serde_with::serde_as` to serialize our map (which would be very convenient)
+// Unfortunately we cannot use `serde_with::serde_as` to serialize our map (which would be very convenient)
 // because it has pulls in the serde and serde_json dependency with `std`, not `default-features=no`.
-// instead we use https://github.com/DenisKolodin/vectorize which is very little code, copy-pasted
+// Instead we use https://github.com/DenisKolodin/vectorize which is very little code, copy-pasted
 // directly into this code base.
 //use serde_with::serde_as;
 
 mod codec_impl;
-// these are used to serialize a map with keys that are not string
+// These are used to serialize a map with keys that are not string.
 mod bypass;
 mod vectorize;
 
 type InternalMap<V> = BTreeMap<Vec<u8>, V>;
 
-// new-type pattern to implement `Encode` `Decode` for Hashmap.
 #[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
 pub struct SgxExternalitiesType(#[serde(with = "vectorize")] InternalMap<Vec<u8>>);
 
@@ -136,7 +135,7 @@ pub mod tests {
 	use super::*;
 
 	#[test]
-	fn environmental_externalities_works() {
+	fn mutating_externalities_through_environmental_variable_works() {
 		let mut externalities = SgxExternalities::default();
 
 		externalities.execute_with(|| {
