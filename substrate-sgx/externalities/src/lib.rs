@@ -155,7 +155,7 @@ pub mod tests {
 
 	#[test]
 	fn basic_externalities_is_empty() {
-		let mut ext = SgxExternalities::default();
+		let ext = SgxExternalities::default();
 		assert!(ext.state.0.is_empty());
 	}
 }
