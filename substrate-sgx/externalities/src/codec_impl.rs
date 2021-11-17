@@ -33,13 +33,10 @@ impl Decode for SgxExternalitiesDiffType {
 }
 
 fn encode_with_serialize<T: Serialize>(source: &T) -> Vec<u8> {
-	match postcard::to_allocvec(source) {
-		Ok(s) => s,
-		Err(e) => {
-			log::error!("failed to serialize SgxExternalitiesType, returning empty vec: {:?}", e);
-			Default::default()
-		},
-	}
+	// We unwrap on purpose here in order to make sure we notice when something goes wrong.
+	// Before we returned an empty vec and logged the error. But this could go unnoticed in the
+	// caller and cause problems (in case the empty vec is also something valid)
+	postcard::to_allocvec(source).unwrap()
 }
 
 fn decode_with_deserialize<I: Input, T: DeserializeOwned>(
