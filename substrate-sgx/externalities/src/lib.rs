@@ -15,32 +15,38 @@
 */
 #![cfg_attr(not(feature = "std"), no_std)]
 
-#[cfg(not(feature = "std"))]
+#[cfg(all(feature = "std", feature = "sgx"))]
+compile_error!("feature \"std\" and feature \"sgx\" cannot be enabled at the same time");
+
+#[cfg(feature = "sgx")]
 extern crate sgx_tstd as std;
 
-#[cfg(not(feature = "std"))]
 use codec::{Decode, Encode};
 use derive_more::{Deref, DerefMut, From};
 use environmental::environmental;
-use std::{collections::HashMap, vec::Vec};
+use serde::{Deserialize, Serialize};
+use std::{collections::BTreeMap, vec::Vec};
 
-#[cfg(not(feature = "std"))]
-use sgx_serialize_derive::{DeSerializable, Serializable};
+// Unfortunately we cannot use `serde_with::serde_as` to serialize our map (which would be very convenient)
+// because it has pulls in the serde and serde_json dependency with `std`, not `default-features=no`.
+// Instead we use https://github.com/DenisKolodin/vectorize which is very little code, copy-pasted
+// directly into this code base.
+//use serde_with::serde_as;
 
-#[cfg(not(feature = "std"))]
 mod codec_impl;
+// These are used to serialize a map with keys that are not string.
+mod bypass;
+mod vectorize;
 
-// new-type pattern to implement `Encode` `Decode` for Hashmap.
-#[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
-#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq)]
-pub struct SgxExternalitiesType(HashMap<Vec<u8>, Vec<u8>>);
+type InternalMap<V> = BTreeMap<Vec<u8>, V>;
 
-#[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable))]
-#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq)]
-pub struct SgxExternalitiesDiffType(HashMap<Vec<u8>, Option<Vec<u8>>>);
+#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SgxExternalitiesType(#[serde(with = "vectorize")] InternalMap<Vec<u8>>);
 
-#[cfg_attr(not(feature = "std"), derive(Serializable, DeSerializable, Encode, Decode))]
-#[derive(Clone, Debug, Default, PartialEq, Eq)]
+#[derive(From, Deref, DerefMut, Clone, Debug, Default, PartialEq, Eq, Serialize, Deserialize)]
+pub struct SgxExternalitiesDiffType(#[serde(with = "vectorize")] InternalMap<Option<Vec<u8>>>);
+
+#[derive(Clone, Debug, Default, PartialEq, Eq, Encode, Decode, Serialize, Deserialize)]
 pub struct SgxExternalities {
 	pub state: SgxExternalitiesType,
 	pub state_diff: SgxExternalitiesDiffType,
@@ -121,4 +127,34 @@ pub fn set_and_run_with_externalities<F: FnOnce() -> R, R>(ext: &mut SgxExternal
 /// Returns `None` if no externalities are set or `Some(_)` with the result of the closure.
 pub fn with_externalities<F: FnOnce(&mut SgxExternalities) -> R, R>(f: F) -> Option<R> {
 	ext::with(f)
+}
+
+#[cfg(test)]
+pub mod tests {
+
+	use super::*;
+
+	#[test]
+	fn mutating_externalities_through_environmental_variable_works() {
+		let mut externalities = SgxExternalities::default();
+
+		externalities.execute_with(|| {
+			with_externalities(|e| {
+				e.insert("building".encode(), "empire_state".encode());
+				e.insert("house".encode(), "ginger_bread".encode());
+			})
+			.unwrap()
+		});
+
+		let state_len =
+			externalities.execute_with(|| with_externalities(|e| e.state.0.len()).unwrap());
+
+		assert_eq!(2, state_len);
+	}
+
+	#[test]
+	fn basic_externalities_is_empty() {
+		let ext = SgxExternalities::default();
+		assert!(ext.state.0.is_empty());
+	}
 }

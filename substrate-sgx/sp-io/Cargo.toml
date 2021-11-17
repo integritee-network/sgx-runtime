@@ -13,11 +13,11 @@ futures = { version = "0.3.1", features = ["thread-pool"], optional = true }
 parking_lot = { version = "0.11.1", optional = true }
 tracing = { version = "0.1.25", default-features = false }
 tracing-core = { version = "0.1.17", default-features = false}
+log = { version = "0.4", default-features = false }
 
-environmental = { version = "1.0.1", default-features = false, optional = true }
+environmental = { version = "1.1.3", default-features = false }
 sgx_tstd      = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs","net","backtrace"], optional = true}
 sgx_types     = { rev = "v1.1.3", git = "https://github.com/apache/teaclave-sgx-sdk.git", optional = true}
-sgx_log       = { package = "log", git = "https://github.com/mesalock-linux/log-sgx", optional =true }
 sgx-externalities = { default-features = false, path = "../externalities", optional = true }
 
 # Substrate dependencies
@@ -31,11 +31,15 @@ sp-trie = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrat
 sp-keystore = {  version = "0.10.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
 sp-externalities = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
 
+[dev-dependencies]
+hex-literal = { version = "0.3.4" }
 
 [features]
 default = ["std"]
 
 std = [
+	"environmental/std",
+	"log/std",
 	"sp-core/std",
 	"codec/std",
 	"sp-std/std",
@@ -49,16 +53,14 @@ std = [
 	"sp-wasm-interface/std",
 	"futures",
 	"parking_lot",
+	"sgx-externalities/std",
 ]
 
 sgx = [
 	"sgx_tstd",
 	"sgx_types",
-	"sgx_log",
-	"sgx-externalities",
-	"environmental",
+	"sgx-externalities/sgx",
 	"sp-runtime-interface/disable_target_static_assertions",
-	"sp-core/full_crypto",
 ]
 
 # These two features are used for `no_std` builds for the environments which already provides
