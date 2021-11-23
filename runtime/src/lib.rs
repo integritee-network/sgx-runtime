@@ -55,12 +55,10 @@ pub use pallet_timestamp::Call as TimestampCall;
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
 
-<<<<<<< HEAD
 /// litentry pallets
 pub use pallet_sgx_account_linker;
 pub use pallet_sgx_account_linker::Call as SgxAccountLinkerCall;
 
-=======
 /// The address format for describing accounts.
 pub type Address = sp_runtime::MultiAddress<AccountId, ()>;
 /// Block header type as expected by this runtime.
@@ -93,7 +91,6 @@ pub type Executive = frame_executive::Executive<
 	Runtime,
 	AllPallets,
 >;
->>>>>>> upstream/master
 /// An index to a block.
 pub type BlockNumber = u32;
 
