@@ -7,6 +7,13 @@ members = [
     'substrate-sgx/externalities',
     'test-no-std'
 ]
+[patch."https://github.com/apache/teaclave-sgx-sdk.git"]
+sgx_tstd = { version = "1.1.4", git = "https://github.com/haerdib/incubator-teaclave-sgx-sdk", branch = "master"}
+sgx_types = { version = "1.1.4", git = "https://github.com/haerdib/incubator-teaclave-sgx-sdk", branch = "master"}
+
+#[patch."https://github.com/integritee-network/pallets.git"]
+#pallet-parentchain = { path = '../pallets/parentchain' }
+
 
 [profile.release]
 panic = 'unwind'
