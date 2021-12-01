@@ -1,5 +1,5 @@
 [package]
-name = "test_no_std"
+name = "test-no-std"
 version = "0.1.0"
 authors = ["Alain Brenzikofer <alain.brenzikofer@scs.ch>"]
 edition = "2018"

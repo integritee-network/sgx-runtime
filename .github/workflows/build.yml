@@ -21,11 +21,11 @@ jobs:
 
       - name: cargo test
         # exclude the packages that don't compile to std.
-        run:  cargo test --all --exclude test_no_std --exclude sgx-runtime
+        run:  cargo test --all --exclude test-no-std --exclude sgx-runtime
 
       - name: test_no_std
         # We can only run cargo check here, as the linker will fail, as we don't have the sgx `c` files in the repo
-        run: cargo check -p test_no_std
+        run: cargo check -p test-no-std
 
   fmt:
     runs-on: ubuntu-latest

@@ -5,7 +5,7 @@ members = [
     'runtime',
     'substrate-sgx/sp-io',
     'substrate-sgx/externalities',
-    'test_no_std'
+    'test-no-std'
 ]
 
 [profile.release]
