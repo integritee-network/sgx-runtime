@@ -17,11 +17,25 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: init-rust-target
-        run: rustup target add wasm32-unknown-unknown
+        run: rustup show
+
       - name: cargo-test-externalities
         run: cd substrate-sgx/externalities && cargo test
+
       - name: cargo-test-sp-io
         run: cd substrate-sgx/sp-io && cargo test
+
       - name: test_no_std
         # We can only run cargo check here, as the linker will fail, as we don't have the sgx `c` files in the repo
         run: cd test_no_std && cargo check
+
+  fmt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: init-rust-target
+        run: rustup show
+
+      - name: fmt
+        run:  cargo fmt --all -- --check
+
