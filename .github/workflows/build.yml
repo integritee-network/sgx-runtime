@@ -19,15 +19,13 @@ jobs:
       - name: init-rust-target
         run: rustup show
 
-      - name: cargo-test-externalities
-        run: cd substrate-sgx/externalities && cargo test
-
-      - name: cargo-test-sp-io
-        run: cd substrate-sgx/sp-io && cargo test
+      - name: cargo test
+        # exclude the packages that don't compile to std.
+        run:  cargo test --all --exclude test_no_std --exclude sgx-runtime
 
       - name: test_no_std
         # We can only run cargo check here, as the linker will fail, as we don't have the sgx `c` files in the repo
-        run: cd test_no_std && cargo check
+        run: cargo check -p test_no_std
 
   fmt:
     runs-on: ubuntu-latest
