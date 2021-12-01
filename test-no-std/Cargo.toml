@@ -1,7 +1,7 @@
 [package]
 name = "test-no-std"
 version = "0.1.0"
-authors = ["Alain Brenzikofer <alain.brenzikofer@scs.ch>"]
+authors = ["Integritee AG <hello@integritee.network>"]
 edition = "2018"
 
 [target.'cfg(not(target_env = "sgx"))'.dependencies]
