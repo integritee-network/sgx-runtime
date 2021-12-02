@@ -1728,11 +1728,10 @@ dependencies = [
 [[package]]
 name = "pallet-sgx-account-linker"
 version = "0.1.0"
-source = "git+https://github.com/litentry/litentry-pallets?branch=sgx-pallets#2dce8efcbdd78bfa390cf06f15fe6a4d6a934cd6"
+source = "git+https://github.com/litentry/litentry-pallets?branch=sgx-pallets#d8b1ddd4590aa882a7233e782142f47b190bf1be"
 dependencies = [
  "frame-support",
  "frame-system",
- "libsecp256k1 0.6.0",
  "log",
  "parity-scale-codec",
  "ripemd160",
@@ -1741,7 +1740,6 @@ dependencies = [
  "sp-core",
  "sp-io 4.0.0-dev (git+https://github.com/paritytech/substrate.git?branch=master)",
  "sp-std",
- "tiny-keccak",
 ]
 
 [[package]]

@@ -47,13 +47,13 @@ std = [
 	"hash-db/std",
 	"sp-trie",
 	"sp-state-machine",
-	"libsecp256k1",
 	"sp-runtime-interface/std",
 	"sp-externalities",
 	"sp-wasm-interface/std",
 	"futures",
 	"parking_lot",
 	"sgx-externalities/std",
+	"libsecp256k1",
 ]
 
 sgx = [
