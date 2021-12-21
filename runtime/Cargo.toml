@@ -15,6 +15,7 @@ hex-literal = { optional = true, version = '0.3.1' }
 serde = { features = ['derive'], optional = true, version = '1.0.101' }
 # alias "parity-scale-code" to "codec"
 codec = { package = 'parity-scale-codec', version = "2.0.0", default-features = false,  features = ['derive']}
+scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 
 # litentry
 pallet-sgx-account-linker = { default-features = false, git = "https://github.com/litentry/litentry-pallets", branch = "sgx-pallets" }
@@ -47,7 +48,7 @@ sp-transaction-pool = { version = "4.0.0-dev", default-features = false, git = "
 sp-version = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
 
 # Integritee dependencies
-pallet-parentchain = { default-features = false, git = "https://github.com/integritee-network/pallets.git", branch = "teaclave-1.1.3" }
+pallet-parentchain = { default-features = false, git = "https://github.com/integritee-network/pallets.git", branch = "master" }
 
 [features]
 default = ['std']
@@ -63,6 +64,7 @@ runtime-benchmarks = [
 ]
 std = [
     'codec/std',
+    'scale-info/std',
     'serde',
     'frame-executive/std',
     'frame-support/std',
