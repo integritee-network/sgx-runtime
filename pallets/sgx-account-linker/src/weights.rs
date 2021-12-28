@@ -39,49 +39,49 @@
 #![allow(unused_imports)]
 
 use frame_support::{
-    traits::Get,
-    weights::{constants::RocksDbWeight, Weight},
+	traits::Get,
+	weights::{constants::RocksDbWeight, Weight},
 };
 use sp_std::marker::PhantomData;
 
 /// Weight functions needed for pallet_account_linker.
 pub trait WeightInfo {
-    fn link_eth() -> Weight;
-    fn link_btc() -> Weight;
-    fn link_sub() -> Weight;
+	fn link_eth() -> Weight;
+	fn link_btc() -> Weight;
+	fn link_sub() -> Weight;
 }
 
 /// Weights for pallet_account_linker using the Substrate node and recommended hardware.
 pub struct SubstrateWeight<T>(PhantomData<T>);
 impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
-    fn link_eth() -> Weight {
-        (324_000_000 as Weight)
-            .saturating_add(T::DbWeight::get().reads(1 as Weight))
-            .saturating_add(T::DbWeight::get().writes(1 as Weight))
-    }
-    fn link_btc() -> Weight {
-        (335_000_000 as Weight)
-            .saturating_add(T::DbWeight::get().reads(1 as Weight))
-            .saturating_add(T::DbWeight::get().writes(1 as Weight))
-    }
-    fn link_sub() -> Weight {
-        (335_000_000 as Weight).saturating_add(T::DbWeight::get().reads(1 as Weight))
-    }
+	fn link_eth() -> Weight {
+		(324_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn link_btc() -> Weight {
+		(335_000_000 as Weight)
+			.saturating_add(T::DbWeight::get().reads(1 as Weight))
+			.saturating_add(T::DbWeight::get().writes(1 as Weight))
+	}
+	fn link_sub() -> Weight {
+		(335_000_000 as Weight).saturating_add(T::DbWeight::get().reads(1 as Weight))
+	}
 }
 
 // For backwards compatibility and tests
 impl WeightInfo for () {
-    fn link_eth() -> Weight {
-        (324_000_000 as Weight)
-            .saturating_add(RocksDbWeight::get().reads(1 as Weight))
-            .saturating_add(RocksDbWeight::get().writes(1 as Weight))
-    }
-    fn link_btc() -> Weight {
-        (335_000_000 as Weight)
-            .saturating_add(RocksDbWeight::get().reads(1 as Weight))
-            .saturating_add(RocksDbWeight::get().writes(1 as Weight))
-    }
-    fn link_sub() -> Weight {
-        (335_000_000 as Weight).saturating_add(RocksDbWeight::get().reads(1 as Weight))
-    }
+	fn link_eth() -> Weight {
+		(324_000_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
+	}
+	fn link_btc() -> Weight {
+		(335_000_000 as Weight)
+			.saturating_add(RocksDbWeight::get().reads(1 as Weight))
+			.saturating_add(RocksDbWeight::get().writes(1 as Weight))
+	}
+	fn link_sub() -> Weight {
+		(335_000_000 as Weight).saturating_add(RocksDbWeight::get().reads(1 as Weight))
+	}
 }
