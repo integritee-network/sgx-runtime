@@ -18,7 +18,7 @@ codec = { package = 'parity-scale-codec', version = "2.0.0", default-features = 
 scale-info = { version = "1.0", default-features = false, features = ["derive"] }
 
 # litentry
-pallet-sgx-account-linker = { default-features = false, git = "https://github.com/litentry/litentry-pallets", branch = "sgx-pallets" }
+pallet-sgx-account-linker = { default-features = false, path = "../pallets/sgx-account-linker" }
 
 # Substrate dependencies
 frame-benchmarking = { version = "4.0.0-dev", default-features = false, optional = true, git = "https://github.com/paritytech/substrate.git", branch = "master" }
