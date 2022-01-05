@@ -85,7 +85,7 @@ pub type Executive = frame_executive::Executive<
 	Block,
 	frame_system::ChainContext<Runtime>,
 	Runtime,
-	AllPallets,
+	AllPalletsReversedWithSystemFirst,
 >;
 /// An index to a block.
 pub type BlockNumber = u32;
@@ -217,6 +217,8 @@ impl frame_system::Config for Runtime {
 	type SS58Prefix = SS58Prefix;
 	/// The set code logic, just the default since we're not a parachain.
 	type OnSetCode = ();
+	/// The maximum number of consumers allowed on a single account.
+	type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
 parameter_types! {
