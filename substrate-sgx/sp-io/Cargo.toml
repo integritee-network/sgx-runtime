@@ -22,7 +22,7 @@ sgx-externalities = { default-features = false, path = "../externalities", optio
 
 # Substrate dependencies
 sp-std = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-core = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", features=["full_crypto"], branch = "master" }
+sp-core = { version = "4.1.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", features=["full_crypto"], branch = "master" }
 sp-state-machine = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true}
 sp-runtime-interface = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
 sp-wasm-interface = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }

@@ -5,28 +5,11 @@ authors = ["Integritee AG <hello@integritee.network>"]
 edition = "2018"
 
 [target.'cfg(not(target_env = "sgx"))'.dependencies]
-sgx_tstd = { branch = "master", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs","net","backtrace"] }
+sgx_tstd = { branch = "master", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs", "net", "backtrace"] }
 
 [dependencies]
-libc = { version="0.2", default-features=false }
-
-[dependencies.sgx-runtime]
-path = "../runtime"
-default-features = false
-
-[dependencies.sp-io]
-path = "../substrate-sgx/sp-io"
-default-features = false
-features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"]
-
-[dependencies.sp-application-crypto]
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-default-features = false
-features = ["full_crypto"]
-
-[dependencies.sp-core]
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-default-features = false
-features = ["full_crypto"]
+libc = { version = "0.2", default-features = false }
+sgx-runtime = { path = "../runtime", default-features = false }
+sp-io = { path = "../substrate-sgx/sp-io", default-features = false, features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"] }
+sp-application-crypto = { git = "https://github.com/paritytech/substrate.git", branch = "master", default-features = false, features = ["full_crypto"] }
+sp-core = { version = "4.1.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "master", default-features = false, features = ["full_crypto"] }
