@@ -52,7 +52,7 @@ pub use frame_support::{
 	StorageValue,
 };
 pub use pallet_balances::Call as BalancesCall;
-pub use pallet_connectfour::Call as ConnectfourCall;
+pub use pallet_ajuna_connectfour::Call as ConnectfourCall;
 pub use pallet_parentchain::Call as ParentchainCall;
 pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
@@ -299,7 +299,7 @@ impl pallet_scheduler::Config for Runtime {
 	type OriginPrivilegeCmp = EqualPrivilegeOnly;
 }
 
-impl pallet_connectfour::Config for Runtime {
+impl pallet_ajuna_connectfour::Config for Runtime {
 	type Proposal = Call;
 	type Event = Event;
 	type Randomness = RandomnessCollectiveFlip;
@@ -321,7 +321,7 @@ construct_runtime!(
 		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
-		ConnectFour: pallet_connectfour::{Pallet, Call, Config<T>, Storage, Event<T>},
+		ConnectFour: pallet_ajuna_connectfour::{Pallet, Call, Config<T>, Storage, Event<T>},
 	}
 );
 
