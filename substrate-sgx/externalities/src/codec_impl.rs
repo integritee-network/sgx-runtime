@@ -86,6 +86,20 @@ mod tests {
 	}
 
 	#[test]
+	fn encoding_decoding_works() {
+		let externalities = SgxExternalities {
+			state: create_default_state(),
+			state_diff: create_default_state_diff(),
+		};
+		let encoded_externalities = externalities.encode();
+
+		let decoded_externalities =
+			SgxExternalities::decode(&mut encoded_externalities.as_slice()).unwrap();
+
+		assert_eq!(externalities, decoded_externalities);
+	}
+
+	#[test]
 	fn encoding_decoding_preserves_order() {
 		let externalities = create_default_state();
 		let encoded_externalities = externalities.encode();
