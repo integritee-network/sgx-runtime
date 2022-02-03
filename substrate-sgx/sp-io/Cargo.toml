@@ -22,14 +22,14 @@ sgx-externalities = { default-features = false, path = "../externalities", optio
 
 # Substrate dependencies
 sp-std = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-core = { version = "4.1.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", features=["full_crypto"], branch = "master" }
-sp-state-machine = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true}
-sp-runtime-interface = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-wasm-interface = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-core = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", features=["full_crypto"], branch = "master" }
+sp-state-machine = { version = "0.11.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true}
+sp-runtime-interface = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-wasm-interface = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
 sp-tracing = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-trie = { version = "4.0.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
-sp-keystore = {  version = "0.10.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
-sp-externalities = { version = "0.10.0-dev", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
+sp-trie = { version = "5.0.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
+sp-keystore = {  version = "0.11.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
+sp-externalities = { version = "0.11.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
 
 [dev-dependencies]
 hex-literal = { version = "0.3.4" }
