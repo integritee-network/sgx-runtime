@@ -401,14 +401,15 @@ pub mod misc {
 /// Interfaces for working with crypto related types from within the runtime.
 pub mod crypto {
 	use super::*;
+	use sp_core::H512;
 	pub fn ed25519_public_keys(id: KeyTypeId) -> Vec<ed25519::Public> {
 		warn!("crypto::ed25519_public_keys unimplemented");
-		vec![ed25519::Public::default()]
+		vec![ed25519::Public::from_h256(H256::default())]
 	}
 
 	pub fn ed25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ed25519::Public {
 		warn!("crypto::ed25519_generate unimplemented");
-		ed25519::Public::default()
+		ed25519::Public::from_h256(H256::default())
 	}
 
 	pub fn ed25519_sign(
@@ -417,7 +418,8 @@ pub mod crypto {
 		msg: &[u8],
 	) -> Option<ed25519::Signature> {
 		warn!("crypto::ed25519_sign unimplemented");
-		Some(ed25519::Signature::default())
+
+		Some(ed25519::Signature::from_raw(H512::default().into()))
 	}
 
 	pub fn ed25519_verify(sig: &ed25519::Signature, msg: &[u8], pub_key: &ed25519::Public) -> bool {
@@ -461,12 +463,12 @@ pub mod crypto {
 
 	pub fn sr25519_public_keys(id: KeyTypeId) -> Vec<sr25519::Public> {
 		warn!("crypto::sr25519_public_key unimplemented");
-		vec![sr25519::Public::default()]
+		vec![sr25519::Public::from_h256(H256::default())]
 	}
 
 	pub fn sr25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> sr25519::Public {
 		warn!("crypto::sr25519_generate unimplemented");
-		sr25519::Public::default()
+		sr25519::Public::from_h256(H256::default())
 	}
 
 	pub fn sr25519_sign(
@@ -475,7 +477,7 @@ pub mod crypto {
 		msg: &[u8],
 	) -> Option<sr25519::Signature> {
 		warn!("crypto::sr25519_sign unimplemented");
-		Some(sr25519::Signature::default())
+		Some(sr25519::Signature::from_raw(H512::default().into()))
 	}
 
 	/// Verify `sr25519` signature.
@@ -499,7 +501,8 @@ pub mod crypto {
 	/// Returns the public key.
 	pub fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
 		warn!("crypto::ecdsa_generate unimplemented");
-		ecdsa::Public::default()
+		let raw: [u8; 33] = [0; 33];
+		ecdsa::Public::from_raw(raw)
 	}
 
 	/// Sign the given `msg` with the `ecdsa` key that corresponds to the given public key and
