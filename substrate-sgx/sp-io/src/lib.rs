@@ -201,7 +201,22 @@ pub mod storage {
 		warn!("storage::append() unimplemented");
 	}
 
-	pub fn root() -> [u8; 32] {
+	/// "Commit" all existing operations and compute the resulting storage root.
+	///
+	/// The hashing algorithm is defined by the `Block`.
+	///
+	/// Returns a `Vec<u8>` that holds the SCALE encoded hash.
+	pub fn root_version_1() -> [u8; 32] {
+		warn!("storage::root() unimplemented");
+		[0u8; 32]
+	}
+
+	/// "Commit" all existing operations and compute the resulting storage root.
+	///
+	/// The hashing algorithm is defined by the `Block`.
+	///
+	/// Returns a `Vec<u8>` that holds the SCALE encoded hash.
+	pub fn root(version: StateVersion) -> [u8; 32] {
 		warn!("storage::root() unimplemented");
 		[0u8; 32]
 	}
