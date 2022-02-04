@@ -309,7 +309,7 @@ pub mod default_child_storage {
 	/// Clear child default key by prefix.
 	///
 	/// Clear the child storage of each key-value pair where the key starts with the given `prefix`.
-	fn clear_prefix_version_1(storage_key: &[u8], prefix: &[u8]) {
+	pub fn clear_prefix_version_1(storage_key: &[u8], prefix: &[u8]) {
 		warn!("child storage::clear_prefix() unimplemented");
 	}
 
@@ -325,7 +325,12 @@ pub mod default_child_storage {
 		KillStorageResult::AllRemoved(0)
 	}
 
-	pub fn root(storage_key: &[u8]) -> Vec<u8> {
+	pub fn root_version_1(storage_key: &[u8]) -> Vec<u8> {
+		warn!("child storage::root() unimplemented");
+		vec![0, 1, 2, 3]
+	}
+
+	pub fn root(storage_key: &[u8], version: StateVersion) -> Vec<u8> {
 		warn!("child storage::root() unimplemented");
 		vec![0, 1, 2, 3]
 	}

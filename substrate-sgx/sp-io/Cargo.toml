@@ -36,7 +36,6 @@ hex-literal = { version = "0.3.4" }
 
 [features]
 default = ["std"]
-
 std = [
 	"environmental/std",
 	"log/std",
@@ -55,7 +54,6 @@ std = [
 	"parking_lot",
 	"sgx-externalities/std",
 ]
-
 sgx = [
 	"sgx_tstd",
 	"sgx_types",
