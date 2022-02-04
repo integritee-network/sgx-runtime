@@ -48,6 +48,7 @@ use sp_core::{
 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
 	},
 	sr25519,
+	storage::StateVersion,
 };
 use std::{char, prelude::v1::String, println, vec, vec::Vec};
 
@@ -339,35 +340,93 @@ pub mod trie {
 	use super::*;
 
 	/// A trie root formed from the iterated items.
-	pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+	pub fn blake2_256_root_version_1(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+		warn!("trie::blake2_256_root() unimplemented");
+		H256::default()
+	}
+
+	/// A trie root formed from the iterated items.
+	pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>, version: StateVersion) -> H256 {
 		warn!("trie::blake2_256_root() unimplemented");
 		H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	pub fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	pub fn blake2_256_ordered_root_version_1(input: Vec<Vec<u8>>) -> H256 {
 		warn!("trie::blake2_256_ordered_root() unimplemented");
 		H256::default()
 	}
 
-	pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+	/// A trie root formed from the enumerated items.
+	pub fn blake2_256_ordered_root(input: Vec<Vec<u8>>, version: StateVersion) -> H256 {
+		warn!("trie::blake2_256_ordered_root() unimplemented");
+		H256::default()
+	}
+
+	pub fn keccak_256_root_version_1(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+		warn!("trie::keccak_256_root_version_1() unimplemented");
+		H256::default()
+	}
+
+	pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>, version: StateVersion) -> H256 {
 		warn!("trie::keccak_256_root() unimplemented");
 		H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	pub fn keccak_256_ordered_root_version_1(input: Vec<Vec<u8>>) -> H256 {
 		warn!("trie::keccak_256_ordered_root() unimplemented");
 		H256::default()
 	}
+
+	/// A trie root formed from the enumerated items.
+	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>, version: StateVersion) -> H256 {
+		warn!("trie::keccak_256_ordered_root() unimplemented");
+		H256::default()
+	}
+
 	/// Verify trie proof
-	fn blake2_256_verify_proof(root: H256, proof: &[Vec<u8>], key: &[u8], value: &[u8]) -> bool {
+	fn blake2_256_verify_proof_version_1(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+	) -> bool {
 		warn!("trie::blake2_256_verify_proof() unimplemented");
 		false
 	}
 
 	/// Verify trie proof
-	fn keccak_256_verify_proof(root: H256, proof: &[Vec<u8>], key: &[u8], value: &[u8]) -> bool {
+	fn blake2_256_verify_proof(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+		version: StateVersion,
+	) -> bool {
+		warn!("trie::blake2_256_verify_proof() unimplemented");
+		false
+	}
+
+	/// Verify trie proof
+	fn keccak_256_verify_proof_version_1(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+	) -> bool {
+		warn!("trie::keccak_256_verify_proof() unimplemented");
+		false
+	}
+
+	/// Verify trie proof
+	fn keccak_256_verify_proof(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+		version: StateVersion,
+	) -> bool {
 		warn!("trie::keccak_256_verify_proof() unimplemented");
 		false
 	}
