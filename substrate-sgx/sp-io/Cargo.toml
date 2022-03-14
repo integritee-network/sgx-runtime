@@ -1,12 +1,12 @@
 [package]
 name = "sp-io"
-version = "5.0.0"
+version = "6.0.0"
 authors = ["Integritee AG <hello@integritee.network> and Parity Technologies <admin@parity.io>"]
 edition = "2018"
 license = "Apache-2.0"
 
 [dependencies]
-codec = { package = "parity-scale-codec", version = "2.0.0", default-features = false }
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false }
 hash-db = { version = "0.15.2", default-features = false }
 libsecp256k1 = { version = "0.7.0", default-features = false, features = ["static-context"] }
 futures = { version = "0.3.1", features = ["thread-pool"], optional = true }
@@ -22,14 +22,14 @@ sgx-externalities = { default-features = false, path = "../externalities", optio
 
 # Substrate dependencies
 sp-std = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-core = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", features=["full_crypto"], branch = "master" }
-sp-state-machine = { version = "0.11.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true}
-sp-runtime-interface = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-wasm-interface = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-tracing = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
-sp-trie = { version = "5.0.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
-sp-keystore = {  version = "0.11.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
-sp-externalities = { version = "0.11.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
+sp-core = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", features=["full_crypto"], branch = "master" }
+sp-state-machine = { version = "0.12.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true}
+sp-runtime-interface = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-wasm-interface = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-tracing = { version = "5.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-trie = { version = "6.0.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
+sp-keystore = {  version = "0.12.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
+sp-externalities = { version = "0.12.0", git = "https://github.com/paritytech/substrate.git", branch = "master", optional = true }
 
 [dev-dependencies]
 hex-literal = { version = "0.3.4" }
