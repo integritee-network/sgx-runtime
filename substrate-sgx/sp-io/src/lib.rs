@@ -300,6 +300,7 @@ pub mod default_child_storage {
 	}
 
 	pub fn storage_kill_version_1(storage_key: &[u8]) {
+		//asdf
 		warn!("child storage::storage_kill() unimplemented");
 	}
 
@@ -877,6 +878,86 @@ pub mod logging {
 		log::max_level().into()
 	}
 }
+
+pub mod sandbox {
+	use log::warn;
+	use sp_runtime_interface::Pointer;
+
+	/// Instantiate a new sandbox instance with the given `wasm_code`.
+	pub fn instantiate(
+		dispatch_thunk: u32,
+		wasm_code: &[u8],
+		env_def: &[u8],
+		state_ptr: Pointer<u8>,
+	) -> u32 {
+		warn!("LALALALALALA");
+		0
+	}
+
+	/// Invoke `function` in the sandbox with `sandbox_idx`.
+	pub fn invoke(
+		instance_idx: u32,
+		function: &str,
+		args: &[u8],
+		return_val_ptr: Pointer<u8>,
+		return_val_len: u32,
+		state_ptr: Pointer<u8>,
+	) -> u32 {
+		warn!("LALALALALALA");
+		0
+	}
+
+	/// Create a new memory instance with the given `initial` and `maximum` size.
+	pub fn memory_new(initial: u32, maximum: u32) -> u32 {
+		warn!("LALALALALALA");
+		0
+	}
+
+	/// Get the memory starting at `offset` from the instance with `memory_idx` into the buffer.
+	pub fn memory_get(
+		memory_idx: u32,
+		offset: u32,
+		buf_ptr: Pointer<u8>,
+		buf_len: u32,
+	) -> u32 {
+		warn!("LALALALALALA");
+		0
+	}
+
+	/// Set the memory in the given `memory_idx` to the given value at `offset`.
+	pub fn memory_set(
+		memory_idx: u32,
+		offset: u32,
+		val_ptr: Pointer<u8>,
+		val_len: u32,
+	) -> u32 {
+		warn!("LALALALALALA");
+		0
+	}
+
+	/// Teardown the memory instance with the given `memory_idx`.
+	pub fn memory_teardown(memory_idx: u32) {
+		warn!("LALALALALALA");
+	}
+
+	/// Teardown the sandbox instance with the given `instance_idx`.
+	pub fn instance_teardown(instance_idx: u32) {
+		warn!("LALALALALALA");
+	}
+
+	/// Get the value from a global with the given `name`. The sandbox is determined by the given
+	/// `instance_idx`.
+	///
+	/// Returns `Some(_)` when the requested global variable could be found.
+	pub fn get_global_val(
+		instance_idx: u32,
+		name: &str,
+	) -> Option<sp_wasm_interface::Value> {
+		warn!("LALALALALALA");
+		None
+	}
+}
+
 
 mod tracing_setup {
 	/// Initialize tracing of sp_tracing not necessary – noop. To enable build
