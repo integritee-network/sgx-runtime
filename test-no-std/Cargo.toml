@@ -11,5 +11,5 @@ sgx_tstd = { branch = "master", git = "https://github.com/apache/teaclave-sgx-sd
 libc = { version = "0.2", default-features = false }
 sgx-runtime = { path = "../runtime", default-features = false }
 sp-io = { path = "../substrate-sgx/sp-io", default-features = false, features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"] }
-sp-application-crypto = { git = "https://github.com/paritytech/substrate.git", branch = "master", default-features = false, features = ["full_crypto"] }
-sp-core = { version = "6.0.0", git = "https://github.com/paritytech/substrate.git", branch = "master", default-features = false, features = ["full_crypto"] }
+sp-application-crypto = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18", default-features = false, features = ["full_crypto"] }
+sp-core = { version = "6.0.0", git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.18", default-features = false, features = ["full_crypto"] }
