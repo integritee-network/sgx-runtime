@@ -11,67 +11,21 @@ version = '0.1.0'
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
 
-# alias "parity-scale-code" to "codec"
-[dependencies.codec]
-default-features = false
-features = ['derive']
-package = 'parity-scale-codec'
-version = '2.0.0'
-
-[dependencies.frame-support]
-default-features = false
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-version = '4.0.0-dev'
-
-[dependencies.frame-system]
-default-features = false
-package = 'frame-system'
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-version = '4.0.0-dev'
-
-[dependencies.sp-io]
-default-features = false
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-version = '4.0.0-dev'
-
-[dependencies.sp-core]
-default-features = false
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-version = '4.0.0-dev'
-features = ['full_crypto']
-
-[dependencies.sp-runtime]
-default-features = false
-optional = true
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-version = '4.0.0-dev'
-
-[dependencies.sp-std]
-default-features = false
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-version = '4.0.0-dev'
-
-[dev-dependencies.sp-runtime]
-default-features = false
-git = "https://github.com/paritytech/substrate.git"
-branch = "master"
-version = '4.0.0-dev'
-
 [dependencies]
-
-log = { version = "0.4.14", default-features = false }
+log = { version = "0.4", default-features = false }
 sha2 = { default-features = false, version = "0.9.5" }
 ripemd160 = {default-features = false, version = "0.9.1" }
-scale-info = { version = "1.0", default-features = false, features = ["derive"] }
+scale-info = { version = "2.0", default-features = false, features = ["derive"] }
+# no_std
+codec = { package = "parity-scale-codec", version = "3.0.0", default-features = false, features = ["derive", "chain-error"]}
+frame-support = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+frame-system = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-io = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-core = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-runtime = { version = "6.0.0", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
+sp-std = { version = "4.0.0-dev", default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "master" }
 
 [dev-dependencies]
-
 parity-crypto = {version = "0.8.0", features = ["publickey"] }
 bitcoin = { version = "0.25.2", features = ["rand"] }
 serde = { version = "1.0.119" }
