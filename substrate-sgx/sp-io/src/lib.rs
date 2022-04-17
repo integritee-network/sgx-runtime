@@ -48,6 +48,7 @@ use sp_core::{
 		HttpError, HttpRequestId, HttpRequestStatus, OpaqueNetworkState, StorageKind, Timestamp,
 	},
 	sr25519,
+	storage::StateVersion,
 };
 use std::{char, prelude::v1::String, println, vec, vec::Vec};
 
@@ -200,7 +201,22 @@ pub mod storage {
 		warn!("storage::append() unimplemented");
 	}
 
-	pub fn root() -> [u8; 32] {
+	/// "Commit" all existing operations and compute the resulting storage root.
+	///
+	/// The hashing algorithm is defined by the `Block`.
+	///
+	/// Returns a `Vec<u8>` that holds the SCALE encoded hash.
+	pub fn root_version_1() -> [u8; 32] {
+		warn!("storage::root() unimplemented");
+		[0u8; 32]
+	}
+
+	/// "Commit" all existing operations and compute the resulting storage root.
+	///
+	/// The hashing algorithm is defined by the `Block`.
+	///
+	/// Returns a `Vec<u8>` that holds the SCALE encoded hash.
+	pub fn root(version: StateVersion) -> [u8; 32] {
 		warn!("storage::root() unimplemented");
 		[0u8; 32]
 	}
@@ -308,7 +324,7 @@ pub mod default_child_storage {
 	/// Clear child default key by prefix.
 	///
 	/// Clear the child storage of each key-value pair where the key starts with the given `prefix`.
-	fn clear_prefix_version_1(storage_key: &[u8], prefix: &[u8]) {
+	pub fn clear_prefix_version_1(storage_key: &[u8], prefix: &[u8]) {
 		warn!("child storage::clear_prefix() unimplemented");
 	}
 
@@ -324,7 +340,12 @@ pub mod default_child_storage {
 		KillStorageResult::AllRemoved(0)
 	}
 
-	pub fn root(storage_key: &[u8]) -> Vec<u8> {
+	pub fn root_version_1(storage_key: &[u8]) -> Vec<u8> {
+		warn!("child storage::root() unimplemented");
+		vec![0, 1, 2, 3]
+	}
+
+	pub fn root(storage_key: &[u8], version: StateVersion) -> Vec<u8> {
 		warn!("child storage::root() unimplemented");
 		vec![0, 1, 2, 3]
 	}
@@ -339,35 +360,93 @@ pub mod trie {
 	use super::*;
 
 	/// A trie root formed from the iterated items.
-	pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+	pub fn blake2_256_root_version_1(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+		warn!("trie::blake2_256_root() unimplemented");
+		H256::default()
+	}
+
+	/// A trie root formed from the iterated items.
+	pub fn blake2_256_root(input: Vec<(Vec<u8>, Vec<u8>)>, version: StateVersion) -> H256 {
 		warn!("trie::blake2_256_root() unimplemented");
 		H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	pub fn blake2_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	pub fn blake2_256_ordered_root_version_1(input: Vec<Vec<u8>>) -> H256 {
 		warn!("trie::blake2_256_ordered_root() unimplemented");
 		H256::default()
 	}
 
-	pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+	/// A trie root formed from the enumerated items.
+	pub fn blake2_256_ordered_root(input: Vec<Vec<u8>>, version: StateVersion) -> H256 {
+		warn!("trie::blake2_256_ordered_root() unimplemented");
+		H256::default()
+	}
+
+	pub fn keccak_256_root_version_1(input: Vec<(Vec<u8>, Vec<u8>)>) -> H256 {
+		warn!("trie::keccak_256_root_version_1() unimplemented");
+		H256::default()
+	}
+
+	pub fn keccak_256_root(input: Vec<(Vec<u8>, Vec<u8>)>, version: StateVersion) -> H256 {
 		warn!("trie::keccak_256_root() unimplemented");
 		H256::default()
 	}
 
 	/// A trie root formed from the enumerated items.
-	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>) -> H256 {
+	pub fn keccak_256_ordered_root_version_1(input: Vec<Vec<u8>>) -> H256 {
 		warn!("trie::keccak_256_ordered_root() unimplemented");
 		H256::default()
 	}
+
+	/// A trie root formed from the enumerated items.
+	pub fn keccak_256_ordered_root(input: Vec<Vec<u8>>, version: StateVersion) -> H256 {
+		warn!("trie::keccak_256_ordered_root() unimplemented");
+		H256::default()
+	}
+
 	/// Verify trie proof
-	fn blake2_256_verify_proof(root: H256, proof: &[Vec<u8>], key: &[u8], value: &[u8]) -> bool {
+	fn blake2_256_verify_proof_version_1(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+	) -> bool {
 		warn!("trie::blake2_256_verify_proof() unimplemented");
 		false
 	}
 
 	/// Verify trie proof
-	fn keccak_256_verify_proof(root: H256, proof: &[Vec<u8>], key: &[u8], value: &[u8]) -> bool {
+	fn blake2_256_verify_proof(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+		version: StateVersion,
+	) -> bool {
+		warn!("trie::blake2_256_verify_proof() unimplemented");
+		false
+	}
+
+	/// Verify trie proof
+	fn keccak_256_verify_proof_version_1(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+	) -> bool {
+		warn!("trie::keccak_256_verify_proof() unimplemented");
+		false
+	}
+
+	/// Verify trie proof
+	fn keccak_256_verify_proof(
+		root: H256,
+		proof: &[Vec<u8>],
+		key: &[u8],
+		value: &[u8],
+		version: StateVersion,
+	) -> bool {
 		warn!("trie::keccak_256_verify_proof() unimplemented");
 		false
 	}
@@ -401,14 +480,15 @@ pub mod misc {
 /// Interfaces for working with crypto related types from within the runtime.
 pub mod crypto {
 	use super::*;
+	use sp_core::H512;
 	pub fn ed25519_public_keys(id: KeyTypeId) -> Vec<ed25519::Public> {
 		warn!("crypto::ed25519_public_keys unimplemented");
-		vec![ed25519::Public::default()]
+		vec![ed25519::Public::from_h256(H256::default())]
 	}
 
 	pub fn ed25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ed25519::Public {
 		warn!("crypto::ed25519_generate unimplemented");
-		ed25519::Public::default()
+		ed25519::Public::from_h256(H256::default())
 	}
 
 	pub fn ed25519_sign(
@@ -417,7 +497,8 @@ pub mod crypto {
 		msg: &[u8],
 	) -> Option<ed25519::Signature> {
 		warn!("crypto::ed25519_sign unimplemented");
-		Some(ed25519::Signature::default())
+
+		Some(ed25519::Signature::from_raw(H512::default().into()))
 	}
 
 	pub fn ed25519_verify(sig: &ed25519::Signature, msg: &[u8], pub_key: &ed25519::Public) -> bool {
@@ -461,12 +542,12 @@ pub mod crypto {
 
 	pub fn sr25519_public_keys(id: KeyTypeId) -> Vec<sr25519::Public> {
 		warn!("crypto::sr25519_public_key unimplemented");
-		vec![sr25519::Public::default()]
+		vec![sr25519::Public::from_h256(H256::default())]
 	}
 
 	pub fn sr25519_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> sr25519::Public {
 		warn!("crypto::sr25519_generate unimplemented");
-		sr25519::Public::default()
+		sr25519::Public::from_h256(H256::default())
 	}
 
 	pub fn sr25519_sign(
@@ -475,7 +556,7 @@ pub mod crypto {
 		msg: &[u8],
 	) -> Option<sr25519::Signature> {
 		warn!("crypto::sr25519_sign unimplemented");
-		Some(sr25519::Signature::default())
+		Some(sr25519::Signature::from_raw(H512::default().into()))
 	}
 
 	/// Verify `sr25519` signature.
@@ -499,7 +580,8 @@ pub mod crypto {
 	/// Returns the public key.
 	pub fn ecdsa_generate(id: KeyTypeId, seed: Option<Vec<u8>>) -> ecdsa::Public {
 		warn!("crypto::ecdsa_generate unimplemented");
-		ecdsa::Public::default()
+		let raw: [u8; 33] = [0; 33];
+		ecdsa::Public::from_raw(raw)
 	}
 
 	/// Sign the given `msg` with the `ecdsa` key that corresponds to the given public key and

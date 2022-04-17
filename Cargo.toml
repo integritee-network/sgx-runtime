@@ -2,7 +2,6 @@
 resolver = "2"
 
 members = [
-    'pallets/sgx-account-linker',
     'runtime',
     'substrate-sgx/sp-io',
     'substrate-sgx/externalities',
