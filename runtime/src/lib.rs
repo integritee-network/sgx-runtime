@@ -302,17 +302,12 @@ impl pallet_scheduler::Config for Runtime {
 	type NoPreimagePostponement = ();
 }
 
-impl pallet_ajuna_matchmaker::Config for Runtime {
-	type Event = Event;
-}
-
 impl pallet_ajuna_connectfour::Config for Runtime {
 	type Proposal = Call;
 	type Event = Event;
 	type Randomness = RandomnessCollectiveFlip;
 	type Scheduler = Scheduler;
 	type PalletsOrigin = OriginCaller;
-	type MatchMaker = pallet_ajuna_matchmaker::MatchMaking<Runtime>;
 }
 
 construct_runtime!(
@@ -329,7 +324,6 @@ construct_runtime!(
 		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
 		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
 		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
-		Matchmaker: pallet_ajuna_matchmaker,
 		ConnectFour: pallet_ajuna_connectfour::{Pallet, Call, Config<T>, Storage, Event<T>},
 	}
 );
