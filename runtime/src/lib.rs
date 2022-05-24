@@ -28,6 +28,7 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
+use frame_system::EnsureRoot;
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_api::impl_runtime_apis;
 use sp_core::OpaqueMetadata;
@@ -43,13 +44,14 @@ use sp_version::RuntimeVersion;
 use frame_support::weights::ConstantMultiplier;
 pub use frame_support::{
 	construct_runtime, parameter_types,
-	traits::{KeyOwnerProofSystem, Randomness},
+	traits::{EqualPrivilegeOnly, KeyOwnerProofSystem, Randomness},
 	weights::{
 		constants::{BlockExecutionWeight, ExtrinsicBaseWeight, RocksDbWeight, WEIGHT_PER_SECOND},
 		IdentityFee, Weight,
 	},
 	StorageValue,
 };
+pub use pallet_ajuna_connectfour::Call as ConnectfourCall;
 pub use pallet_balances::Call as BalancesCall;
 pub use pallet_parentchain::Call as ParentchainCall;
 pub use pallet_timestamp::Call as TimestampCall;
@@ -278,6 +280,41 @@ impl pallet_parentchain::Config for Runtime {
 	type WeightInfo = ();
 }
 
+impl pallet_randomness_collective_flip::Config for Runtime {}
+
+parameter_types! {
+	pub MaximumSchedulerWeight: Weight = Perbill::from_percent(80) *
+		BlockWeights::get().max_block;
+	pub const MaxScheduledPerBlock: u32 = 50;
+}
+
+impl pallet_scheduler::Config for Runtime {
+	type Event = Event;
+	type Origin = Origin;
+	type PalletsOrigin = OriginCaller;
+	type Call = Call;
+	type MaximumWeight = MaximumSchedulerWeight;
+	type ScheduleOrigin = EnsureRoot<AccountId>;
+	type MaxScheduledPerBlock = MaxScheduledPerBlock;
+	type WeightInfo = pallet_scheduler::weights::SubstrateWeight<Runtime>;
+	type OriginPrivilegeCmp = EqualPrivilegeOnly;
+	type PreimageProvider = ();
+	type NoPreimagePostponement = ();
+}
+
+impl pallet_ajuna_matchmaker::Config for Runtime {
+	type Event = Event;
+}
+
+impl pallet_ajuna_connectfour::Config for Runtime {
+	type Proposal = Call;
+	type Event = Event;
+	type Randomness = RandomnessCollectiveFlip;
+	type Scheduler = Scheduler;
+	type PalletsOrigin = OriginCaller;
+	type MatchMaker = pallet_ajuna_matchmaker::MatchMaking<Runtime>;
+}
+
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
@@ -290,6 +327,10 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
+		RandomnessCollectiveFlip: pallet_randomness_collective_flip::{Pallet, Storage},
+		Scheduler: pallet_scheduler::{Pallet, Call, Storage, Event<T>},
+		Matchmaker: pallet_ajuna_matchmaker,
+		ConnectFour: pallet_ajuna_connectfour::{Pallet, Call, Config<T>, Storage, Event<T>},
 	}
 );
 

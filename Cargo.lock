@@ -48,6 +48,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ajuna-common"
+version = "0.1.0"
+source = "git+https://github.com/ajuna-network/Ajuna.git?branch=polkadot-v0.9.20#38a7fe4303b11c31e9412ca7527c399d895311a9"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
 name = "ansi_term"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1256,6 +1267,35 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
+name = "pallet-ajuna-connectfour"
+version = "0.1.0"
+source = "git+https://github.com/ajuna-network/Ajuna.git?branch=polkadot-v0.9.20#38a7fe4303b11c31e9412ca7527c399d895311a9"
+dependencies = [
+ "ajuna-common",
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "pallet-ajuna-matchmaker",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-ajuna-matchmaker"
+version = "0.1.0"
+source = "git+https://github.com/ajuna-network/Ajuna.git?branch=polkadot-v0.9.20#38a7fe4303b11c31e9412ca7527c399d895311a9"
+dependencies = [
+ "ajuna-common",
+ "frame-support",
+ "frame-system",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-aura"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/substrate.git?branch=polkadot-v0.9.20#563f4820d8f36d256ada7ea3fef46b2e94c4cd5a"
@@ -1351,6 +1391,22 @@ dependencies = [
  "parity-scale-codec",
  "safe-mix",
  "scale-info",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
+name = "pallet-scheduler"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/substrate.git?branch=polkadot-v0.9.20#563f4820d8f36d256ada7ea3fef46b2e94c4cd5a"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-io 6.0.0 (git+https://github.com/paritytech/substrate.git?branch=polkadot-v0.9.20)",
  "sp-runtime",
  "sp-std",
 ]
@@ -2004,11 +2060,14 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "hex-literal",
+ "pallet-ajuna-connectfour",
+ "pallet-ajuna-matchmaker",
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
  "pallet-parentchain",
  "pallet-randomness-collective-flip",
+ "pallet-scheduler",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",
