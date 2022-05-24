@@ -1,0 +1,68 @@
+name: Poll for upstream changes
+
+on:
+  schedule:
+    - cron: '0 20 * * *'
+
+env:
+  UPSTREAM_URL: https://github.com/integritee-network/sgx-runtime
+  UPDATED: 0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Fetch and merge upstream changes
+        run: |
+          # set upstream remote
+          [[ -n $(git remote | grep upstream) ]] && (
+            git remote set-url upstream $UPSTREAM_URL
+          ) || (
+            git remote add upstream $UPSTREAM_URL
+          )
+
+          git checkout upstream
+          git fetch upstream master
+
+          [[ -n $(git diff --name-only upstream/master) ]] && (
+            git merge upstream/master
+            git push origin upstream
+            git log --oneline --left-right main..upstream > git.log
+            echo "UPDATED=1" >> $GITHUB_ENV
+          ) || (
+            echo "No upstream changes!"
+            exit 0
+          )
+      - name: Upload git.log
+        if: ${{ env.UPDATED == 1 && hashFiles('git.log') != '' }}
+        uses: actions/upload-artifact@v3
+        with:
+          name: git log
+          path: git.log
+      - name: Create an issue
+        if: ${{ env.UPDATED == 1 }}
+        uses: imjohnbo/issue-bot@v3
+        with:
+          assignees: "ajuna-network/ajunablockchain"
+          labels: maintenance
+          pinned: false
+          close-previous: false
+          title: :robot Rebase `main` branch
+          body: |-
+            There have been updates from [upstream]($UPSTREAM_URL)
+            with [logs]($GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID).
+            Review the changes, wait for all WIP PRs to be merged and rebase `main` branch:
+            ```bash
+            git checkout upstream && git pull origin upstream
+            git checkout main
+
+            # may need to resolve conflicts
+            git rebase upstream
+
+            # then
+            git push -f
+            ```
