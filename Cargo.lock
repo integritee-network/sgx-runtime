@@ -50,7 +50,7 @@ dependencies = [
 [[package]]
 name = "ajuna-common"
 version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?branch=main#517fe3ac968fceabc0387e47ff3fef3c97aade46"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#4b94816df69a9c6668ebb505f57e864e03fdc01a"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -1269,7 +1269,7 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "pallet-ajuna-connectfour"
 version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?branch=main#517fe3ac968fceabc0387e47ff3fef3c97aade46"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#4b94816df69a9c6668ebb505f57e864e03fdc01a"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
@@ -1284,7 +1284,7 @@ dependencies = [
 [[package]]
 name = "pallet-ajuna-matchmaker"
 version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?branch=main#517fe3ac968fceabc0387e47ff3fef3c97aade46"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#4b94816df69a9c6668ebb505f57e864e03fdc01a"
 dependencies = [
  "ajuna-common",
  "frame-support",
