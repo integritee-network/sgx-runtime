@@ -48,17 +48,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ajuna-common"
-version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#4b94816df69a9c6668ebb505f57e864e03fdc01a"
-dependencies = [
- "frame-support",
- "parity-scale-codec",
- "scale-info",
- "sp-std",
-]
-
-[[package]]
 name = "ansi_term"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1269,28 +1258,14 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "pallet-ajuna-connectfour"
 version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#4b94816df69a9c6668ebb505f57e864e03fdc01a"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#128bfee8199a2686062ac6f5a357b480c1a7e91f"
 dependencies = [
  "frame-benchmarking",
  "frame-support",
  "frame-system",
- "pallet-ajuna-matchmaker",
  "parity-scale-codec",
  "scale-info",
  "sp-runtime",
- "sp-std",
-]
-
-[[package]]
-name = "pallet-ajuna-matchmaker"
-version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#4b94816df69a9c6668ebb505f57e864e03fdc01a"
-dependencies = [
- "ajuna-common",
- "frame-support",
- "frame-system",
- "parity-scale-codec",
- "scale-info",
  "sp-std",
 ]
 
