@@ -48,6 +48,17 @@ dependencies = [
 ]
 
 [[package]]
+name = "ajuna-common"
+version = "0.1.0"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#d1756fb178294bb5d2eb40c8e5711d5fb3570b8a"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-std",
+]
+
+[[package]]
 name = "ansi_term"
 version = "0.12.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1256,11 +1267,11 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 
 [[package]]
-name = "pallet-ajuna-connectfour"
+name = "pallet-ajuna-board"
 version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#128bfee8199a2686062ac6f5a357b480c1a7e91f"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#d1756fb178294bb5d2eb40c8e5711d5fb3570b8a"
 dependencies = [
- "frame-benchmarking",
+ "ajuna-common",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
@@ -2034,7 +2045,7 @@ dependencies = [
  "frame-system-benchmarking",
  "frame-system-rpc-runtime-api",
  "hex-literal",
- "pallet-ajuna-connectfour",
+ "pallet-ajuna-board",
  "pallet-aura",
  "pallet-balances",
  "pallet-grandpa",
