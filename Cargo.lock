@@ -50,7 +50,7 @@ dependencies = [
 [[package]]
 name = "ajuna-common"
 version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#d1756fb178294bb5d2eb40c8e5711d5fb3570b8a"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#9422cc2feaacd339693a703a16ef6ff5e85beeeb"
 dependencies = [
  "frame-support",
  "parity-scale-codec",
@@ -400,6 +400,15 @@ dependencies = [
  "block-buffer 0.10.2",
  "crypto-common",
  "subtle",
+]
+
+[[package]]
+name = "dot4gravity"
+version = "0.1.0"
+source = "git+https://github.com/ajuna-network/ajuna-games?rev=polkadot-v0.9.20#159ae6d601374af2295fb17b0be89b344a1afaf0"
+dependencies = [
+ "parity-scale-codec",
+ "scale-info",
 ]
 
 [[package]]
@@ -1269,9 +1278,10 @@ checksum = "624a8340c38c1b80fd549087862da4ba43e08858af025b236e509b6649fc13d5"
 [[package]]
 name = "pallet-ajuna-board"
 version = "0.1.0"
-source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#d1756fb178294bb5d2eb40c8e5711d5fb3570b8a"
+source = "git+https://github.com/ajuna-network/Ajuna.git?rev=polkadot-v0.9.20#9422cc2feaacd339693a703a16ef6ff5e85beeeb"
 dependencies = [
  "ajuna-common",
+ "dot4gravity",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
