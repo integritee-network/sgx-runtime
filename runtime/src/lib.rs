@@ -28,19 +28,20 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
+use core::str::FromStr;
+use frame_support::{traits::FindAuthor, weights::ConstantMultiplier, ConsensusEngineId};
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_api::impl_runtime_apis;
-use sp_core::OpaqueMetadata;
+use sp_core::{OpaqueMetadata, H160, U256};
 use sp_runtime::{
 	create_runtime_str, generic,
 	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-	MultiSignature,
+	AccountId32, MultiSignature,
 };
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 
 // A few exports that help ease life for downstream crates.
-use frame_support::weights::ConstantMultiplier;
 pub use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{KeyOwnerProofSystem, Randomness},
@@ -51,6 +52,7 @@ pub use frame_support::{
 	StorageValue,
 };
 pub use pallet_balances::Call as BalancesCall;
+use pallet_evm::{AddressMapping, EnsureAddressNever, EnsureAddressRoot, FeeCalculator, Runner};
 pub use pallet_parentchain::Call as ParentchainCall;
 pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
@@ -119,6 +121,9 @@ pub type DigestItem = generic::DigestItem;
 /// A type to hold UTC unix epoch [ms]
 pub type Moment = u64;
 pub const ONE_DAY: Moment = 86_400_000;
+
+/// Maximum weight per block
+pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
@@ -277,6 +282,78 @@ impl pallet_sudo::Config for Runtime {
 impl pallet_parentchain::Config for Runtime {
 	type WeightInfo = ();
 }
+pub struct FixedGasPrice;
+impl FeeCalculator for FixedGasPrice {
+	fn min_gas_price() -> U256 {
+		(1 * 1_000_000_000).into()
+	}
+}
+
+/// Current approximation of the gas/s consumption considering
+/// EVM execution over compiled WASM (on 4.4Ghz CPU).
+/// Given the 500ms Weight, from which 75% only are used for transactions,
+/// the total EVM execution gas limit is: GAS_PER_SECOND * 0.500 * 0.75 ~= 15_000_000.
+pub const GAS_PER_SECOND: u64 = 40_000_000;
+
+/// Approximate ratio of the amount of Weight per Gas.
+/// u64 works for approximations because Weight is a very small unit compared to gas.
+pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
+
+pub struct IntegriteeGasWeightMapping;
+
+impl pallet_evm::GasWeightMapping for IntegriteeGasWeightMapping {
+	fn gas_to_weight(gas: u64) -> Weight {
+		gas.saturating_mul(WEIGHT_PER_GAS)
+	}
+	fn weight_to_gas(weight: Weight) -> u64 {
+		u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
+	}
+}
+/// Dummy FindAuthor. For sensible example, take a look at moonbeam
+pub struct AccountId20(pub [u8; 20]);
+pub struct FindAuthorTruncated;
+impl FindAuthor<H160> for FindAuthorTruncated {
+	fn find_author<'a, I>(_digests: I) -> Option<H160>
+	where
+		I: 'a + IntoIterator<Item = (ConsensusEngineId, &'a [u8])>,
+	{
+		Some(H160::from_str("1234500000000000000000000000000000000000").unwrap())
+	}
+}
+
+/// An ipmlementation of Frontier's AddressMapping trait for Moonbeam Accounts.
+/// This is basically identical to Frontier's own IdentityAddressMapping, but it works for any type
+/// that is Into<H160> like AccountId20 for example.
+pub struct IntoAddressMapping;
+
+impl<T: From<H160>> AddressMapping<T> for IntoAddressMapping {
+	fn into_account_id(address: H160) -> T {
+		address.into()
+	}
+}
+
+parameter_types! {
+	pub BlockGasLimit: U256
+		= U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT / WEIGHT_PER_GAS);
+}
+
+impl pallet_evm::Config for Runtime {
+	type FeeCalculator = FixedGasPrice;
+	type GasWeightMapping = IntegriteeGasWeightMapping;
+	type BlockHashMapping = pallet_evm::SubstrateBlockHashMapping<Self>;
+	type CallOrigin = EnsureAddressRoot<AccountId>;
+	type WithdrawOrigin = EnsureAddressNever<AccountId>;
+	type AddressMapping = pallet_evm::HashedAddressMapping<BlakeTwo256>;
+	type Currency = Balances;
+	type Event = Event;
+	type Runner = pallet_evm::runner::stack::Runner<Self>;
+	type PrecompilesType = (); //MoonriverPrecompiles<Self>; (https://github.com/PureStake/moonbeam/blob/master/runtime/moonriver/src/precompiles.rs)
+	type PrecompilesValue = (); //PrecompilesValue;
+	type ChainId = ();
+	type OnChargeTransaction = ();
+	type BlockGasLimit = BlockGasLimit;
+	type FindAuthor = FindAuthorTruncated;
+}
 
 construct_runtime!(
 	pub enum Runtime where
@@ -290,6 +367,8 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
+		EVM: pallet_evm::{Pallet, Call, Storage, Config, Event<T>},
+
 	}
 );
 
