@@ -28,15 +28,18 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
-use core::str::FromStr;
-use frame_support::{traits::FindAuthor, weights::ConstantMultiplier, ConsensusEngineId};
+use frame_support::weights::ConstantMultiplier;
+use pallet_evm::{
+	AddressMapping, EnsureAddressTruncated, FeeCalculator, GasWeightMapping, HashedAddressMapping,
+	SubstrateBlockHashMapping,
+};
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_api::impl_runtime_apis;
 use sp_core::{OpaqueMetadata, H160, U256};
 use sp_runtime::{
 	create_runtime_str, generic,
 	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
-	AccountId32, MultiSignature,
+	MultiSignature,
 };
 use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
@@ -52,7 +55,7 @@ pub use frame_support::{
 	StorageValue,
 };
 pub use pallet_balances::Call as BalancesCall;
-use pallet_evm::{AddressMapping, EnsureAddressNever, EnsureAddressRoot, FeeCalculator, Runner};
+
 pub use pallet_parentchain::Call as ParentchainCall;
 pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
@@ -299,9 +302,9 @@ pub const GAS_PER_SECOND: u64 = 40_000_000;
 /// u64 works for approximations because Weight is a very small unit compared to gas.
 pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
 
-pub struct IntegriteeGasWeightMapping;
+pub struct FixedGasWeightMapping;
 
-impl pallet_evm::GasWeightMapping for IntegriteeGasWeightMapping {
+impl GasWeightMapping for FixedGasWeightMapping {
 	fn gas_to_weight(gas: u64) -> Weight {
 		gas.saturating_mul(WEIGHT_PER_GAS)
 	}
@@ -309,19 +312,8 @@ impl pallet_evm::GasWeightMapping for IntegriteeGasWeightMapping {
 		u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
 	}
 }
-/// Dummy FindAuthor. For sensible example, take a look at moonbeam
-pub struct AccountId20(pub [u8; 20]);
-pub struct FindAuthorTruncated;
-impl FindAuthor<H160> for FindAuthorTruncated {
-	fn find_author<'a, I>(_digests: I) -> Option<H160>
-	where
-		I: 'a + IntoIterator<Item = (ConsensusEngineId, &'a [u8])>,
-	{
-		Some(H160::from_str("1234500000000000000000000000000000000000").unwrap())
-	}
-}
 
-/// An ipmlementation of Frontier's AddressMapping trait for Moonbeam Accounts.
+/// An ipmlementation of Frontier's AddressMapping trait for Sgx Accounts.
 /// This is basically identical to Frontier's own IdentityAddressMapping, but it works for any type
 /// that is Into<H160> like AccountId20 for example.
 pub struct IntoAddressMapping;
@@ -333,26 +325,29 @@ impl<T: From<H160>> AddressMapping<T> for IntoAddressMapping {
 }
 
 parameter_types! {
-	pub BlockGasLimit: U256
-		= U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT / WEIGHT_PER_GAS);
+	pub const ChainId: u64 = 42;
+	pub BlockGasLimit: U256 = U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT / WEIGHT_PER_GAS);
+	//pub PrecompilesValue: FrontierPrecompiles<Runtime> = FrontierPrecompiles::<_>::new();
 }
+
+parameter_types! {}
 
 impl pallet_evm::Config for Runtime {
 	type FeeCalculator = FixedGasPrice;
-	type GasWeightMapping = IntegriteeGasWeightMapping;
-	type BlockHashMapping = pallet_evm::SubstrateBlockHashMapping<Self>;
-	type CallOrigin = EnsureAddressRoot<AccountId>;
-	type WithdrawOrigin = EnsureAddressNever<AccountId>;
-	type AddressMapping = pallet_evm::HashedAddressMapping<BlakeTwo256>;
+	type GasWeightMapping = FixedGasWeightMapping;
+	type BlockHashMapping = SubstrateBlockHashMapping<Self>;
+	type CallOrigin = EnsureAddressTruncated;
+	type WithdrawOrigin = EnsureAddressTruncated;
+	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
 	type Currency = Balances;
 	type Event = Event;
 	type Runner = pallet_evm::runner::stack::Runner<Self>;
-	type PrecompilesType = (); //MoonriverPrecompiles<Self>; (https://github.com/PureStake/moonbeam/blob/master/runtime/moonriver/src/precompiles.rs)
-	type PrecompilesValue = (); //PrecompilesValue;
-	type ChainId = ();
+	type PrecompilesType = ();
+	type PrecompilesValue = ();
+	type ChainId = ChainId;
 	type OnChargeTransaction = ();
 	type BlockGasLimit = BlockGasLimit;
-	type FindAuthor = FindAuthorTruncated;
+	type FindAuthor = (); // Currently not available. Would need some more thoughts how prioritisation fees could be handled.
 }
 
 construct_runtime!(
