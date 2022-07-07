@@ -29,10 +29,6 @@
 #![recursion_limit = "256"]
 
 use frame_support::weights::ConstantMultiplier;
-use pallet_evm::{
-	AddressMapping, EnsureAddressTruncated, FeeCalculator, GasWeightMapping, HashedAddressMapping,
-	SubstrateBlockHashMapping,
-};
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_api::impl_runtime_apis;
 use sp_core::{OpaqueMetadata, H160, U256};
@@ -55,7 +51,10 @@ pub use frame_support::{
 	StorageValue,
 };
 pub use pallet_balances::Call as BalancesCall;
-pub use pallet_evm::Call as EvmCall;
+pub use pallet_evm::{
+	AddressMapping, Call as EvmCall, EnsureAddressTruncated, FeeCalculator, GasWeightMapping,
+	HashedAddressMapping, SubstrateBlockHashMapping,
+};
 pub use pallet_parentchain::Call as ParentchainCall;
 pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
