@@ -53,7 +53,7 @@ pub use frame_support::{
 pub use pallet_balances::Call as BalancesCall;
 pub use pallet_evm::{
 	AddressMapping, Call as EvmCall, EnsureAddressTruncated, FeeCalculator, GasWeightMapping,
-	HashedAddressMapping, SubstrateBlockHashMapping,
+	HashedAddressMapping as GenericHashedAddressMapping, SubstrateBlockHashMapping,
 };
 pub use pallet_parentchain::Call as ParentchainCall;
 pub use pallet_timestamp::Call as TimestampCall;
@@ -123,6 +123,8 @@ pub type DigestItem = generic::DigestItem;
 /// A type to hold UTC unix epoch [ms]
 pub type Moment = u64;
 pub const ONE_DAY: Moment = 86_400_000;
+
+pub type HashedAddressMapping = GenericHashedAddressMapping<BlakeTwo256>;
 
 /// Maximum weight per block
 pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
@@ -337,7 +339,7 @@ impl pallet_evm::Config for Runtime {
 	type BlockHashMapping = SubstrateBlockHashMapping<Self>;
 	type CallOrigin = EnsureAddressTruncated;
 	type WithdrawOrigin = EnsureAddressTruncated;
-	type AddressMapping = HashedAddressMapping<BlakeTwo256>;
+	type AddressMapping = HashedAddressMapping;
 	type Currency = Balances;
 	type Event = Event;
 	type Runner = pallet_evm::runner::stack::Runner<Self>;
