@@ -362,7 +362,7 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
-		EVM: pallet_evm::{Pallet, Call, Storage, Config, Event<T>},
+		Evm: pallet_evm::{Pallet, Call, Storage, Config, Event<T>},
 
 	}
 );
