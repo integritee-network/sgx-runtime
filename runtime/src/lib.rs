@@ -286,10 +286,12 @@ impl pallet_sudo::Config for Runtime {
 impl pallet_parentchain::Config for Runtime {
 	type WeightInfo = ();
 }
+
+// FIXME: For now just a random value.
 pub struct FixedGasPrice;
 impl FeeCalculator for FixedGasPrice {
 	fn min_gas_price() -> U256 {
-		(1 * 1_000_000_000).into()
+		1.into()
 	}
 }
 
