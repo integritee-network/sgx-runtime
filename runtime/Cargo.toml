@@ -46,7 +46,7 @@ sp-version = { default-features = false, git = "https://github.com/paritytech/su
 
 # Integritee dependencies
 pallet-parentchain = { default-features = false, git = "https://github.com/integritee-network/pallets.git", branch = "master" }
-pallet-evm = { default-features = false, git = "https://github.com/haerdib/frontier.git", branch = "polkadot-v0.9.24" }
+pallet-evm = { default-features = false, git = "https://github.com/integritee-network/frontier.git", branch = "polkadot-v0.9.24" }
 
 [features]
 default = ['std']
