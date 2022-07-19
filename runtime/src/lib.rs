@@ -28,10 +28,20 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
+#[cfg(feature = "evm")]
+mod evm;
+
+#[cfg(feature = "evm")]
+pub use evm::{
+	AddressMapping, EnsureAddressTruncated, EvmCall, FeeCalculator, FixedGasPrice,
+	FixedGasWeightMapping, GasWeightMapping, HashedAddressMapping, IntoAddressMapping,
+	SubstrateBlockHashMapping, GAS_PER_SECOND, MAXIMUM_BLOCK_WEIGHT, WEIGHT_PER_GAS,
+};
+
 use frame_support::weights::ConstantMultiplier;
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_api::impl_runtime_apis;
-use sp_core::{OpaqueMetadata, H160, U256};
+use sp_core::OpaqueMetadata;
 use sp_runtime::{
 	create_runtime_str, generic,
 	traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, Verify},
@@ -51,10 +61,6 @@ pub use frame_support::{
 	StorageValue,
 };
 pub use pallet_balances::Call as BalancesCall;
-pub use pallet_evm::{
-	AddressMapping, Call as EvmCall, EnsureAddressTruncated, FeeCalculator, GasWeightMapping,
-	HashedAddressMapping as GenericHashedAddressMapping, SubstrateBlockHashMapping,
-};
 pub use pallet_parentchain::Call as ParentchainCall;
 pub use pallet_timestamp::Call as TimestampCall;
 #[cfg(any(feature = "std", test))]
@@ -123,11 +129,6 @@ pub type DigestItem = generic::DigestItem;
 /// A type to hold UTC unix epoch [ms]
 pub type Moment = u64;
 pub const ONE_DAY: Moment = 86_400_000;
-
-pub type HashedAddressMapping = GenericHashedAddressMapping<BlakeTwo256>;
-
-/// Maximum weight per block
-pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 
 /// Opaque types. These are used by the CLI to instantiate machinery that don't need to know
 /// the specifics of the runtime. They can then be made to be agnostic over specific formats
@@ -287,72 +288,8 @@ impl pallet_parentchain::Config for Runtime {
 	type WeightInfo = ();
 }
 
-// FIXME: For now just a random value.
-pub struct FixedGasPrice;
-impl FeeCalculator for FixedGasPrice {
-	fn min_gas_price() -> U256 {
-		1.into()
-	}
-}
-
-/// Current approximation of the gas/s consumption considering
-/// EVM execution over compiled WASM (on 4.4Ghz CPU).
-/// Given the 500ms Weight, from which 75% only are used for transactions,
-/// the total EVM execution gas limit is: GAS_PER_SECOND * 0.500 * 0.75 ~= 15_000_000.
-pub const GAS_PER_SECOND: u64 = 40_000_000;
-
-/// Approximate ratio of the amount of Weight per Gas.
-/// u64 works for approximations because Weight is a very small unit compared to gas.
-pub const WEIGHT_PER_GAS: u64 = WEIGHT_PER_SECOND / GAS_PER_SECOND;
-
-pub struct FixedGasWeightMapping;
-
-impl GasWeightMapping for FixedGasWeightMapping {
-	fn gas_to_weight(gas: u64) -> Weight {
-		gas.saturating_mul(WEIGHT_PER_GAS)
-	}
-	fn weight_to_gas(weight: Weight) -> u64 {
-		u64::try_from(weight.wrapping_div(WEIGHT_PER_GAS)).unwrap_or(u32::MAX as u64)
-	}
-}
-
-/// An ipmlementation of Frontier's AddressMapping trait for Sgx Accounts.
-/// This is basically identical to Frontier's own IdentityAddressMapping, but it works for any type
-/// that is Into<H160> like AccountId20 for example.
-pub struct IntoAddressMapping;
-
-impl<T: From<H160>> AddressMapping<T> for IntoAddressMapping {
-	fn into_account_id(address: H160) -> T {
-		address.into()
-	}
-}
-
-parameter_types! {
-	pub const ChainId: u64 = 42;
-	pub BlockGasLimit: U256 = U256::from(NORMAL_DISPATCH_RATIO * MAXIMUM_BLOCK_WEIGHT / WEIGHT_PER_GAS);
-	//pub PrecompilesValue: FrontierPrecompiles<Runtime> = FrontierPrecompiles::<_>::new();
-}
-
-parameter_types! {}
-
-impl pallet_evm::Config for Runtime {
-	type FeeCalculator = FixedGasPrice;
-	type GasWeightMapping = FixedGasWeightMapping;
-	type BlockHashMapping = SubstrateBlockHashMapping<Self>;
-	type CallOrigin = EnsureAddressTruncated;
-	type WithdrawOrigin = EnsureAddressTruncated;
-	type AddressMapping = HashedAddressMapping;
-	type Currency = Balances;
-	type Event = Event;
-	type Runner = pallet_evm::runner::stack::Runner<Self>;
-	type PrecompilesType = ();
-	type PrecompilesValue = ();
-	type ChainId = ChainId;
-	type OnChargeTransaction = ();
-	type BlockGasLimit = BlockGasLimit;
-	type FindAuthor = (); // Currently not available. Would need some more thoughts how prioritisation fees could be handled.
-}
-
+// The plain sgx-runtime without the `evm-pallet`
+#[cfg(not(feature = "evm"))]
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
@@ -365,8 +302,28 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
-		Evm: pallet_evm::{Pallet, Call, Storage, Config, Event<T>},
+	}
+);
 
+// Runtime constructed with the evm pallet.
+//
+// We need add the compiler-flag for the whole macro because it does not support
+// compiler flags withing the macro.
+#[cfg(feature = "evm")]
+construct_runtime!(
+	pub enum Runtime where
+		Block = Block,
+		NodeBlock = opaque::Block,
+		UncheckedExtrinsic = UncheckedExtrinsic
+	{
+		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		TransactionPayment: pallet_transaction_payment::{Pallet, Storage},
+		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
+		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
+
+		Evm: pallet_evm::{Pallet, Call, Storage, Config, Event<T>},
 	}
 );
 

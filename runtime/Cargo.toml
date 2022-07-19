@@ -46,10 +46,17 @@ sp-version = { default-features = false, git = "https://github.com/paritytech/su
 
 # Integritee dependencies
 pallet-parentchain = { default-features = false, git = "https://github.com/integritee-network/pallets.git", branch = "master" }
-pallet-evm = { default-features = false, git = "https://github.com/integritee-network/frontier.git", branch = "polkadot-v0.9.24" }
+pallet-evm = { default-features = false, optional = true, git = "https://github.com/integritee-network/frontier.git", branch = "polkadot-v0.9.24" }
 
 [features]
 default = ['std']
+# Compile the sgx-runtime with evm-pallet support in `no_std`.
+evm = ["pallet-evm"]
+# Compile the sgx-runtime with evm-pallet support in `std`.
+evm_std = [
+    'evm', # Activate the `feature = evm` for the compiler flags.
+    'pallet-evm/std'
+]
 runtime-benchmarks = [
     'hex-literal',
     'frame-benchmarking',
@@ -77,7 +84,6 @@ std = [
     'pallet-transaction-payment/std',
     'pallet-transaction-payment-rpc-runtime-api/std',
     'pallet-parentchain/std',
-    'pallet-evm/std',
     'sp-api/std',
     'sp-block-builder/std',
     'sp-consensus-aura/std',
