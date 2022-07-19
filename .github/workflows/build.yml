@@ -14,26 +14,24 @@ jobs:
   build:
     runs-on: ubuntu-latest
     container: "integritee/integritee-dev:0.1.7"
+    strategy:
+      fail-fast: false
+      matrix:
+        # We need to compile `test-no-std` separately, otherwise we have std leaks from the build-deps.
+        check: [
+          # exclude the packages that don't compile to std.
+          cargo test --all --exclude test-no-std --exclude sgx-runtime,
+          cargo check -p test-no-std
+          cargo check -p test-no-std --features evm
+          cargo fmt --all -- --check
+        ]
     steps:
       - uses: actions/checkout@v2
       - name: init-rust-target
         run: rustup show
 
-      - name: cargo test
-        # exclude the packages that don't compile to std.
-        run:  cargo test --all --exclude test-no-std --exclude sgx-runtime
+      - name: ${{ matrix.check }}
+        run:  ${{ matrix.check }}
 
-      - name: test_no_std
-        # We can only run cargo check here, as the linker will fail, as we don't have the sgx `c` files in the repo
-        run: cargo check -p test-no-std
 
-  fmt:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: init-rust-target
-        run: rustup show
-
-      - name: fmt
-        run:  cargo fmt --all -- --check
 
