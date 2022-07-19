@@ -6,12 +6,12 @@ use frame_support::{
 	pallet_prelude::Weight, parameter_types, weights::constants::WEIGHT_PER_SECOND,
 };
 use sp_core::{H160, U256};
+use sp_runtime::traits::BlakeTwo256;
 
 pub use pallet_evm::{
 	AddressMapping, Call as EvmCall, EnsureAddressTruncated, FeeCalculator, GasWeightMapping,
 	HashedAddressMapping as GenericHashedAddressMapping, SubstrateBlockHashMapping,
 };
-use sp_runtime::traits::BlakeTwo256;
 
 pub type HashedAddressMapping = GenericHashedAddressMapping<BlakeTwo256>;
 
