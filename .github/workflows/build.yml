@@ -21,9 +21,9 @@ jobs:
         check: [
           # exclude the packages that don't compile to std.
           cargo test --all --exclude test-no-std --exclude sgx-runtime,
-          cargo check -p test-no-std
-          cargo check -p test-no-std --features evm
-          cargo fmt --all -- --check
+          cargo check -p test-no-std,
+          cargo check -p test-no-std --features evm,
+          cargo fmt --all -- --check,
         ]
     steps:
       - uses: actions/checkout@v2
