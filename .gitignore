@@ -14,3 +14,7 @@
 
 # vscode
 .vscode
+
+
+#CLion
+.idea/
