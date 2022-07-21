@@ -314,6 +314,9 @@ impl pallet_ajuna_board::Config for Runtime {
 	type GameState = pallet_ajuna_board::dot4gravity::GameState<AccountId>;
 	type Game = pallet_ajuna_board::dot4gravity::Game<AccountId>;
 	type MaxNumberOfPlayers = MaxNumberOfPlayers;
+	type MaxNumberOfIdleBlocks = frame_support::traits::ConstU32<10>;
+	type MaxNumberOfGamesToExpire = frame_support::traits::ConstU32<5>;
+	type WeightInfo = pallet_ajuna_board::weights::AjunaWeight<Runtime>;
 }
 
 construct_runtime!(
