@@ -1415,7 +1415,7 @@ dependencies = [
 [[package]]
 name = "pallet-parentchain"
 version = "0.9.0"
-source = "git+https://github.com/integritee-network/pallets.git?branch=master#bd804ba63d4944952075b5fb8798066b8af87ab6"
+source = "git+https://github.com/integritee-network/pallets.git?branch=sdk-v0.9.0-polkadot-v0.9.26#4fde4d5e07d28be269c0b677a36531bb03316d66"
 dependencies = [
  "frame-support",
  "frame-system",
@@ -2066,7 +2066,7 @@ dependencies = [
 
 [[package]]
 name = "sgx-externalities"
-version = "0.4.0"
+version = "0.9.0"
 dependencies = [
  "derive_more",
  "environmental",
@@ -2080,7 +2080,7 @@ dependencies = [
 
 [[package]]
 name = "sgx-runtime"
-version = "0.8.0"
+version = "0.9.0"
 dependencies = [
  "frame-benchmarking",
  "frame-executive",

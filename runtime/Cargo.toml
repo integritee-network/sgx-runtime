@@ -5,7 +5,7 @@ homepage = 'https://www.integritee.network/'
 license = 'Unlicense'
 name = 'sgx-runtime'
 repository = 'https://github.com/integritee-network/sgx-runtime/'
-version = '0.8.0'
+version = '0.9.0'
 
 [package.metadata.docs.rs]
 targets = ['x86_64-unknown-linux-gnu']
@@ -45,7 +45,7 @@ sp-transaction-pool = { default-features = false, git = "https://github.com/pari
 sp-version = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.26" }
 
 # Integritee dependencies
-pallet-parentchain = { default-features = false, git = "https://github.com/integritee-network/pallets.git", branch = "master" }
+pallet-parentchain = { default-features = false, git = "https://github.com/integritee-network/pallets.git", branch = "sdk-v0.9.0-polkadot-v0.9.26" }
 
 [features]
 default = ['std']

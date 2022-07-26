@@ -3,9 +3,9 @@ name: Check
 on:
   workflow_dispatch:
   push:
-    branches: [ master ]
+    branches: [ master, sdk-v0.9.0-polkadot-v0.9.26 ]
   pull_request:
-    branches: [ master ]
+    branches: [ master, sdk-v0.9.0-polkadot-v0.9.26 ]
 
 env:
   CARGO_TERM_COLOR: always
