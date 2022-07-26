@@ -5,14 +5,14 @@ authors = ["Integritee AG <hello@integritee.network>"]
 edition = "2018"
 
 [target.'cfg(not(target_env = "sgx"))'.dependencies]
-sgx_tstd = { branch = "master", git = "https://github.com/apache/teaclave-sgx-sdk.git", features = ["untrusted_fs", "net", "backtrace"] }
+sgx_tstd = { features = ["untrusted_fs", "net", "backtrace"], git = "https://github.com/apache/teaclave-sgx-sdk.git", branch = "master" }
 
 [dependencies]
 libc = { version = "0.2", default-features = false }
 sgx-runtime = { path = "../runtime", default-features = false }
 sp-io = { path = "../substrate-sgx/sp-io", default-features = false, features = ["disable_oom", "disable_panic_handler", "disable_allocator", "sgx"] }
-sp-application-crypto = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.24", default-features = false, features = ["full_crypto"] }
-sp-core = { git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.24", default-features = false, features = ["full_crypto"] }
+sp-application-crypto = { default-features = false, features = ["full_crypto"], git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.26" }
+sp-core = { default-features = false, features = ["full_crypto"], git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.26" }
 
 [features]
 evm = ["sgx-runtime/evm"]
