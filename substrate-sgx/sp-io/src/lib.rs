@@ -80,6 +80,8 @@ pub use sgx_externalities::{
 	with_externalities, SgxExternalities, SgxExternalitiesTrait, SgxExternalitiesType,
 };
 
+pub use sp_externalities::MultiRemovalResults;
+
 /// Error verifying ECDSA signature
 #[derive(Encode, Decode)]
 pub enum EcdsaVerifyError {
@@ -99,6 +101,16 @@ pub enum KillStorageResult {
 	AllRemoved(u32),
 	/// At least one key still resides in the child trie due to the supplied limit.
 	SomeRemaining(u32),
+}
+
+impl From<MultiRemovalResults> for KillStorageResult {
+	fn from(r: MultiRemovalResults) -> Self {
+		match r {
+			MultiRemovalResults { maybe_cursor: None, backend, .. } => Self::AllRemoved(backend),
+			MultiRemovalResults { maybe_cursor: Some(..), backend, .. } =>
+				Self::SomeRemaining(backend),
+		}
+	}
 }
 
 pub mod storage {
