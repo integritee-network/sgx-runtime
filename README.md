@@ -2,9 +2,9 @@
 
 Based on [Integritee Node Template](https://github.com/integritee-network/integritee-node)
 
-This substrate runtime is instantiated inside a Intel SGX enclave in the [Integritee framework](https://book.integritee.network/). Probably all substrate compatible pallets can be integrated and executed confidentially
+This substrate runtime is instantiated inside a Intel SGX enclave in the [Integritee framework](https://book.integritee.network/). Probably all substrate compatible pallets can be integrated and executed confidentially.
 
-This repo also hosts our SGX patchese for `sr-io` and `externalities`.
+This repo also hosts our SGX patches for `sp-io` and `externalities`.
 
 # test build
 
