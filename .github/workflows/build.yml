@@ -20,7 +20,7 @@ jobs:
         # We need to compile `test-no-std` separately, otherwise we have std leaks from the build-deps.
         check: [
           # exclude the packages that don't compile to std.
-          cargo check --all exclude test-no-std,
+          cargo check --all --exclude test-no-std,
           cargo test --all --exclude test-no-std,
           cargo check -p test-no-std,
           cargo check -p test-no-std --features evm,
