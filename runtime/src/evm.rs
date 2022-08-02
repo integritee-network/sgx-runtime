@@ -21,8 +21,8 @@ pub const MAXIMUM_BLOCK_WEIGHT: Weight = WEIGHT_PER_SECOND / 2;
 // FIXME: For now just a random value.
 pub struct FixedGasPrice;
 impl FeeCalculator for FixedGasPrice {
-	fn min_gas_price() -> U256 {
-		1.into()
+	fn min_gas_price() -> (U256, u64) {
+		(1.into(), 1)
 	}
 }
 
