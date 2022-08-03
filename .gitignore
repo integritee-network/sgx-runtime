@@ -12,5 +12,9 @@
 # The cache for chain data in container
 .local
 
+# vscode
+.vscode
+
+
 #CLion
 .idea/

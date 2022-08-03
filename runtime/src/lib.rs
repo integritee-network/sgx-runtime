@@ -20,7 +20,7 @@
 //! you should assemble your runtime to be used with your STF here
 //! and get all your needed pallets in
 
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![feature(prelude_import)]
 #![feature(structural_match)]
 #![feature(core_intrinsics)]
@@ -28,6 +28,17 @@
 // `construct_runtime!` does a lot of recursion and requires us to increase the limit to 256.
 #![recursion_limit = "256"]
 
+#[cfg(feature = "evm")]
+mod evm;
+
+#[cfg(feature = "evm")]
+pub use evm::{
+	AddressMapping, EnsureAddressTruncated, EvmCall, FeeCalculator, FixedGasPrice,
+	FixedGasWeightMapping, GasWeightMapping, HashedAddressMapping, IntoAddressMapping,
+	SubstrateBlockHashMapping, GAS_PER_SECOND, MAXIMUM_BLOCK_WEIGHT, WEIGHT_PER_GAS,
+};
+
+use frame_support::weights::ConstantMultiplier;
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_api::impl_runtime_apis;
 use sp_core::OpaqueMetadata;
@@ -40,7 +51,6 @@ use sp_std::prelude::*;
 use sp_version::RuntimeVersion;
 
 // A few exports that help ease life for downstream crates.
-use frame_support::weights::ConstantMultiplier;
 pub use frame_support::{
 	construct_runtime, parameter_types,
 	traits::{KeyOwnerProofSystem, Randomness},
@@ -279,6 +289,8 @@ impl pallet_parentchain::Config for Runtime {
 	type WeightInfo = ();
 }
 
+// The plain sgx-runtime without the `evm-pallet`
+#[cfg(not(feature = "evm"))]
 construct_runtime!(
 	pub enum Runtime where
 		Block = Block,
@@ -291,6 +303,28 @@ construct_runtime!(
 		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>},
 		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
 		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
+	}
+);
+
+// Runtime constructed with the evm pallet.
+//
+// We need add the compiler-flag for the whole macro because it does not support
+// compiler flags withing the macro.
+#[cfg(feature = "evm")]
+construct_runtime!(
+	pub enum Runtime where
+		Block = Block,
+		NodeBlock = opaque::Block,
+		UncheckedExtrinsic = UncheckedExtrinsic
+	{
+		System: frame_system::{Pallet, Call, Config, Storage, Event<T>},
+		Timestamp: pallet_timestamp::{Pallet, Call, Storage, Inherent},
+		Balances: pallet_balances::{Pallet, Call, Storage, Config<T>, Event<T>},
+		TransactionPayment: pallet_transaction_payment::{Pallet, Storage, Event<T>},
+		Sudo: pallet_sudo::{Pallet, Call, Config<T>, Storage, Event<T>},
+		Parentchain: pallet_parentchain::{Pallet, Call, Storage},
+
+		Evm: pallet_evm::{Pallet, Call, Storage, Config, Event<T>},
 	}
 );
 
