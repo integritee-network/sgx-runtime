@@ -1,3 +1,5 @@
+> The code of this repo has been moved to the [worker repository](https://github.com/integritee-network/worker).
+
 # SGX-Runtime
 
 Based on [Integritee Node Template](https://github.com/integritee-network/integritee-node)
