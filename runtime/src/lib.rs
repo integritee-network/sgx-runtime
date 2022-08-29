@@ -304,6 +304,7 @@ impl pallet_scheduler::Config for Runtime {
 
 parameter_types! {
 	pub const MaxNumberOfPlayers: u8 = 2;
+	pub const TenMinutes: BlockNumber = 10 * MINUTES;
 }
 
 pub type BoardId = u32;
@@ -314,8 +315,7 @@ impl pallet_ajuna_board::Config for Runtime {
 	type GameState = pallet_ajuna_board::dot4gravity::GameState<AccountId>;
 	type Game = pallet_ajuna_board::dot4gravity::Game<AccountId>;
 	type MaxNumberOfPlayers = MaxNumberOfPlayers;
-	type MaxNumberOfIdleBlocks = frame_support::traits::ConstU32<10>;
-	type MaxNumberOfGamesToExpire = frame_support::traits::ConstU32<5>;
+	type IdleBoardTimeout = TenMinutes;
 	type WeightInfo = pallet_ajuna_board::weights::AjunaWeight<Runtime>;
 }
 
