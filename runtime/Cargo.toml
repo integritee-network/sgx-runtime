@@ -48,7 +48,7 @@ sp-version = { version = "5.0.0", default-features = false, git = "https://githu
 pallet-parentchain = { default-features = false, git = "https://github.com/integritee-network/pallets.git", branch = "polkadot-v0.9.20" }
 
 # Ajuna dependencies
-pallet-ajuna-board = { default-features = false, git = "https://github.com/ajuna-network/Ajuna.git", rev = "polkadot-v0.9.20-dev" }
+pallet-ajuna-board = { default-features = false, git = "https://github.com/ajuna-network/Ajuna.git", branch = "release/bengal" }
 pallet-scheduler = { default-features = false, git = "https://github.com/paritytech/substrate.git", branch = "polkadot-v0.9.20" }
 
 [features]
